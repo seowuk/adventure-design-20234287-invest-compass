@@ -1,0 +1,370 @@
+/* ---------- 페이지 골격 ---------- */
+
+.page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 20px 20px 120px;
+}
+
+.layout {
+  display: grid;
+  gap: 32px;
+}
+
+@media (min-width: 880px) {
+  .page {
+    padding: 36px 32px 64px;
+  }
+
+  .layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    gap: 56px;
+    align-items: start;
+  }
+
+  .stage {
+    position: sticky;
+    top: 24px;
+  }
+
+  .dock {
+    display: none;
+  }
+}
+
+/* ---------- 입력 영역 ---------- */
+
+.controls h1 {
+  font-size: clamp(28px, 5vw, 40px);
+  line-height: 1.22;
+  letter-spacing: -0.035em;
+  font-weight: 800;
+  margin: 0 0 28px;
+}
+
+.field {
+  padding: 22px 0;
+  border-top: 1px solid var(--line);
+}
+
+.field:last-child {
+  border-bottom: 1px solid var(--line);
+}
+
+.field-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.field-label {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.field-hint {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cobalt);
+}
+
+.field-value {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.money {
+  position: relative;
+}
+
+.money input {
+  width: 100%;
+  border: 0;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: 16px 48px 16px 18px;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  outline: 2px solid transparent;
+  transition: outline-color 0.15s;
+}
+
+.money input:focus-visible {
+  outline-color: var(--cobalt);
+}
+
+.money-unit {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.chip {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.chip:hover {
+  border-color: var(--ink);
+}
+
+.chip:focus-visible {
+  outline: 2px solid var(--cobalt);
+  outline-offset: 2px;
+}
+
+.chip[aria-pressed='true'] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+
+/* 슬라이더: 채워진 부분만 코발트 */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  margin: 8px 0;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--cobalt) var(--fill),
+    var(--line) var(--fill)
+  );
+  cursor: pointer;
+}
+
+.slider:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(51, 70, 245, 0.25);
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #fff;
+  border: 7px solid var(--cobalt);
+  box-shadow: 0 2px 8px rgba(20, 23, 43, 0.25);
+  cursor: grab;
+  transition: transform 0.12s;
+}
+
+.slider:active::-webkit-slider-thumb {
+  transform: scale(1.15);
+  cursor: grabbing;
+}
+
+.slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  border: 7px solid var(--cobalt);
+  box-shadow: 0 2px 8px rgba(20, 23, 43, 0.25);
+  cursor: grab;
+}
+
+.slider-scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.warn {
+  margin: 12px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--warn);
+}
+
+/* ---------- 결과 무대 ---------- */
+
+.stage {
+  background: var(--cobalt);
+  color: #fff;
+  border-radius: var(--radius-lg);
+  padding: 28px 24px 16px;
+  overflow: hidden;
+}
+
+.stage-caption {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.stage-amount {
+  margin: 6px 0 4px;
+  font-size: clamp(40px, 9vw, 60px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.045em;
+  font-variant-numeric: tabular-nums;
+  word-break: keep-all;
+}
+
+.stage-exact {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  font-variant-numeric: tabular-nums;
+}
+
+.stage-badge {
+  display: inline-block;
+  margin: 16px 0 0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--sun);
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.split {
+  margin-top: 28px;
+}
+
+.split-bar {
+  display: flex;
+  gap: 3px;
+  height: 14px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.split-principal,
+.split-profit {
+  transition: width 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.split-principal {
+  background: var(--sky);
+}
+
+.split-profit {
+  background: var(--sun);
+}
+
+.split-legend {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 14px 0 0;
+}
+
+.split-legend dt {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.split-legend dd {
+  margin: 4px 0 0;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+
+.dot-principal {
+  background: var(--sky);
+}
+
+.dot-profit {
+  background: var(--sun);
+}
+
+.chart {
+  margin: 24px -10px 0;
+}
+
+.tip {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.tip-profit {
+  color: var(--sun);
+}
+
+/* ---------- 하단 ---------- */
+
+/* 모바일: 결과가 화면 밖일 때 떠오르는 금액 바 */
+.dock {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  border-radius: 18px;
+  background: var(--ink);
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(20, 23, 43, 0.3);
+  transform: translateY(160%);
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  z-index: 10;
+}
+
+.dock.is-visible {
+  transform: none;
+}
+
+.dock-label {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.dock-amount {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--sun);
+  font-variant-numeric: tabular-nums;
+}

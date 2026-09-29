@@ -1,0 +1,44 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+
+:root {
+  /* 색 */
+  --paper: #f3f4f8;
+  --surface: #ffffff;
+  --ink: #14172b;
+  --muted: #6b7090;
+  --line: #e1e3ec;
+  --cobalt: #3346f5;
+  --sky: #9fb4ff;
+  --sun: #ffd84d;
+  --warn: #c2410c;
+
+  /* 모서리 */
+  --radius-lg: 28px;
+  --radius-md: 14px;
+
+  font-family: 'Pretendard Variable', Pretendard, -apple-system,
+    BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', system-ui,
+    sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  color-scheme: light;
+  -webkit-font-smoothing: antialiased;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--paper);
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
