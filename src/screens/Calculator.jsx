@@ -8,6 +8,7 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import TopBar from '../components/TopBar'
+import Why from '../components/Why'
 import './Calculator.css'
 
 // 입력 상한 (03 기능명세서 8장)
@@ -16,23 +17,38 @@ const LIMITS = {
   monthly: 10_000_000,
 }
 
-const INITIAL_PRESETS = [0, 5_000_000, 10_000_000, 30_000_000]
+const INITIAL_PRESETS = [5_000_000, 10_000_000, 30_000_000, 50_000_000]
 const MONTHLY_PRESETS = [100_000, 300_000, 500_000, 1_000_000]
+// 투자 방식 (피드백 반영: 목돈과 적립을 구분)
+const MODES = [
+  { key: 'monthly', label: '매달 적립', title: ['매달 꾸준히 넣으면', '얼마가 될까요?'] },
+  { key: 'lump', label: '한 번에 목돈', title: ['목돈을 넣어두면', '얼마가 될까요?'] },
+  { key: 'both', label: '둘 다', title: ['목돈에 매달 더하면', '얼마가 될까요?'] },
+]
+
 const RATE_PRESETS = [
   { label: '안정형', value: 3 },
   { label: '중립형', value: 5 },
   { label: '적극형', value: 7 },
 ]
 
-// 월 복리 적립식 미래가치 (03 기능명세서 8장)
+// 적립식·거치식 미래가치 (03 기능명세서 8장, v1.2)
+// "연 5%"는 1년이 지나면 정확히 5% 불어난다는 뜻으로 계산한다.
+// 매달 수익률 = (1 + 연수익률)^(1/12) - 1  → 12번 쌓이면 정확히 연수익률이 된다.
+// (예전처럼 연수익률/12를 쓰면 1년에 5.12%가 불어나 결과가 부풀려진다)
+function monthlyRate(annualRate) {
+  return Math.pow(1 + annualRate / 100, 1 / 12) - 1
+}
+
 function calculate(initial, monthly, annualRate, years) {
   const n = years * 12
-  const r = annualRate / 100 / 12
+  const r = monthlyRate(annualRate)
 
   if (r === 0) {
     return initial + monthly * n
   }
   const growth = Math.pow(1 + r, n)
+  // 목돈은 처음부터 n개월 동안, 매달 넣는 돈은 넣은 달부터 남은 기간 동안 불어난다
   return initial * growth + monthly * ((growth - 1) / r)
 }
 
@@ -210,16 +226,57 @@ function SliderField({ id, label, display, value, min, max, step, onChange, scal
   )
 }
 
+// "어떻게 계산했나요?" — 입력한 숫자로 계산 과정을 보여준다
+function HowCalculated({ lump, perMonth, rate, years }) {
+  const factor = 1 + rate / 100
+  const lumpGrowth = Math.pow(factor, years)
+  return (
+    <div className="how">
+      <Why title="어떻게 계산했나요?">
+        <p>
+          연 {rate}%는 <strong>1년이 지나면 {rate}% 불어난다</strong>는 뜻으로 계산해요. 매달
+          조금씩 불어나고, 12달을 채우면 정확히 {rate}%가 돼요.
+        </p>
+        {lump > 0 && (
+          <p>
+            <strong>목돈 {koreanUnit(lump)}</strong>은 1년마다 ×{factor.toFixed(2)}씩 불어나요.
+            {years}년이면 ×{lumpGrowth.toFixed(2)}배, 약 {koreanUnit(lump * lumpGrowth)}이 돼요.
+          </p>
+        )}
+        {perMonth > 0 && (
+          <p>
+            <strong>매달 넣는 {koreanUnit(perMonth)}</strong>은 넣은 달부터 남은 기간만큼
+            불어나요. 첫 달 돈은 거의 {years}년 내내 굴러가고, 마지막 달 돈은 거의 굴러가지
+            못해요.
+          </p>
+        )}
+        <p>
+          <strong>목돈도 복리가 붙어요.</strong> 복리는 불어난 돈에 다시 수익이 붙는 거라,
+          한 번 넣고 그대로 두면 복리 효과를 처음부터 온전히 받아요. 같은 금액이라면 한 번에
+          넣는 쪽이 더 많이 불어나고, 목돈이 없어도 바로 시작할 수 있다는 게 적립식의 장점이에요.
+        </p>
+        <p>세금과 수수료는 빼지 않았어요. 실제로 받는 돈은 이보다 조금 적어요.</p>
+      </Why>
+    </div>
+  )
+}
+
 export default function Calculator({ initialRate = 5, onBack }) {
-  const [initial, setInitial] = useState(0)
+  const [mode, setMode] = useState('monthly')
+  const [initial, setInitial] = useState(10_000_000)
   const [monthly, setMonthly] = useState(300_000)
   const [rate, setRate] = useState(initialRate)
   const [years, setYears] = useState(10)
 
-  const total = calculate(initial, monthly, rate, years)
-  const principal = initial + monthly * years * 12
+  // 고른 방식에 해당하는 금액만 계산에 넣는다
+  const lump = mode === 'monthly' ? 0 : initial
+  const perMonth = mode === 'lump' ? 0 : monthly
+
+  const total = calculate(lump, perMonth, rate, years)
+  const principal = lump + perMonth * years * 12
   const profit = Math.max(0, total - principal)
-  const data = yearlyData(initial, monthly, rate, years)
+  const data = yearlyData(lump, perMonth, rate, years)
+  const modeInfo = MODES.find((m) => m.key === mode)
   const principalShare = total > 0 ? (principal / total) * 100 : 100
   const multiple = principal > 0 ? total / principal : 0
 
@@ -234,28 +291,46 @@ export default function Calculator({ initialRate = 5, onBack }) {
       <div className="layout">
         <section className="controls" aria-labelledby="calc-title">
           <h1 id="calc-title">
-            매달 꾸준히 넣으면
+            {modeInfo.title[0]}
             <br />
-            얼마가 될까요?
+            {modeInfo.title[1]}
           </h1>
 
-          <MoneyField
-            id="initial"
-            label="처음에 넣을 돈"
-            value={initial}
-            onChange={setInitial}
-            presets={INITIAL_PRESETS}
-            max={LIMITS.initial}
-          />
+          <div className="mode" role="group" aria-label="투자 방식">
+            {MODES.map((m) => (
+              <button
+                key={m.key}
+                type="button"
+                className="mode-btn"
+                aria-pressed={mode === m.key}
+                onClick={() => setMode(m.key)}
+              >
+                {m.label}
+              </button>
+            ))}
+          </div>
 
-          <MoneyField
-            id="monthly"
-            label="매달 넣을 돈"
-            value={monthly}
-            onChange={setMonthly}
-            presets={MONTHLY_PRESETS}
-            max={LIMITS.monthly}
-          />
+          {mode !== 'monthly' && (
+            <MoneyField
+              id="initial"
+              label="한 번에 넣을 목돈"
+              value={initial}
+              onChange={setInitial}
+              presets={INITIAL_PRESETS}
+              max={LIMITS.initial}
+            />
+          )}
+
+          {mode !== 'lump' && (
+            <MoneyField
+              id="monthly"
+              label="매달 넣을 돈"
+              value={monthly}
+              onChange={setMonthly}
+              presets={MONTHLY_PRESETS}
+              max={LIMITS.monthly}
+            />
+          )}
 
           <SliderField
             id="rate"
@@ -356,6 +431,8 @@ export default function Calculator({ initialRate = 5, onBack }) {
           </div>
         </section>
       </div>
+
+      <HowCalculated lump={lump} perMonth={perMonth} rate={rate} years={years} />
 
       <p className="disclaimer">
         이 숫자는 예시이며 보장된 수익률이 아닙니다. 세금과 수수료는 반영하지 않았습니다.

@@ -21,6 +21,28 @@ export const LEVELS = {
 
 export const BOOKS = [
   {
+    title: '돈의 속성',
+    author: '김승호',
+    level: 'intro',
+    why: '돈을 어떻게 대하고 모으고 지켜야 하는지, 투자 전에 갖춰야 할 태도를 짧은 글로 쉽게 풀어줘요.',
+    tags: ['마음가짐', '돈 관리'],
+  },
+  // ⚠ 아래 두 권은 저자·내용 미확인. 서점에서 확인 후 author와 why를 채우고 level을 조정할 것
+  {
+    title: '부의 속성',
+    author: '',
+    level: 'intro',
+    why: '부를 쌓는 원리와 태도를 다룬 책이에요.',
+    tags: ['마음가짐'],
+  },
+  {
+    title: '부의 갈림길',
+    author: '',
+    level: 'deeper',
+    why: '부가 갈리는 선택과 흐름을 다룬 책이에요.',
+    tags: ['투자 원리'],
+  },
+  {
     title: '돈의 심리학',
     author: '모건 하우절',
     level: 'intro',
@@ -66,7 +88,7 @@ export const BOOKS = [
 
 // 서점 검색 링크 (판매 링크가 아니라 검색 결과로 보낸다)
 export function bookSearchUrl(book) {
-  const q = encodeURIComponent(`${book.title} ${book.author}`)
+  const q = encodeURIComponent(book.author ? `${book.title} ${book.author}` : book.title)
   return `https://www.aladin.co.kr/search/wsearchresult.aspx?SearchTarget=Book&SearchWord=${q}`
 }
 

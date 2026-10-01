@@ -335,3 +335,51 @@
   color: var(--sun);
   font-variant-numeric: tabular-nums;
 }
+
+/* 투자 방식 선택: 매달 적립 / 한 번에 목돈 / 둘 다 */
+.mode {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  margin: 0 0 8px;
+  padding: 4px;
+  border-radius: 16px;
+  background: var(--line);
+}
+
+.mode-btn {
+  padding: 12px 8px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.mode-btn:hover {
+  color: var(--ink);
+}
+
+.mode-btn:focus-visible {
+  outline: 2px solid var(--cobalt);
+  outline-offset: 2px;
+}
+
+.mode-btn[aria-pressed='true'] {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 4px rgba(20, 23, 43, 0.12);
+}
+
+/* 계산 설명 */
+.how {
+  max-width: 640px;
+  margin-top: 32px;
+}
+
+.how strong {
+  color: var(--ink);
+}

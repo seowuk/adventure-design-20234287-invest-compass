@@ -62,7 +62,7 @@ export default function Learn({ exp, onBack }) {
           {books.map((b) => (
             <article key={b.title} className="card">
               <h3>{b.title}</h3>
-              <p className="card-sub">{b.author}</p>
+              {b.author && <p className="card-sub">{b.author}</p>}
               <p className="card-why">{b.why}</p>
               <Tags tags={b.tags} />
               <a className="card-link" href={bookSearchUrl(b)} target="_blank" rel="noreferrer">

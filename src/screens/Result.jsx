@@ -4,6 +4,7 @@ import Why from '../components/Why'
 import { diagnose } from '../lib/diagnosis'
 import {
   CAP_TEXT,
+  EXPERIENCED,
   HOW_IT_WORKS,
   MISMATCH,
   TYPES,
@@ -112,6 +113,7 @@ export default function Result({
 
       {!picked && d.mismatch && <p className="note">{MISMATCH}</p>}
       {!picked && d.untested && <p className="note">{UNTESTED}</p>}
+      {!picked && d.exp === 4 && <p className="note">{EXPERIENCED}</p>}
 
       <section className="steps">
         <h2>어떻게 시작하면 좋을까</h2>
