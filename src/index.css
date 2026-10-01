@@ -11,6 +11,12 @@
   --sky: #9fb4ff;
   --sun: #ffd84d;
   --warn: #c2410c;
+  --night: #14172b;
+  --tint: #eef0ff;
+  --accent-text: #3346f5;
+  --text-2: #3a3f5c;
+  --warn-bg: #fff3e8;
+  --warn-text: #3a2a1f;
 
   /* 모서리 */
   --radius-lg: 28px;
@@ -22,7 +28,47 @@
   color: var(--ink);
   background: var(--paper);
   color-scheme: light;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   -webkit-font-smoothing: antialiased;
+}
+
+/* 어두운 테마: 기기 설정을 따르되 data-theme으로 강제 가능 */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --paper: #0f1222;
+    --surface: #1a1e33;
+    --ink: #eef0f8;
+    --muted: #9aa0bf;
+    --line: #2b3050;
+    --tint: #242b5e;
+  --accent-text: #a3b0ff;
+    --text-2: #c3c7de;
+    --warn: #ff9a5c;
+    --warn-bg: #3a2616;
+    --warn-text: #f3dccb;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --paper: #0f1222;
+  --surface: #1a1e33;
+  --ink: #eef0f8;
+  --muted: #9aa0bf;
+  --line: #2b3050;
+  --tint: #242b5e;
+  --accent-text: #a3b0ff;
+  --text-2: #c3c7de;
+  --warn: #ff9a5c;
+  --warn-bg: #3a2616;
+  --warn-text: #f3dccb;
+  color-scheme: dark;
+}
+
+html {
+  scroll-padding-top: env(safe-area-inset-top, 0px);
 }
 
 *,

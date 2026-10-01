@@ -4,9 +4,11 @@ import Quiz from './screens/Quiz'
 import Result from './screens/Result'
 import Account from './screens/Account'
 import Calculator from './screens/Calculator'
+import Learn from './screens/Learn'
+import { diagnose } from './lib/diagnosis'
 import { QUESTIONS } from './data/questions'
 import { FUND_QUESTIONS } from './data/fundQuestions'
-import { loadAnswers, loadFunds, saveAnswers, saveFunds } from './lib/storage'
+import { clearSaved, loadAnswers, loadFunds, saveAnswers, saveFunds } from './lib/storage'
 import './App.css'
 
 // 화면 흐름 (03 기능명세서 2장)
@@ -14,14 +16,23 @@ import './App.css'
 //                         └────────────→ 계산기
 export default function App() {
   const [screen, setScreen] = useState('start')
-  const [answers, setAnswers] = useState(() => loadAnswers())
-  const [funds, setFunds] = useState(() => loadFunds())
+  // 저장된 진단 기록 { answers, at } — 다시 접속해도 그대로 불러온다
+  const [diag, setDiag] = useState(() => loadAnswers())
+  const [fundRec, setFundRec] = useState(() => loadFunds())
+  const answers = diag?.answers ?? null
+  const funds = fundRec?.answers ?? null
   const [calc, setCalc] = useState({ rate: 5, from: 'start' })
+  const [learnFrom, setLearnFrom] = useState('start')
 
   // 화면이 바뀌면 맨 위로
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [screen])
+
+  const openLearn = (from) => {
+    setLearnFrom(from)
+    setScreen('learn')
+  }
 
   const openCalculator = (rate, from) => {
     setCalc({ rate, from })
@@ -35,8 +46,7 @@ export default function App() {
         questions={QUESTIONS}
         onExit={() => setScreen('start')}
         onDone={(result) => {
-          setAnswers(result)
-          saveAnswers(result)
+          setDiag(saveAnswers(result))
           setScreen('result')
         }}
       />
@@ -50,8 +60,7 @@ export default function App() {
         questions={FUND_QUESTIONS}
         onExit={() => setScreen(answers ? 'result' : 'start')}
         onDone={(result) => {
-          setFunds(result)
-          saveFunds(result)
+          setFundRec(saveFunds(result))
           setScreen('account')
         }}
       />
@@ -68,6 +77,7 @@ export default function App() {
         onCalculate={(rate) => openCalculator(rate, 'result')}
         onFunds={() => setScreen('funds')}
         onShowAccount={() => setScreen('account')}
+        onLearn={() => openLearn('result')}
       />
     )
   }
@@ -80,6 +90,17 @@ export default function App() {
         onBack={() => setScreen(answers ? 'result' : 'start')}
         onRetry={() => setScreen('funds')}
         onCalculate={(rate) => openCalculator(rate, 'account')}
+        onShowResult={() => setScreen('result')}
+        onLearn={() => openLearn('account')}
+      />
+    )
+  }
+
+  if (screen === 'learn') {
+    return (
+      <Learn
+        exp={answers ? diagnose(answers).exp : null}
+        onBack={() => setScreen(learnFrom)}
       />
     )
   }
@@ -96,10 +117,19 @@ export default function App() {
 
   return (
     <Start
-      hasResult={Boolean(answers)}
+      diag={diag}
+      funds={fundRec}
       onStart={() => setScreen('quiz')}
       onShowResult={() => setScreen('result')}
+      onShowAccount={() => setScreen('account')}
+      onFunds={() => setScreen('funds')}
       onCalculator={() => openCalculator(5, 'start')}
+      onLearn={() => openLearn('start')}
+      onClear={() => {
+        clearSaved()
+        setDiag(null)
+        setFundRec(null)
+      }}
     />
   )
 }

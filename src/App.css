@@ -55,7 +55,7 @@
   height: 30px;
   display: grid;
   place-items: center;
-  background: var(--ink);
+  background: var(--night);
   border-radius: 9px;
 }
 
@@ -141,6 +141,40 @@
   color: var(--muted);
 }
 
+/* 빠른 선택 칩 */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.chip {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.chip:hover {
+  border-color: var(--ink);
+}
+
+.chip:focus-visible {
+  outline: 2px solid var(--cobalt);
+  outline-offset: 2px;
+}
+
+.chip[aria-pressed='true'] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
 /* "왜 물어보나요?" */
 .why {
   margin-top: 20px;
@@ -155,7 +189,7 @@
   padding: 14px 16px;
   font-size: 14px;
   font-weight: 600;
-  color: var(--cobalt);
+  color: var(--accent-text);
   list-style: none;
   cursor: pointer;
 }
@@ -190,7 +224,7 @@
   padding: 0 16px 16px;
   font-size: 14px;
   line-height: 1.75;
-  color: #3a3f5c;
+  color: var(--text-2);
   word-break: keep-all;
 }
 
@@ -328,7 +362,7 @@
   margin: 0 0 8px;
   font-size: 14px;
   font-weight: 700;
-  color: var(--cobalt);
+  color: var(--accent-text);
   font-variant-numeric: tabular-nums;
 }
 
@@ -384,7 +418,7 @@
 
 .option[aria-pressed='true'] {
   border-color: var(--cobalt);
-  background: #eef0ff;
+  background: var(--tint);
 }
 
 .option[aria-pressed='true'] .option-mark {
@@ -414,7 +448,7 @@
 }
 
 .review-item:hover {
-  background: #eef0ff;
+  background: var(--tint);
 }
 
 .review-item:focus-visible {
@@ -441,7 +475,7 @@
   align-self: center;
   font-size: 13px;
   font-weight: 700;
-  color: var(--cobalt);
+  color: var(--accent-text);
 }
 
 /* ---------- 결과 화면 ---------- */
@@ -450,7 +484,7 @@
   margin-bottom: 16px;
   padding: 20px;
   border-radius: 18px;
-  background: #fff3e8;
+  background: var(--warn-bg);
 }
 
 .warning h2 {
@@ -465,7 +499,7 @@
   margin: 0 0 10px;
   font-size: 15px;
   line-height: 1.75;
-  color: #3a2a1f;
+  color: var(--warn-text);
   word-break: keep-all;
 }
 
@@ -629,7 +663,7 @@
   margin: 0 0 16px;
   font-size: 15px;
   line-height: 1.65;
-  color: #3a3f5c;
+  color: var(--text-2);
   word-break: keep-all;
 }
 
@@ -646,7 +680,7 @@
   margin: 0 0 24px;
   padding: 6px 12px;
   border-radius: 999px;
-  background: #fff3e8;
+  background: var(--warn-bg);
   color: var(--warn);
   font-size: 13px;
   font-weight: 700;
@@ -702,7 +736,7 @@
 }
 
 .checklist-fit h3 {
-  color: var(--cobalt);
+  color: var(--accent-text);
 }
 
 .checklist-unfit h3 {
@@ -734,7 +768,7 @@
 
 .checklist-fit li::before {
   content: '○';
-  color: var(--cobalt);
+  color: var(--accent-text);
 }
 
 .checklist-unfit li::before {
@@ -782,7 +816,7 @@
 .account-tagline {
   margin: 0;
   font-size: 15px;
-  color: #3a3f5c;
+  color: var(--text-2);
   word-break: keep-all;
 }
 
@@ -908,11 +942,11 @@
 }
 
 .table .is-focus {
-  background: #eef0ff;
+  background: var(--tint);
 }
 
 .table thead .is-focus {
-  color: var(--cobalt);
+  color: var(--accent-text);
 }
 
 .nowrap {
@@ -926,7 +960,7 @@
 }
 
 .basis a {
-  color: var(--cobalt);
+  color: var(--accent-text);
   font-weight: 600;
 }
 
@@ -937,4 +971,368 @@
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;
+}
+
+/* ---------- 결과: 두 축 설명 ---------- */
+
+.type-leaning {
+  margin: 16px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--sun);
+}
+
+.reasoning {
+  margin-bottom: 24px;
+}
+
+.reasoning h2,
+.pick h2 {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.axes {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+
+.axes > div {
+  display: grid;
+  grid-template-columns: 6.5em 1fr;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.axes dt {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.axes dd {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+}
+
+.axes strong {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.axes span {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-2);
+  word-break: keep-all;
+}
+
+.axes-rule {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-2);
+  word-break: keep-all;
+}
+
+.pick {
+  margin: 0 0 32px;
+}
+
+.pick > p {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text-2);
+}
+
+/* ---------- 두 결과 요약 (시작·계좌 화면 공통) ---------- */
+
+.summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.summary-tile {
+  display: grid;
+  gap: 2px;
+  padding: 18px 16px;
+  border: 0;
+  border-radius: 18px;
+  background: var(--cobalt);
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.1s, background 0.15s;
+}
+
+.summary-tile:hover:not(:disabled) {
+  background: #2837d9;
+}
+
+.summary-tile:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.summary-tile:focus-visible {
+  outline: 3px solid var(--sun);
+  outline-offset: 3px;
+}
+
+.summary-tile:disabled {
+  cursor: default;
+}
+
+.summary-tile.is-empty {
+  border: 2px dashed var(--cobalt);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.summary-tile.is-empty:hover:not(:disabled) {
+  background: var(--tint);
+}
+
+.summary-label {
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0.75;
+}
+
+.summary-value {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.2;
+}
+
+.summary-hint {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sun);
+}
+
+.summary-tile.is-empty .summary-hint {
+  color: var(--accent-text);
+}
+
+/* 시작 화면: 다시 온 사용자 */
+.saved h2 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  margin: 0 0 14px;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.saved-date {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.saved-note {
+  margin: 20px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+  text-align: center;
+  word-break: keep-all;
+}
+
+.inline-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--accent-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.inline-link:focus-visible {
+  outline: 2px solid var(--cobalt);
+  outline-offset: 2px;
+}
+
+/* 계좌 화면: 무엇을 담을까 + 어디에 담을까 */
+.combo {
+  margin-bottom: 36px;
+}
+
+.combo-title {
+  margin: 0 0 14px;
+  font-size: clamp(24px, 5.5vw, 30px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.combo-what {
+  padding: 18px 20px;
+  border-radius: 18px;
+  background: var(--surface);
+}
+
+.combo-what h2 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.combo-what h2 span {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.combo-what .bullets {
+  margin-bottom: 12px;
+  font-size: 15px;
+  line-height: 1.6;
+  word-break: keep-all;
+}
+
+.combo-what .inline-link {
+  font-size: 14px;
+}
+
+.where-title {
+  margin: 0 0 12px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+/* ---------- 학습 자료 추천 ---------- */
+
+.learn-title {
+  margin: 0 0 8px;
+  font-size: clamp(26px, 6vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+.learn-lead {
+  margin: 0 0 16px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text-2);
+  word-break: keep-all;
+}
+
+.learn-section {
+  margin-top: 36px;
+}
+
+.learn-section h2 {
+  margin: 0 0 12px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.learn-section .chips {
+  margin-top: 0;
+}
+
+.level-desc {
+  margin: 10px 0 14px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.cards {
+  display: grid;
+  gap: 10px;
+}
+
+@media (min-width: 560px) {
+  .cards {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px;
+  border-radius: 18px;
+  background: var(--surface);
+}
+
+.card h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  word-break: keep-all;
+}
+
+.card-sub {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.card-why {
+  flex: 1;
+  margin: 4px 0 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-2);
+  word-break: keep-all;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0 4px;
+  padding: 0;
+  list-style: none;
+}
+
+.tags li {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--tint);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent-text);
+}
+
+.card-link {
+  align-self: flex-start;
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent-text);
+  text-underline-offset: 3px;
+}
+
+.card-link:focus-visible {
+  outline: 2px solid var(--cobalt);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.learn-section .checklists {
+  margin-top: 0;
 }

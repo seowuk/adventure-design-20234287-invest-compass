@@ -67,7 +67,7 @@
 .field-hint {
   font-size: 14px;
   font-weight: 600;
-  color: var(--cobalt);
+  color: var(--accent-text);
 }
 
 .field-value {
@@ -107,39 +107,6 @@
   color: var(--muted);
   font-weight: 600;
   pointer-events: none;
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.chip {
-  border: 1px solid var(--line);
-  background: var(--surface);
-  padding: 8px 14px;
-  border-radius: 999px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
-}
-
-.chip:hover {
-  border-color: var(--ink);
-}
-
-.chip:focus-visible {
-  outline: 2px solid var(--cobalt);
-  outline-offset: 2px;
-}
-
-.chip[aria-pressed='true'] {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: #fff;
 }
 
 /* 슬라이더: 채워진 부분만 코발트 */
@@ -321,7 +288,7 @@
   gap: 2px;
   padding: 10px 12px;
   border-radius: 10px;
-  background: var(--ink);
+  background: var(--night);
   color: #fff;
   font-size: 13px;
   font-variant-numeric: tabular-nums;
@@ -344,7 +311,7 @@
   align-items: center;
   padding: 14px 18px;
   border-radius: 18px;
-  background: var(--ink);
+  background: var(--night);
   color: #fff;
   box-shadow: 0 8px 24px rgba(20, 23, 43, 0.3);
   transform: translateY(160%);

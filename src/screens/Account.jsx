@@ -1,4 +1,5 @@
 import TopBar from '../components/TopBar'
+import Summary from '../components/Summary'
 import Why from '../components/Why'
 import { classifyFunds } from '../lib/accounts'
 import { diagnose } from '../lib/diagnosis'
@@ -126,7 +127,15 @@ function AccountCard({ id, focus }) {
   )
 }
 
-export default function Account({ answers, funds, onBack, onRetry, onCalculate }) {
+export default function Account({
+  answers,
+  funds,
+  onBack,
+  onRetry,
+  onCalculate,
+  onShowResult,
+  onLearn,
+}) {
   const { type, guideKey } = classifyFunds(funds)
   const fund = FUND_TYPES[type]
   const guide = GUIDES[guideKey]
@@ -136,6 +145,32 @@ export default function Account({ answers, funds, onBack, onRetry, onCalculate }
   return (
     <div className="screen">
       <TopBar onBack={onBack} />
+
+      <section className="combo" aria-labelledby="combo-title">
+        <h1 id="combo-title" className="combo-title">
+          내 진단 결과
+        </h1>
+        <Summary answers={answers} funds={funds} onShowResult={onShowResult} />
+
+        {investType && (
+          <div className="combo-what">
+            <h2>
+              무엇을 담을까
+              <span>{investType.name} 기준</span>
+            </h2>
+            <ul className="bullets">
+              {investType.steps.slice(0, 2).map((s) => (
+                <li key={s}>{s}</li>
+              ))}
+            </ul>
+            <button type="button" className="inline-link" onClick={onShowResult}>
+              성향 결과 자세히 보기
+            </button>
+          </div>
+        )}
+      </section>
+
+      <h2 className="where-title">어디에 담을까</h2>
 
       <section className="type-stage">
         <p className="type-caption">내 돈의 성격</p>
@@ -235,7 +270,10 @@ export default function Account({ answers, funds, onBack, onRetry, onCalculate }
             </span>
           )}
         </button>
-        <button type="button" className="btn-secondary" onClick={onRetry}>
+        <button type="button" className="btn-secondary" onClick={onLearn}>
+          공부할 책과 사이트 보기
+        </button>
+        <button type="button" className="btn-link" onClick={onRetry}>
           3문항 다시 답하기
         </button>
       </div>

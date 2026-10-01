@@ -1,5 +1,7 @@
 import TopBar from '../components/TopBar'
+import Summary from '../components/Summary'
 import { QUESTIONS } from '../data/questions'
+import { formatDate } from '../lib/storage'
 
 function CompassDial() {
   return (
@@ -27,7 +29,19 @@ function CompassDial() {
   )
 }
 
-export default function Start({ hasResult, onStart, onShowResult, onCalculator }) {
+export default function Start({
+  diag,
+  funds,
+  onStart,
+  onShowResult,
+  onShowAccount,
+  onFunds,
+  onCalculator,
+  onClear,
+  onLearn,
+}) {
+  const date = diag ? formatDate(diag.at) : ''
+
   return (
     <div className="screen">
       <TopBar />
@@ -39,29 +53,67 @@ export default function Start({ hasResult, onStart, onShowResult, onCalculator }
           <br />
           방향만 알려드립니다.
         </h1>
-        <p className="start-lead">몇 가지 질문에 답하면 나에게 맞는 투자 방향을 알려드려요.</p>
+        {!diag && (
+          <p className="start-lead">몇 가지 질문에 답하면 나에게 맞는 투자 방향을 알려드려요.</p>
+        )}
       </section>
 
-      <ul className="promises">
-        <li>로그인 없이 바로 써요</li>
-        <li>개인정보를 모으지 않아요</li>
-        <li>특정 종목을 추천하지 않아요</li>
-      </ul>
+      {diag ? (
+        <section className="saved" aria-labelledby="saved-title">
+          <h2 id="saved-title">
+            다시 오셨네요
+            {date && <span className="saved-date">{date} 진단</span>}
+          </h2>
+          <Summary
+            answers={diag.answers}
+            funds={funds?.answers}
+            onShowResult={onShowResult}
+            onShowAccount={onShowAccount}
+            onFunds={onFunds}
+          />
+          <div className="start-actions">
+            <button type="button" className="btn-primary" onClick={onShowResult}>
+              내 결과 다시 보기
+            </button>
+            <button type="button" className="btn-secondary" onClick={onStart}>
+              처음부터 다시 진단하기
+            </button>
+            <button type="button" className="btn-link" onClick={onCalculator}>
+              복리 계산기만 써볼래요
+            </button>
+            <button type="button" className="btn-link" onClick={onLearn}>
+              공부할 책과 사이트 보기
+            </button>
+          </div>
+          <p className="saved-note">
+            결과는 이 기기의 이 브라우저에만 저장돼요. 서버로 보내지 않아요.{' '}
+            <button type="button" className="inline-link" onClick={onClear}>
+              이 기기에서 지우기
+            </button>
+          </p>
+        </section>
+      ) : (
+        <>
+          <ul className="promises">
+            <li>로그인 없이 바로 써요</li>
+            <li>개인정보를 모으지 않아요</li>
+            <li>특정 종목을 추천하지 않아요</li>
+          </ul>
 
-      <div className="start-actions">
-        <button type="button" className="btn-primary" onClick={onStart}>
-          진단 시작하기
-          <span className="btn-sub">{QUESTIONS.length}문항, 1분이면 끝나요</span>
-        </button>
-        {hasResult && (
-          <button type="button" className="btn-secondary" onClick={onShowResult}>
-            지난 결과 다시 보기
-          </button>
-        )}
-        <button type="button" className="btn-link" onClick={onCalculator}>
-          진단 없이 복리 계산기만 써볼래요
-        </button>
-      </div>
+          <div className="start-actions">
+            <button type="button" className="btn-primary" onClick={onStart}>
+              진단 시작하기
+              <span className="btn-sub">{QUESTIONS.length}문항, 1분이면 끝나요</span>
+            </button>
+            <button type="button" className="btn-link" onClick={onCalculator}>
+              진단 없이 복리 계산기만 써볼래요
+            </button>
+            <button type="button" className="btn-link" onClick={onLearn}>
+              공부할 책과 사이트만 볼래요
+            </button>
+          </div>
+        </>
+      )}
 
       <p className="disclaimer">본 서비스는 교육 목적이며 투자 자문이 아닙니다.</p>
     </div>
