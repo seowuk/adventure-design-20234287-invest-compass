@@ -1336,3 +1336,154 @@
 .learn-section .checklists {
   margin-top: 0;
 }
+
+/* ---------- 계좌를 만든 다음엔 ---------- */
+
+.after {
+  margin-bottom: 36px;
+}
+
+.after h2 {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.after-lead {
+  margin: 0 0 16px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-2);
+  word-break: keep-all;
+}
+
+.after-steps {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.after-step {
+  padding: 18px 20px 6px;
+  border-radius: 18px;
+  background: var(--surface);
+}
+
+.after-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.after-num {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--cobalt);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.after-head h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.after-effort {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.after-name {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent-text);
+}
+
+.after-desc,
+.after-caution {
+  margin: 0 0 10px;
+  font-size: 14px;
+  line-height: 1.65;
+  word-break: keep-all;
+}
+
+.after-desc {
+  color: var(--text-2);
+}
+
+.after-caution {
+  padding-left: 12px;
+  border-left: 3px solid var(--warn);
+  color: var(--text-2);
+}
+
+.after-step .why {
+  margin: 4px -20px 0;
+  background: transparent;
+}
+
+.after-step .why summary {
+  padding: 12px 20px;
+}
+
+.after-step .why-body {
+  padding: 0 20px 14px;
+}
+
+/* 3층 연금 */
+.layers {
+  display: grid;
+  gap: 4px;
+  margin: 4px 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.layers li {
+  display: grid;
+  grid-template-columns: 3em 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--paper);
+}
+
+.layers li.is-mine {
+  background: var(--tint);
+  outline: 2px solid var(--cobalt);
+}
+
+.layer-floor {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--accent-text);
+}
+
+.layer-text {
+  display: grid;
+  gap: 2px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.layer-text strong {
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.accounts > .why {
+  margin: 0 0 12px;
+}

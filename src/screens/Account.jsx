@@ -7,6 +7,11 @@ import { TYPES } from '../data/results'
 import {
   ACCOUNTS,
   ACCOUNT_ORDER,
+  AFTER_LEAD,
+  AFTER_STEPS,
+  PENSION_LAYERS,
+  PENSION_LAYERS_NOTE,
+  TDF_TIP,
   COMPARE,
   FUND_ORDER,
   FUND_TYPES,
@@ -127,6 +132,53 @@ function AccountCard({ id, focus }) {
   )
 }
 
+function AfterSteps() {
+  return (
+    <section className="after" aria-labelledby="after-title">
+      <h2 id="after-title">계좌를 만든 다음엔</h2>
+      <p className="after-lead">{AFTER_LEAD}</p>
+      <ol className="after-steps">
+        {AFTER_STEPS.map((a, i) => (
+          <li key={a.key} className="after-step">
+            <div className="after-head">
+              <span className="after-num" aria-hidden="true">
+                {i + 1}
+              </span>
+              <div>
+                <h3>{a.step}</h3>
+                <p className="after-effort">{a.effort}</p>
+              </div>
+            </div>
+            <p className="after-name">{a.name}</p>
+            <p className="after-desc">{a.desc}</p>
+            <p className="after-caution">{a.caution}</p>
+            {a.tip && <Why title="TDF 이름의 숫자는 뭔가요?">{TDF_TIP}</Why>}
+          </li>
+        ))}
+      </ol>
+    </section>
+  )
+}
+
+function PensionLayers() {
+  return (
+    <Why title="연금저축·IRP는 노후 준비의 어디쯤일까요?">
+      <ol className="layers" aria-label="노후 준비 3층 구조">
+        {PENSION_LAYERS.map((l) => (
+          <li key={l.floor} className={l.mine ? 'is-mine' : undefined}>
+            <span className="layer-floor">{l.floor}</span>
+            <span className="layer-text">
+              <strong>{l.name}</strong>
+              {l.desc}
+            </span>
+          </li>
+        ))}
+      </ol>
+      <p>{PENSION_LAYERS_NOTE}</p>
+    </Why>
+  )
+}
+
 export default function Account({
   answers,
   funds,
@@ -202,8 +254,11 @@ export default function Account({
         {guide.note && <p className="note">{guide.note}</p>}
       </section>
 
+      <AfterSteps />
+
       <section className="accounts">
         <h2>검토해볼 계좌</h2>
+        <PensionLayers />
         {guide.focus.map((id) => (
           <AccountCard key={id} id={id} focus />
         ))}
