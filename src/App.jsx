@@ -8,6 +8,7 @@ import Learn from './screens/Learn'
 import Global from './screens/Global'
 import Words from './screens/Words'
 import Dividend from './screens/Dividend'
+import Brokers from './screens/Brokers'
 import { diagnose } from './lib/diagnosis'
 import { QUESTIONS } from './data/questions'
 import { FUND_QUESTIONS } from './data/fundQuestions'
@@ -28,6 +29,7 @@ function AppScreens({ screen, setScreen }) {
   const [learnFrom, setLearnFrom] = useState('start')
   const [globalFrom, setGlobalFrom] = useState('start')
   const [wordsFrom, setWordsFrom] = useState('start')
+  const [dividendFrom, setDividendFrom] = useState('words')
 
   const openLearn = (from) => {
     setLearnFrom(from)
@@ -123,11 +125,23 @@ function AppScreens({ screen, setScreen }) {
   }
 
   if (screen === 'words') {
-    return <Words onBack={() => setScreen(wordsFrom)} onDividend={() => setScreen('dividend')} />
+    return (
+      <Words
+        onBack={() => setScreen(wordsFrom)}
+        onDividend={() => {
+          setDividendFrom('words')
+          setScreen('dividend')
+        }}
+      />
+    )
   }
 
   if (screen === 'dividend') {
-    return <Dividend onBack={() => setScreen('words')} />
+    return <Dividend onBack={() => setScreen(dividendFrom)} />
+  }
+
+  if (screen === 'brokers') {
+    return <Brokers onBack={() => setScreen('start')} />
   }
 
   if (screen === 'calc') {
@@ -152,6 +166,11 @@ function AppScreens({ screen, setScreen }) {
       onLearn={() => openLearn('start')}
       onWords={() => openWords('start')}
       onGlobal={() => openGlobal('start')}
+      onBrokers={() => setScreen('brokers')}
+      onDividend={() => {
+        setDividendFrom('start')
+        setScreen('dividend')
+      }}
       onClear={() => {
         clearSaved()
         setDiag(null)

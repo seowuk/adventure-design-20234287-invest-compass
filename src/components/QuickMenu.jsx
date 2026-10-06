@@ -1,5 +1,19 @@
 // 시작 화면의 앱형 바로가기 메뉴
 const ICONS = {
+  phone: (
+    <>
+      <rect x="6.5" y="3" width="11" height="18" rx="2.5" />
+      <path d="M10.5 18h3M9.5 12.5l2 2 3.5-4" strokeLinecap="round" strokeLinejoin="round" />
+    </>
+  ),
+  coins: (
+    <>
+      <ellipse cx="10" cy="7" rx="6" ry="2.6" />
+      <path d="M4 7v4c0 1.4 2.7 2.6 6 2.6M4 11v4c0 1.4 2.7 2.6 6 2.6" />
+      <ellipse cx="15.5" cy="14" rx="5" ry="2.2" />
+      <path d="M10.5 14v3.6c0 1.2 2.2 2.2 5 2.2s5-1 5-2.2V14" />
+    </>
+  ),
   calc: (
     <path d="M5 19V11M10 19V7M15 19v-5M20 19V4" strokeLinecap="round" />
   ),

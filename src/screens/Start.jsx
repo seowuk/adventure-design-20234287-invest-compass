@@ -42,6 +42,8 @@ export default function Start({
   onLearn,
   onWords,
   onGlobal,
+  onBrokers,
+  onDividend,
 }) {
   const date = diag ? formatDate(diag.at) : ''
 
@@ -50,6 +52,8 @@ export default function Start({
     { icon: 'globe', label: '해외 투자', sub: 'ETF와 해외 주식 비교', onClick: onGlobal },
     { icon: 'words', label: '용어 사전', sub: '막히는 단어 쉽게 풀기', onClick: onWords },
     { icon: 'books', label: '책·사이트', sub: '수준별 공부 자료', onClick: onLearn },
+    { icon: 'phone', label: '증권사 고르기', sub: '앱 특징과 비교 기준', onClick: onBrokers },
+    { icon: 'coins', label: '배당 계산', sub: '배당만으로 살 수 있을까', onClick: onDividend },
   ]
 
   return (
