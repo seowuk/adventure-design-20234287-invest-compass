@@ -23,7 +23,7 @@ function Tags({ tags }) {
   )
 }
 
-export default function Learn({ exp, onBack, onGlobal }) {
+export default function Learn({ exp, onBack, onGlobal, onWords }) {
   const mine = levelFor(exp)
   const [level, setLevel] = useState(mine)
   const books = BOOKS.filter((b) => b.level === level)
@@ -43,6 +43,14 @@ export default function Learn({ exp, onBack, onGlobal }) {
         <span className="feature-link-title">해외 투자, 어떻게 볼까</span>
         <span className="feature-link-sub">
           ETF와 해외 개별 주식 비교, 미국·중국·대만의 영향력, 미국 상위 10개 기업
+        </span>
+      </button>
+
+      <button type="button" className="feature-link feature-link-alt" onClick={onWords}>
+        <span className="feature-link-title">투자 용어 사전</span>
+        <span className="feature-link-sub">
+          코스피·나스닥부터 커버드콜까지, 막히는 단어를 쉬운 말로. 배당만으로 살 수 있을지 계산도
+          해봐요
         </span>
       </button>
 

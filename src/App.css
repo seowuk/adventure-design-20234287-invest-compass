@@ -1763,3 +1763,200 @@
   color: var(--accent-text);
   white-space: nowrap;
 }
+
+/* ---------- 투자 용어 사전 ---------- */
+
+.feature-link-alt {
+  background: var(--night);
+}
+
+.feature-link-alt:hover {
+  background: #222745;
+}
+
+.search input {
+  width: 100%;
+  margin: 4px 0 14px;
+  padding: 14px 16px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  font-size: 16px;
+  outline: 2px solid transparent;
+  transition: outline-color 0.15s;
+}
+
+.search input:focus-visible {
+  outline-color: var(--cobalt);
+}
+
+.search-count {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.word-group {
+  margin-top: 28px;
+}
+
+.word-group h2 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  margin: 0 0 10px;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.word-group h2 span {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.words {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.word {
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.word.is-highlight {
+  outline: 2px solid var(--sun);
+}
+
+.word dt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  margin-bottom: 4px;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.word-en {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.word dd {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-2);
+  word-break: keep-all;
+}
+
+.word-more {
+  display: block;
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+/* ---------- 배당만으로 살 수 있을까 ---------- */
+
+.div-stage {
+  margin-top: 8px;
+}
+
+.div-amount {
+  font-size: clamp(36px, 9vw, 52px);
+  word-break: keep-all;
+}
+
+.div-tax {
+  margin-bottom: 24px;
+}
+
+.div-tax p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--warn-text);
+  word-break: keep-all;
+}
+
+.div-real {
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.div-real h2 {
+  margin: 0 0 14px;
+  font-size: 18px;
+  font-weight: 800;
+  word-break: keep-all;
+}
+
+.real-rows {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+}
+
+.real-rows li {
+  display: grid;
+  grid-template-columns: 4em 1fr auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.real-year {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.real-bar {
+  height: 12px;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.real-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--warn);
+  transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.real-value {
+  font-size: 15px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.real-note {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-2);
+  word-break: keep-all;
+}
+
+.age-desc {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-2);
+  word-break: keep-all;
+}
+
+.learn-section .note {
+  margin-top: 12px;
+}

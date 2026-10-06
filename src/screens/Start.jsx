@@ -39,6 +39,7 @@ export default function Start({
   onCalculator,
   onClear,
   onLearn,
+  onWords,
 }) {
   const date = diag ? formatDate(diag.at) : ''
 
@@ -84,6 +85,9 @@ export default function Start({
             <button type="button" className="btn-link" onClick={onLearn}>
               공부할 책과 사이트 보기
             </button>
+            <button type="button" className="btn-link" onClick={onWords}>
+              투자 용어 사전
+            </button>
           </div>
           <p className="saved-note">
             결과는 이 기기의 이 브라우저에만 저장돼요. 서버로 보내지 않아요.{' '}
@@ -110,6 +114,9 @@ export default function Start({
             </button>
             <button type="button" className="btn-link" onClick={onLearn}>
               공부할 책과 사이트만 볼래요
+            </button>
+            <button type="button" className="btn-link" onClick={onWords}>
+              투자 용어 사전
             </button>
           </div>
         </>
