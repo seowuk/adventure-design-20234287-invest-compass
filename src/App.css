@@ -2025,3 +2025,29 @@
   color: var(--muted);
   word-break: keep-all;
 }
+
+/* ---------- 상단 홈 버튼 ---------- */
+
+.home-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.home-btn:hover {
+  background: var(--tint);
+}
+
+.home-btn:focus-visible {
+  outline: 2px solid var(--cobalt);
+  outline-offset: 2px;
+}

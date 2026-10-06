@@ -54,7 +54,7 @@ export default function Start({
 
   return (
     <div className="screen">
-      <TopBar />
+      <TopBar hideHome />
 
       <section className="start-hero">
         <CompassDial />

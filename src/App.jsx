@@ -12,13 +12,13 @@ import { diagnose } from './lib/diagnosis'
 import { QUESTIONS } from './data/questions'
 import { FUND_QUESTIONS } from './data/fundQuestions'
 import { clearSaved, loadAnswers, loadFunds, saveAnswers, saveFunds } from './lib/storage'
+import { HomeContext } from './components/HomeContext'
 import './App.css'
 
 // 화면 흐름 (03 기능명세서 2장)
 // 시작 → 성향 5문항 → 결과 → (선택) 자금 3문항 → 계좌 안내
 //                         └────────────→ 계산기
-export default function App() {
-  const [screen, setScreen] = useState('start')
+function AppScreens({ screen, setScreen }) {
   // 저장된 진단 기록 { answers, at } — 다시 접속해도 그대로 불러온다
   const [diag, setDiag] = useState(() => loadAnswers())
   const [fundRec, setFundRec] = useState(() => loadFunds())
@@ -28,11 +28,6 @@ export default function App() {
   const [learnFrom, setLearnFrom] = useState('start')
   const [globalFrom, setGlobalFrom] = useState('start')
   const [wordsFrom, setWordsFrom] = useState('start')
-
-  // 화면이 바뀌면 맨 위로
-  useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [screen])
 
   const openLearn = (from) => {
     setLearnFrom(from)
@@ -163,5 +158,21 @@ export default function App() {
         setFundRec(null)
       }}
     />
+  )
+}
+
+// 어느 화면에서든 상단의 홈 버튼으로 시작 화면(내 결과 + 모든 기능)에 갈 수 있다
+export default function App() {
+  const [screen, setScreen] = useState('start')
+
+  // 화면이 바뀌면 맨 위로
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [screen])
+
+  return (
+    <HomeContext.Provider value={() => setScreen('start')}>
+      <AppScreens screen={screen} setScreen={setScreen} />
+    </HomeContext.Provider>
   )
 }

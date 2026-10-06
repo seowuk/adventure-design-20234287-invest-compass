@@ -1,8 +1,11 @@
 import TopBar from '../components/TopBar'
+import { usHoursKst } from '../lib/marketHours'
 import Why from '../components/Why'
 import {
   COUNTRIES,
   GLOBAL_RULES,
+  HOURS_KR,
+  HOURS_US,
   MIX_NOTE,
   TOP_US,
   WAYS,
@@ -52,6 +55,10 @@ function ProsCons({ data }) {
 }
 
 export default function Global({ onBack }) {
+  const us = usHoursKst()
+  const cell = (row, key) =>
+    row.key === 'hours' && key !== 'domEtf' ? `${us.text} (${us.label})` : row[key]
+
   return (
     <div className="screen">
       <TopBar onBack={onBack} />
@@ -138,13 +145,21 @@ export default function Global({ onBack }) {
                 <tr key={row.label}>
                   <th scope="row">{row.label}</th>
                   {WAYS.map((w) => (
-                    <td key={w.key}>{row[w.key]}</td>
+                    <td key={w.key}>{cell(row, w.key)}</td>
                   ))}
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+        <Why title="거래 시간 자세히">
+          <p>
+            <strong>한국</strong> {HOURS_KR}
+          </p>
+          <p>
+            <strong>미국</strong> {HOURS_US} 오늘은 {us.label}이라 한국 시간 {us.text}에 열려요.
+          </p>
+        </Why>
         <p className="note">{MIX_NOTE}</p>
       </section>
 
