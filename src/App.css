@@ -1960,3 +1960,68 @@
 .learn-section .note {
   margin-top: 12px;
 }
+
+/* ---------- 시작 화면 바로가기 메뉴 ---------- */
+
+.quick {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+@media (min-width: 560px) {
+  .quick {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.quick-tile {
+  display: grid;
+  justify-items: start;
+  gap: 4px;
+  padding: 16px;
+  border: 0;
+  border-radius: 18px;
+  background: var(--surface);
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.15s;
+}
+
+.quick-tile:hover {
+  box-shadow: 0 4px 14px rgba(20, 23, 43, 0.1);
+}
+
+.quick-tile:active {
+  transform: scale(0.97);
+}
+
+.quick-tile:focus-visible {
+  outline: 2px solid var(--cobalt);
+  outline-offset: 2px;
+}
+
+.quick-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  margin-bottom: 6px;
+  border-radius: 13px;
+  background: var(--tint);
+  color: var(--accent-text);
+}
+
+.quick-label {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.quick-sub {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--muted);
+  word-break: keep-all;
+}

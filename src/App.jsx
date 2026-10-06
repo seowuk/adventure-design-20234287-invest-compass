@@ -156,6 +156,7 @@ export default function App() {
       onCalculator={() => openCalculator(5, 'start')}
       onLearn={() => openLearn('start')}
       onWords={() => openWords('start')}
+      onGlobal={() => openGlobal('start')}
       onClear={() => {
         clearSaved()
         setDiag(null)

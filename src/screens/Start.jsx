@@ -1,5 +1,6 @@
 import TopBar from '../components/TopBar'
 import Summary from '../components/Summary'
+import QuickMenu from '../components/QuickMenu'
 import { QUESTIONS } from '../data/questions'
 import { formatDate } from '../lib/storage'
 
@@ -40,8 +41,16 @@ export default function Start({
   onClear,
   onLearn,
   onWords,
+  onGlobal,
 }) {
   const date = diag ? formatDate(diag.at) : ''
+
+  const menu = [
+    { icon: 'calc', label: '복리 계산기', sub: '얼마가 될지 바로 계산', onClick: onCalculator },
+    { icon: 'globe', label: '해외 투자', sub: 'ETF와 해외 주식 비교', onClick: onGlobal },
+    { icon: 'words', label: '용어 사전', sub: '막히는 단어 쉽게 풀기', onClick: onWords },
+    { icon: 'books', label: '책·사이트', sub: '수준별 공부 자료', onClick: onLearn },
+  ]
 
   return (
     <div className="screen">
@@ -79,16 +88,8 @@ export default function Start({
             <button type="button" className="btn-secondary" onClick={onStart}>
               처음부터 다시 진단하기
             </button>
-            <button type="button" className="btn-link" onClick={onCalculator}>
-              복리 계산기만 써볼래요
-            </button>
-            <button type="button" className="btn-link" onClick={onLearn}>
-              공부할 책과 사이트 보기
-            </button>
-            <button type="button" className="btn-link" onClick={onWords}>
-              투자 용어 사전
-            </button>
           </div>
+          <QuickMenu items={menu} />
           <p className="saved-note">
             결과는 이 기기의 이 브라우저에만 저장돼요. 서버로 보내지 않아요.{' '}
             <button type="button" className="inline-link" onClick={onClear}>
@@ -109,16 +110,8 @@ export default function Start({
               진단 시작하기
               <span className="btn-sub">{QUESTIONS.length}문항, 1분이면 끝나요</span>
             </button>
-            <button type="button" className="btn-link" onClick={onCalculator}>
-              진단 없이 복리 계산기만 써볼래요
-            </button>
-            <button type="button" className="btn-link" onClick={onLearn}>
-              공부할 책과 사이트만 볼래요
-            </button>
-            <button type="button" className="btn-link" onClick={onWords}>
-              투자 용어 사전
-            </button>
           </div>
+          <QuickMenu items={menu} />
         </>
       )}
 
