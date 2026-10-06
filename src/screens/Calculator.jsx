@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import {
   BarChart,
   Bar,
+  LineChart,
+  Line,
   XAxis,
   Tooltip,
   CartesianGrid,
@@ -9,6 +11,7 @@ import {
 } from 'recharts'
 import TopBar from '../components/TopBar'
 import Why from '../components/Why'
+import { DEPOSIT_RATE, simulateCrash } from '../lib/scenario'
 import './Calculator.css'
 
 // 입력 상한 (03 기능명세서 8장)
@@ -261,8 +264,113 @@ function HowCalculated({ lump, perMonth, rate, years }) {
   )
 }
 
+const DROP_PRESETS = [20, 30, 50]
+
+// "중간에 크게 떨어지면?" 비교 카드
+function CrashCard({ lump, perMonth, rate, years, crashYear, dropPct }) {
+  const sc = simulateCrash({
+    initial: lump,
+    monthly: perMonth,
+    annualRate: rate,
+    years,
+    crashYear,
+    dropPct,
+  })
+  const gap = sc.hold - sc.sold
+
+  return (
+    <section className="crash" aria-labelledby="crash-title">
+      <h2 id="crash-title">
+        {crashYear}년째에 {dropPct}% 떨어지면
+      </h2>
+
+      <dl className="crash-rows">
+        <div>
+          <dt>
+            <i className="dot dot-base" />
+            하락이 없었다면
+          </dt>
+          <dd>{koreanUnit(sc.base)}</dd>
+        </div>
+        <div className="is-hold">
+          <dt>
+            <i className="dot dot-hold" />
+            떨어져도 계속 넣었다면
+          </dt>
+          <dd>{koreanUnit(sc.hold)}</dd>
+        </div>
+        <div>
+          <dt>
+            <i className="dot dot-sold" />
+            그때 팔고 예금에 모았다면
+          </dt>
+          <dd>{koreanUnit(sc.sold)}</dd>
+        </div>
+      </dl>
+
+      <p className="crash-gap">
+        {gap > 0 ? (
+          <>
+            버틴 쪽이 판 쪽보다 <strong>{koreanUnit(gap)}</strong> 더 많아요. 떨어진 날 팔면 그
+            손실이 확정되고, 이후 회복에 올라탈 기회도 놓치거든요.
+          </>
+        ) : (
+          <>
+            기대 수익률을 예금 금리(연 {DEPOSIT_RATE}%) 근처로 낮게 잡으면 판 쪽이 비슷하거나 더
+            많을 수 있어요. 투자는 예금보다 높은 수익을 기대할 때 의미가 있어요.
+          </>
+        )}
+      </p>
+
+      <ResponsiveContainer width="100%" height={180}>
+        <LineChart data={sc.rows} margin={{ top: 8, right: 8, left: 8, bottom: 0 }}>
+          <CartesianGrid vertical={false} stroke="rgba(127,127,127,0.18)" />
+          <XAxis
+            dataKey="year"
+            axisLine={false}
+            tickLine={false}
+            interval={Math.max(0, Math.ceil(years / 6) - 1)}
+            tick={{ fontSize: 11, fill: '#8a8fa8' }}
+          />
+          <Tooltip
+            formatter={(value, name) => [
+              koreanUnit(value),
+              { base: '하락 없음', hold: '버팀', sold: '팔았음' }[name],
+            ]}
+          />
+          <Line type="monotone" dataKey="base" stroke="#9aa0bf" strokeWidth={2} dot={false} isAnimationActive={false} />
+          <Line type="monotone" dataKey="sold" stroke="#c2410c" strokeWidth={2} dot={false} isAnimationActive={false} />
+          <Line type="monotone" dataKey="hold" stroke="#3346f5" strokeWidth={3} dot={false} isAnimationActive={false} />
+        </LineChart>
+      </ResponsiveContainer>
+
+      <Why title="이 비교는 어떻게 했나요?">
+        <p>
+          같은 돈을 같은 방식으로 넣는다고 보고, {crashYear}년째 마지막 달에 {dropPct}% 하락이 한
+          번 온다고 가정했어요.
+        </p>
+        <p>
+          하락 뒤에 크게 반등하는 건 따로 가정하지 않았어요. 실제 시장은 크게 떨어진 뒤 회복한
+          경우가 많았지만, 언제 얼마나 회복할지는 아무도 보장할 수 없어요.
+        </p>
+        <p>
+          판 경우는 바닥에서 판 돈과 이후 매달 넣는 돈을 예금(연 {DEPOSIT_RATE}% 가정)에 모은다고
+          계산했어요.
+        </p>
+        <p>
+          이 비교는 여러 곳에 나눠 담은 지수 투자를 전제로 해요. 개별 주식이나 코인은 다시
+          회복한다는 보장이 없어요.
+        </p>
+      </Why>
+    </section>
+  )
+}
+
 export default function Calculator({ initialRate = 5, onBack }) {
   const [mode, setMode] = useState('monthly')
+  const [crashOn, setCrashOn] = useState(false)
+  const [crashYear, setCrashYear] = useState(5)
+  const [dropPct, setDropPct] = useState(30)
   const [initial, setInitial] = useState(10_000_000)
   const [monthly, setMonthly] = useState(300_000)
   const [rate, setRate] = useState(initialRate)
@@ -277,6 +385,9 @@ export default function Calculator({ initialRate = 5, onBack }) {
   const profit = Math.max(0, total - principal)
   const data = yearlyData(lump, perMonth, rate, years)
   const modeInfo = MODES.find((m) => m.key === mode)
+  // 하락은 마지막 해 전까지만 고를 수 있다 (그 뒤를 봐야 비교가 되니까)
+  const canCrash = years >= 2
+  const cy = Math.min(crashYear, years - 1)
   const principalShare = total > 0 ? (principal / total) * 100 : 100
   const multiple = principal > 0 ? total / principal : 0
 
@@ -372,8 +483,59 @@ export default function Calculator({ initialRate = 5, onBack }) {
             onChange={setYears}
             scale={['1년', '40년']}
           />
+
+          <div className="field crash-field">
+            <button
+              type="button"
+              className="switch"
+              role="switch"
+              aria-checked={crashOn}
+              onClick={() => setCrashOn(!crashOn)}
+              disabled={!canCrash}
+            >
+              <span className="switch-track" aria-hidden="true">
+                <span className="switch-thumb" />
+              </span>
+              <span className="switch-text">
+                중간에 크게 떨어지면?
+                <span className="switch-sub">
+                  {canCrash ? '버텼을 때와 팔았을 때를 비교해봐요' : '기간을 2년 이상으로 늘려주세요'}
+                </span>
+              </span>
+            </button>
+
+            {crashOn && canCrash && (
+              <div className="crash-settings">
+                <SliderField
+                  id="crash-year"
+                  label="떨어지는 시점"
+                  display={`${cy}년째`}
+                  value={cy}
+                  min={1}
+                  max={years - 1}
+                  step={1}
+                  onChange={setCrashYear}
+                  scale={['1년째', `${years - 1}년째`]}
+                />
+                <div className="chips" role="group" aria-label="하락 폭">
+                  {DROP_PRESETS.map((d) => (
+                    <button
+                      key={d}
+                      type="button"
+                      className="chip"
+                      aria-pressed={dropPct === d}
+                      onClick={() => setDropPct(d)}
+                    >
+                      {d}% 하락
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </section>
 
+        <div className="results">
         <section className="stage" ref={stageRef} aria-label="계산 결과">
           <p className="stage-caption">{years}년 뒤 예상 금액</p>
           <p className="stage-amount">{koreanUnit(shownTotal)}</p>
@@ -430,6 +592,18 @@ export default function Calculator({ initialRate = 5, onBack }) {
             </ResponsiveContainer>
           </div>
         </section>
+
+        {crashOn && canCrash && (
+          <CrashCard
+            lump={lump}
+            perMonth={perMonth}
+            rate={rate}
+            years={years}
+            crashYear={cy}
+            dropPct={dropPct}
+          />
+        )}
+        </div>
       </div>
 
       <HowCalculated lump={lump} perMonth={perMonth} rate={rate} years={years} />

@@ -5,6 +5,7 @@ import { diagnose } from '../lib/diagnosis'
 import {
   CAP_TEXT,
   EXPERIENCED,
+  FUTURE_INCOME,
   HOW_IT_WORKS,
   MISMATCH,
   TYPES,
@@ -108,6 +109,16 @@ export default function Result({
       </section>
 
       {!picked && <Reasoning d={d} />}
+
+      {!picked && (
+        <div className="future">
+          <Why title="아직 모은 돈이 적어도 괜찮은 이유">
+            {FUTURE_INCOME.map((p) => (
+              <p key={p}>{p}</p>
+            ))}
+          </Why>
+        </div>
+      )}
 
       <p className="type-body">{t.body}</p>
 

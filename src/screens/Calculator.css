@@ -22,7 +22,7 @@
     align-items: start;
   }
 
-  .stage {
+  .results {
     position: sticky;
     top: 24px;
   }
@@ -382,4 +382,178 @@
 
 .how strong {
   color: var(--ink);
+}
+
+/* 결과 열: 기본 결과 + 하락 시나리오 */
+.results {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+
+/* 하락 시나리오 켜기 스위치 */
+.crash-field {
+  padding-top: 20px;
+}
+
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  text-align: left;
+  cursor: pointer;
+}
+
+.switch:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.switch:focus-visible {
+  outline: 2px solid var(--cobalt);
+  outline-offset: 2px;
+}
+
+.switch-track {
+  flex: none;
+  position: relative;
+  width: 46px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--line);
+  transition: background 0.2s;
+}
+
+.switch-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(20, 23, 43, 0.3);
+  transition: transform 0.2s;
+}
+
+.switch[aria-checked='true'] .switch-track {
+  background: var(--cobalt);
+}
+
+.switch[aria-checked='true'] .switch-thumb {
+  transform: translateX(18px);
+}
+
+.switch-text {
+  display: grid;
+  gap: 2px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.switch-sub {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.crash-settings {
+  margin-top: 4px;
+}
+
+.crash-settings .field {
+  border-bottom: 0;
+}
+
+/* 하락 시나리오 비교 카드 */
+.crash {
+  padding: 22px 20px 6px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.crash h2 {
+  margin: 0 0 14px;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.crash-rows {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 14px;
+}
+
+.crash-rows > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--paper);
+}
+
+.crash-rows > div.is-hold {
+  background: var(--tint);
+  outline: 2px solid var(--cobalt);
+}
+
+.crash-rows dt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-2);
+}
+
+.crash-rows dd {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.dot-base {
+  background: #9aa0bf;
+}
+
+.dot-hold {
+  background: #3346f5;
+}
+
+.dot-sold {
+  background: #c2410c;
+}
+
+.crash-gap {
+  margin: 0 0 12px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-2);
+  word-break: keep-all;
+}
+
+.crash-gap strong {
+  color: var(--accent-text);
+}
+
+.crash .why {
+  margin: 8px -20px 0;
+  background: transparent;
+}
+
+.crash .why summary {
+  padding: 14px 20px;
+}
+
+.crash .why-body {
+  padding: 0 20px 16px;
 }

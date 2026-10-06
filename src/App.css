@@ -1487,3 +1487,8 @@
 .accounts > .why {
   margin: 0 0 12px;
 }
+
+/* 결과: 앞으로 벌 돈도 자산 */
+.future {
+  margin: -8px 0 24px;
+}
