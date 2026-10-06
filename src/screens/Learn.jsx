@@ -23,7 +23,7 @@ function Tags({ tags }) {
   )
 }
 
-export default function Learn({ exp, onBack }) {
+export default function Learn({ exp, onBack, onGlobal }) {
   const mine = levelFor(exp)
   const [level, setLevel] = useState(mine)
   const books = BOOKS.filter((b) => b.level === level)
@@ -38,6 +38,13 @@ export default function Learn({ exp, onBack }) {
           ? `진단 때 답한 투자 경험에 맞춰 ${LEVELS[mine].name} 단계부터 보여드려요.`
           : '처음이라면 입문 단계부터 시작해보세요.'}
       </p>
+
+      <button type="button" className="feature-link" onClick={onGlobal}>
+        <span className="feature-link-title">해외 투자, 어떻게 볼까</span>
+        <span className="feature-link-sub">
+          ETF와 해외 개별 주식 비교, 미국·중국·대만의 영향력, 미국 상위 10개 기업
+        </span>
+      </button>
 
       <section className="learn-section" aria-labelledby="books-title">
         <h2 id="books-title">책</h2>

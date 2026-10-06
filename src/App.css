@@ -1492,3 +1492,274 @@
 .future {
   margin: -8px 0 24px;
 }
+
+/* ---------- 해외 투자 알아보기 ---------- */
+
+.feature-link {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  margin-top: 8px;
+  padding: 18px 20px;
+  border: 0;
+  border-radius: 18px;
+  background: var(--cobalt);
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+}
+
+.feature-link:hover {
+  background: #2837d9;
+}
+
+.feature-link:focus-visible {
+  outline: 3px solid var(--sun);
+  outline-offset: 3px;
+}
+
+.feature-link-title {
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.feature-link-sub {
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.8);
+  word-break: keep-all;
+}
+
+.reasons {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.reasons li {
+  display: flex;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.reason-num {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--cobalt);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.reasons h3 {
+  margin: 2px 0 4px;
+  font-size: 16px;
+  font-weight: 800;
+  word-break: keep-all;
+}
+
+.reasons p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-2);
+  word-break: keep-all;
+}
+
+.caution-box {
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: var(--warn-bg);
+}
+
+.caution-box h3 {
+  margin: 0 0 10px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--warn);
+}
+
+.caution-box .bullets {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--warn-text);
+  word-break: keep-all;
+}
+
+.countries {
+  display: grid;
+  gap: 10px;
+}
+
+@media (min-width: 560px) {
+  .countries {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.country {
+  padding: 18px;
+  border-radius: 18px;
+  background: var(--surface);
+}
+
+.country.is-home {
+  outline: 2px dashed var(--line);
+  background: transparent;
+}
+
+.country-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.country h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.country-weight {
+  margin: 4px 0 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent-text);
+}
+
+.country .bullets {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-2);
+  word-break: keep-all;
+}
+
+.meter {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.meter i {
+  width: 14px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--line);
+}
+
+.meter i.on {
+  background: var(--cobalt);
+}
+
+.meter-text {
+  margin-left: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.proscons {
+  margin-bottom: 20px;
+}
+
+.proscons h3,
+.sub-title {
+  margin: 0 0 10px;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.proscons .checklists {
+  margin-top: 0;
+}
+
+.proscons h4 {
+  margin: 0 0 10px;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.checklist-fit h4 {
+  color: var(--accent-text);
+}
+
+.checklist-unfit h4 {
+  color: var(--warn);
+}
+
+.sub-title {
+  margin-top: 8px;
+}
+
+.top-list {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 10px;
+  padding: 0;
+  list-style: none;
+}
+
+.top-list li {
+  display: grid;
+  grid-template-columns: 2em 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.top-rank {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--accent-text);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.top-body {
+  min-width: 0;
+}
+
+.top-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.top-name span {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.top-what {
+  margin: 2px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-2);
+  word-break: keep-all;
+}
+
+.top-sector {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--tint);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent-text);
+  white-space: nowrap;
+}

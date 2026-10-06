@@ -5,6 +5,7 @@ import Result from './screens/Result'
 import Account from './screens/Account'
 import Calculator from './screens/Calculator'
 import Learn from './screens/Learn'
+import Global from './screens/Global'
 import { diagnose } from './lib/diagnosis'
 import { QUESTIONS } from './data/questions'
 import { FUND_QUESTIONS } from './data/fundQuestions'
@@ -23,6 +24,7 @@ export default function App() {
   const funds = fundRec?.answers ?? null
   const [calc, setCalc] = useState({ rate: 5, from: 'start' })
   const [learnFrom, setLearnFrom] = useState('start')
+  const [globalFrom, setGlobalFrom] = useState('start')
 
   // 화면이 바뀌면 맨 위로
   useEffect(() => {
@@ -32,6 +34,11 @@ export default function App() {
   const openLearn = (from) => {
     setLearnFrom(from)
     setScreen('learn')
+  }
+
+  const openGlobal = (from) => {
+    setGlobalFrom(from)
+    setScreen('global')
   }
 
   const openCalculator = (rate, from) => {
@@ -78,6 +85,7 @@ export default function App() {
         onFunds={() => setScreen('funds')}
         onShowAccount={() => setScreen('account')}
         onLearn={() => openLearn('result')}
+        onGlobal={() => openGlobal('result')}
       />
     )
   }
@@ -101,8 +109,13 @@ export default function App() {
       <Learn
         exp={answers ? diagnose(answers).exp : null}
         onBack={() => setScreen(learnFrom)}
+        onGlobal={() => openGlobal('learn')}
       />
     )
+  }
+
+  if (screen === 'global') {
+    return <Global onBack={() => setScreen(globalFrom)} />
   }
 
   if (screen === 'calc') {

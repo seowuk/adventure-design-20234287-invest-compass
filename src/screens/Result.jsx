@@ -84,6 +84,7 @@ export default function Result({
   onFunds,
   onShowAccount,
   onLearn,
+  onGlobal,
 }) {
   const d = diagnose(answers)
   const [picked, setPicked] = useState(null)
@@ -188,6 +189,9 @@ export default function Result({
         </button>
         <button type="button" className="btn-secondary" onClick={onLearn}>
           공부할 책과 사이트 보기
+        </button>
+        <button type="button" className="btn-secondary" onClick={onGlobal}>
+          해외 투자, 어떻게 볼까
         </button>
         <button type="button" className="btn-link" onClick={onRetry}>
           다시 진단하기
