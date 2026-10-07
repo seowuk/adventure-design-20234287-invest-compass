@@ -3,10 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>투자 나침반</title>
   </head>
   <body>
+    <!-- Netlify Forms 인식용 숨은 폼 (앱 평가 화면이 같은 이름으로 전송) -->
+    <form name="feedback" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input type="hidden" name="form-name" value="feedback" />
+      <input type="text" name="rating" />
+      <textarea name="lacking"></textarea>
+      <textarea name="regret"></textarea>
+      <textarea name="wish"></textarea>
+      <input type="text" name="bot-field" />
+    </form>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

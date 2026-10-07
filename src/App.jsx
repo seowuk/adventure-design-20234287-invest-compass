@@ -9,6 +9,7 @@ import Global from './screens/Global'
 import Words from './screens/Words'
 import Dividend from './screens/Dividend'
 import Brokers from './screens/Brokers'
+import Feedback from './screens/Feedback'
 import { diagnose } from './lib/diagnosis'
 import { QUESTIONS } from './data/questions'
 import { FUND_QUESTIONS } from './data/fundQuestions'
@@ -140,6 +141,10 @@ function AppScreens({ screen, setScreen }) {
     return <Dividend onBack={() => setScreen(dividendFrom)} />
   }
 
+  if (screen === 'feedback') {
+    return <Feedback onBack={() => setScreen('start')} />
+  }
+
   if (screen === 'brokers') {
     return <Brokers onBack={() => setScreen('start')} />
   }
@@ -167,6 +172,7 @@ function AppScreens({ screen, setScreen }) {
       onWords={() => openWords('start')}
       onGlobal={() => openGlobal('start')}
       onBrokers={() => setScreen('brokers')}
+      onFeedback={() => setScreen('feedback')}
       onDividend={() => {
         setDividendFrom('start')
         setScreen('dividend')

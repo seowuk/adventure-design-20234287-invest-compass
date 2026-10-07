@@ -44,6 +44,7 @@ export default function Start({
   onGlobal,
   onBrokers,
   onDividend,
+  onFeedback,
 }) {
   const date = diag ? formatDate(diag.at) : ''
 
@@ -94,6 +95,13 @@ export default function Start({
             </button>
           </div>
           <QuickMenu items={menu} />
+          <button type="button" className="fb-cta" onClick={onFeedback}>
+            <span className="fb-cta-stars" aria-hidden="true">★★★★★</span>
+            <span className="fb-cta-text">
+              <strong>이 앱 어땠나요?</strong>
+              <span>별점과 아쉬운 점을 남겨주세요</span>
+            </span>
+          </button>
           <p className="saved-note">
             결과는 이 기기의 이 브라우저에만 저장돼요. 서버로 보내지 않아요.{' '}
             <button type="button" className="inline-link" onClick={onClear}>
@@ -116,6 +124,13 @@ export default function Start({
             </button>
           </div>
           <QuickMenu items={menu} />
+          <button type="button" className="fb-cta" onClick={onFeedback}>
+            <span className="fb-cta-stars" aria-hidden="true">★★★★★</span>
+            <span className="fb-cta-text">
+              <strong>이 앱 어땠나요?</strong>
+              <span>별점과 아쉬운 점을 남겨주세요</span>
+            </span>
+          </button>
         </>
       )}
 

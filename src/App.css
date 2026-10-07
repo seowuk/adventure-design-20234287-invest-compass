@@ -2167,3 +2167,146 @@
   padding-top: 8px;
   border-top: 1px solid var(--line);
 }
+
+/* ---------- 앱 평가 ---------- */
+
+.fb-cta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 16px 18px;
+  border: 2px dashed var(--line);
+  border-radius: 18px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.fb-cta:hover {
+  border-color: var(--sun);
+  background: var(--surface);
+}
+
+.fb-cta:focus-visible {
+  outline: 2px solid var(--cobalt);
+  outline-offset: 2px;
+}
+
+.fb-cta-stars {
+  flex: none;
+  font-size: 18px;
+  letter-spacing: 1px;
+  color: var(--sun);
+}
+
+.fb-cta-text {
+  display: grid;
+  gap: 2px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.fb-cta-text strong {
+  font-size: 16px;
+  color: var(--ink);
+}
+
+.fb {
+  display: grid;
+  gap: 18px;
+  margin-top: 8px;
+}
+
+.fb-stars {
+  margin: 0;
+  padding: 18px;
+  border: 0;
+  border-radius: 18px;
+  background: var(--surface);
+}
+
+.fb-stars legend {
+  float: left;
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 0;
+}
+
+.stars {
+  clear: both;
+  display: flex;
+  gap: 4px;
+}
+
+.star-btn {
+  padding: 4px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.star-btn:active {
+  transform: scale(0.9);
+}
+
+.star-btn:focus-visible {
+  outline: 2px solid var(--cobalt);
+}
+
+.stars-label {
+  margin: 8px 0 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-2);
+}
+
+.fb-field {
+  display: grid;
+  gap: 8px;
+}
+
+.fb-optional {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.fb-field textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.6;
+  resize: vertical;
+  outline: 2px solid transparent;
+  transition: outline-color 0.15s;
+}
+
+.fb-field textarea:focus-visible {
+  outline-color: var(--cobalt);
+}
+
+.fb-privacy {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+  word-break: keep-all;
+}
+
+.btn-primary:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.fb-done {
+  margin-bottom: 16px;
+}
