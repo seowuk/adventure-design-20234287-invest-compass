@@ -86,7 +86,7 @@ export default function Feedback({ onBack }) {
         <section className="type-stage fb-done">
           <p className="type-caption">평가를 보냈어요</p>
           <p className="type-name">고마워요!</p>
-          <p className="type-headline">남겨주신 의견은 이 앱을 고치는 데 그대로 쓰여요.</p>
+          <p className="type-headline">남겨주신 의견은 이 앱을 만드는데 큰 도움이 됩니다.</p>
         </section>
         <button type="button" className="btn-secondary" onClick={onBack}>
           돌아가기
@@ -103,7 +103,7 @@ export default function Feedback({ onBack }) {
       <p className="learn-lead">
         {sentBefore
           ? '지난번에도 남겨주셨네요. 고마워요. 달라진 점이 있으면 또 알려주세요.'
-          : '별점과 함께 아쉬웠던 점을 알려주시면 앱을 고치는 데 그대로 반영할게요.'}
+          : '별점과 함께 아쉬웠던 점을 알려주시면 앱을 개선하는데 큰 도움이 됩니다.'}
       </p>
 
       <form className="fb" onSubmit={submit}>
