@@ -2310,3 +2310,54 @@
 .fb-done {
   margin-bottom: 16px;
 }
+
+/* ---------- 나침반 돌리기 ---------- */
+
+.dial-btn {
+  display: block;
+  margin: 0 0 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s;
+}
+
+.dial-btn .dial {
+  margin-bottom: 0;
+}
+
+.dial-btn:hover {
+  transform: scale(1.04);
+}
+
+.dial-btn:active {
+  transform: scale(0.95);
+}
+
+.dial-btn:focus-visible {
+  outline: 3px solid var(--cobalt);
+  outline-offset: 4px;
+}
+
+.dial-needle.is-spinning {
+  animation: needle-spin 1.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+/* 여러 바퀴 돌다가 지나쳤다가 되돌아오며 멈춘다 */
+@keyframes needle-spin {
+  0% {
+    transform: rotate(35deg);
+  }
+  70% {
+    transform: rotate(calc(var(--spin-end) + var(--overshoot)));
+  }
+  86% {
+    transform: rotate(calc(var(--spin-end) - var(--overshoot) * 0.4));
+  }
+  100% {
+    transform: rotate(var(--spin-end));
+  }
+}

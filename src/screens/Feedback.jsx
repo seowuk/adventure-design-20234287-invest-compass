@@ -33,7 +33,8 @@ export default function Feedback({ onBack }) {
   const [rating, setRating] = useState(0)
   const [hover, setHover] = useState(0)
   const [texts, setTexts] = useState({ lacking: '', regret: '', wish: '' })
-  const [status, setStatus] = useState('idle') // idle | sending | done | local | error
+  const [status, setStatus] = useState('idle') // idle | sending | done | local | offline | rejected
+  const [code, setCode] = useState(null)
   const [sentBefore] = useState(() => {
     try {
       return Boolean(localStorage.getItem(SENT_KEY))
@@ -67,7 +68,12 @@ export default function Feedback({ onBack }) {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: body.toString(),
       })
-      if (!res.ok) throw new Error(String(res.status))
+      if (!res.ok) {
+        // 서버가 거절함: 대부분 Netlify가 아직 폼을 모르는 경우(404)
+        setCode(res.status)
+        setStatus('rejected')
+        return
+      }
       try {
         localStorage.setItem(SENT_KEY, new Date().toISOString())
       } catch {
@@ -75,7 +81,8 @@ export default function Feedback({ onBack }) {
       }
       setStatus('done')
     } catch {
-      setStatus('error')
+      // 요청 자체가 나가지 못함: 실제 인터넷 문제
+      setStatus('offline')
     }
   }
 
@@ -86,7 +93,7 @@ export default function Feedback({ onBack }) {
         <section className="type-stage fb-done">
           <p className="type-caption">평가를 보냈어요</p>
           <p className="type-name">고마워요!</p>
-          <p className="type-headline">남겨주신 의견은 이 앱을 만드는데 큰 도움이 됩니다.</p>
+          <p className="type-headline">남겨주신 의견은 이 앱을 만드는 데 큰 도움이 됩니다.</p>
         </section>
         <button type="button" className="btn-secondary" onClick={onBack}>
           돌아가기
@@ -103,7 +110,7 @@ export default function Feedback({ onBack }) {
       <p className="learn-lead">
         {sentBefore
           ? '지난번에도 남겨주셨네요. 고마워요. 달라진 점이 있으면 또 알려주세요.'
-          : '별점과 함께 아쉬웠던 점을 알려주시면 앱을 개선하는데 큰 도움이 됩니다.'}
+          : '별점과 함께 아쉬웠던 점을 남겨주시면 이 앱을 만드는 데 큰 도움이 됩니다.'}
       </p>
 
       <form className="fb" onSubmit={submit}>
@@ -160,8 +167,13 @@ export default function Feedback({ onBack }) {
             지금은 내 컴퓨터에서 실행 중이라 저장되지 않아요. Netlify 주소에서 남겨주세요.
           </p>
         )}
-        {status === 'error' && (
+        {status === 'offline' && (
           <p className="warn">보내지 못했어요. 인터넷 연결을 확인하고 다시 눌러주세요.</p>
+        )}
+        {status === 'rejected' && (
+          <p className="warn">
+            지금은 평가를 받을 준비가 안 됐어요 (오류 {code}). 잠시 후 다시 시도해주세요.
+          </p>
         )}
 
         <button type="submit" className="btn-primary" disabled={!rating || status === 'sending'}>

@@ -1,32 +1,48 @@
+import { useState } from 'react'
 import TopBar from '../components/TopBar'
 import Summary from '../components/Summary'
 import QuickMenu from '../components/QuickMenu'
 import { QUESTIONS } from '../data/questions'
 import { formatDate } from '../lib/storage'
 
+// 누르면 바늘이 몇 바퀴 돌다가 흔들리며 원래 방향으로 돌아온다
 function CompassDial() {
+  const [spin, setSpin] = useState({ n: 0, end: 35, dir: 1 })
+
+  const turn = () => {
+    const turns = 2 + Math.floor(Math.random() * 3) // 2~4바퀴
+    const dir = Math.random() < 0.5 ? 1 : -1 // 시계 방향 또는 반대
+    setSpin((s) => ({ n: s.n + 1, end: 35 + dir * 360 * turns, dir }))
+  }
+
   return (
-    <svg className="dial" viewBox="0 0 120 120" aria-hidden="true">
-      <circle cx="60" cy="60" r="58" fill="var(--cobalt)" />
-      {Array.from({ length: 24 }, (_, i) => (
-        <line
-          key={i}
-          x1="60"
-          y1="9"
-          x2="60"
-          y2={i % 6 === 0 ? 19 : 14}
-          stroke="rgba(255,255,255,0.55)"
-          strokeWidth={i % 6 === 0 ? 2.2 : 1.2}
-          strokeLinecap="round"
-          transform={`rotate(${i * 15} 60 60)`}
-        />
-      ))}
-      <g className="dial-needle">
-        <path d="M60 22 L68 60 L52 60 Z" fill="var(--sun)" />
-        <path d="M60 98 L68 60 L52 60 Z" fill="#fff" opacity="0.9" />
-        <circle cx="60" cy="60" r="5" fill="var(--ink)" />
-      </g>
-    </svg>
+    <button type="button" className="dial-btn" onClick={turn} aria-label="나침반 돌리기">
+      <svg className="dial" viewBox="0 0 120 120" aria-hidden="true">
+        <circle cx="60" cy="60" r="58" fill="var(--cobalt)" />
+        {Array.from({ length: 24 }, (_, i) => (
+          <line
+            key={i}
+            x1="60"
+            y1="9"
+            x2="60"
+            y2={i % 6 === 0 ? 19 : 14}
+            stroke="rgba(255,255,255,0.55)"
+            strokeWidth={i % 6 === 0 ? 2.2 : 1.2}
+            strokeLinecap="round"
+            transform={`rotate(${i * 15} 60 60)`}
+          />
+        ))}
+        <g
+          key={spin.n}
+          className={spin.n ? 'dial-needle is-spinning' : 'dial-needle'}
+          style={{ '--spin-end': `${spin.end}deg`, '--overshoot': `${spin.dir * 24}deg` }}
+        >
+          <path d="M60 22 L68 60 L52 60 Z" fill="var(--sun)" />
+          <path d="M60 98 L68 60 L52 60 Z" fill="#fff" opacity="0.9" />
+          <circle cx="60" cy="60" r="5" fill="var(--ink)" />
+        </g>
+      </svg>
+    </button>
   )
 }
 
