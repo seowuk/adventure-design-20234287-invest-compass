@@ -110,12 +110,18 @@ export default function Sim({ answers, onBack }) {
           달라요. 가상의 시장에서 직접 겪어보고, 내가 어떻게 움직이는지 확인해봐요.
         </p>
         <ol className="sim-rules">
-          <span></span><li>
-            <strong>700만원</strong>은 투자한 상태로, <strong>300만원</strong>은 현금으로
-            시작해요
+          <li>
+            <span>
+              <strong>700만원</strong>은 투자한 상태로, <strong>300만원</strong>은 현금으로
+              시작해요
+            </span>
           </li>
-          <span></span><li>3년 동안 6번, 시장 상황을 보고 팔지, 버틸지, 더 살지 골라요</li>
-         <span></span> <li>실제 종목이 아닌 가상의 시장이에요. 진짜 돈은 오가지 않아요</li>
+          <li>
+            <span>3년 동안 6번, 시장 상황을 보고 팔지, 버틸지, 더 살지 골라요</span>
+          </li>
+          <li>
+            <span>실제 종목이 아닌 가상의 시장이에요. 진짜 돈은 오가지 않아요</span>
+          </li>
         </ol>
         <button type="button" className="btn-primary" onClick={restart}>
           시작하기
