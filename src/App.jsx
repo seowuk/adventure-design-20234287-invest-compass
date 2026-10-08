@@ -10,6 +10,7 @@ import Words from './screens/Words'
 import Dividend from './screens/Dividend'
 import Brokers from './screens/Brokers'
 import Feedback from './screens/Feedback'
+import Extras from './screens/Extras'
 import { diagnose } from './lib/diagnosis'
 import { QUESTIONS } from './data/questions'
 import { FUND_QUESTIONS } from './data/fundQuestions'
@@ -31,6 +32,7 @@ function AppScreens({ screen, setScreen }) {
   const [globalFrom, setGlobalFrom] = useState('start')
   const [wordsFrom, setWordsFrom] = useState('start')
   const [dividendFrom, setDividendFrom] = useState('words')
+  const [extrasFrom, setExtrasFrom] = useState('start')
 
   const openLearn = (from) => {
     setLearnFrom(from)
@@ -117,6 +119,10 @@ function AppScreens({ screen, setScreen }) {
         onBack={() => setScreen(learnFrom)}
         onGlobal={() => openGlobal('learn')}
         onWords={() => openWords('learn')}
+        onExtras={() => {
+          setExtrasFrom('learn')
+          setScreen('extras')
+        }}
       />
     )
   }
@@ -139,6 +145,10 @@ function AppScreens({ screen, setScreen }) {
 
   if (screen === 'dividend') {
     return <Dividend onBack={() => setScreen(dividendFrom)} />
+  }
+
+  if (screen === 'extras') {
+    return <Extras onBack={() => setScreen(extrasFrom)} />
   }
 
   if (screen === 'feedback') {
@@ -173,6 +183,10 @@ function AppScreens({ screen, setScreen }) {
       onGlobal={() => openGlobal('start')}
       onBrokers={() => setScreen('brokers')}
       onFeedback={() => setScreen('feedback')}
+      onExtras={() => {
+        setExtrasFrom('start')
+        setScreen('extras')
+      }}
       onDividend={() => {
         setDividendFrom('start')
         setScreen('dividend')

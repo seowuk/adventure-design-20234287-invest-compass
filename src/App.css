@@ -2361,3 +2361,181 @@
     transform: rotate(var(--spin-end));
   }
 }
+
+/* ---------- 국내 상장 vs 미국 상장 ---------- */
+
+.listing {
+  display: grid;
+  gap: 8px;
+}
+
+@media (min-width: 560px) {
+  .listing {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.listing-card {
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.listing-who {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.listing-pick {
+  margin: 4px 0 8px;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--accent-text);
+  word-break: keep-all;
+}
+
+.listing-why {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-2);
+  word-break: keep-all;
+}
+
+.listing-note {
+  margin-top: 12px;
+}
+
+/* ---------- 이런 것도 있어요 (금테크) ---------- */
+
+.h2-sub {
+  display: block;
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.gold-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 4px 0 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.gold-steps li {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 2px;
+  padding: 16px 8px;
+  border-radius: 16px;
+  background: var(--surface);
+  text-align: center;
+}
+
+.gold-visual {
+  display: grid;
+  place-items: end center;
+  height: 54px;
+}
+
+.gold-amount {
+  font-size: 22px;
+  font-weight: 800;
+  color: #b8860b;
+}
+
+.gold-label {
+  font-size: 13px;
+  font-weight: 700;
+  word-break: keep-all;
+}
+
+.gold-desc {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted);
+  word-break: keep-all;
+}
+
+.gold-withdraw {
+  margin: 14px 0;
+}
+
+.gold-withdraw p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--warn-text);
+  word-break: keep-all;
+}
+
+.feature-link-gold {
+  background: linear-gradient(135deg, #b8860b, #e0a82e);
+}
+
+.feature-link-gold:hover {
+  background: linear-gradient(135deg, #a6790a, #d19c26);
+}
+
+.extra-cta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 16px 18px;
+  border: 0;
+  border-radius: 18px;
+  background: #fff6dc;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.15s;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .extra-cta {
+    background: #3a3014;
+  }
+}
+
+.extra-cta:hover {
+  box-shadow: 0 4px 14px rgba(184, 134, 11, 0.2);
+}
+
+.extra-cta:active {
+  transform: scale(0.98);
+}
+
+.extra-cta:focus-visible {
+  outline: 2px solid var(--cobalt);
+  outline-offset: 2px;
+}
+
+.extra-badge {
+  flex: none;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #e0a82e;
+  color: #14172b;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.extra-text {
+  display: grid;
+  gap: 2px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.extra-text strong {
+  font-size: 16px;
+  color: var(--ink);
+}

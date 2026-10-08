@@ -6,6 +6,8 @@ import {
   GLOBAL_RULES,
   HOURS_KR,
   HOURS_US,
+  LISTING_CHOICE,
+  LISTING_NOTE,
   MIX_NOTE,
   TOP_US,
   WAYS,
@@ -152,6 +154,18 @@ export default function Global({ onBack }) {
             </tbody>
           </table>
         </div>
+        <h3 className="sub-title">국내 상장과 미국 상장, 무엇을 고를까</h3>
+        <div className="listing">
+          {LISTING_CHOICE.map((c) => (
+            <article key={c.who} className="listing-card">
+              <p className="listing-who">{c.who}</p>
+              <p className="listing-pick">{c.pick}</p>
+              <p className="listing-why">{c.why}</p>
+            </article>
+          ))}
+        </div>
+        <p className="learn-lead listing-note">{LISTING_NOTE}</p>
+
         <Why title="거래 시간 자세히">
           <p>
             <strong>한국</strong> {HOURS_KR}

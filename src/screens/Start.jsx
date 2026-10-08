@@ -61,6 +61,7 @@ export default function Start({
   onBrokers,
   onDividend,
   onFeedback,
+  onExtras,
 }) {
   const date = diag ? formatDate(diag.at) : ''
 
@@ -111,6 +112,13 @@ export default function Start({
             </button>
           </div>
           <QuickMenu items={menu} />
+          <button type="button" className="extra-cta" onClick={onExtras}>
+            <span className="extra-badge">이런 것도 있어요</span>
+            <span className="extra-text">
+              <strong>금테크, 1g씩 모아 골드바로</strong>
+              <span>증권사에서 금을 소액으로 사고파는 방법</span>
+            </span>
+          </button>
           <button type="button" className="fb-cta" onClick={onFeedback}>
             <span className="fb-cta-stars" aria-hidden="true">★★★★★</span>
             <span className="fb-cta-text">
@@ -140,6 +148,13 @@ export default function Start({
             </button>
           </div>
           <QuickMenu items={menu} />
+          <button type="button" className="extra-cta" onClick={onExtras}>
+            <span className="extra-badge">이런 것도 있어요</span>
+            <span className="extra-text">
+              <strong>금테크, 1g씩 모아 골드바로</strong>
+              <span>증권사에서 금을 소액으로 사고파는 방법</span>
+            </span>
+          </button>
           <button type="button" className="fb-cta" onClick={onFeedback}>
             <span className="fb-cta-stars" aria-hidden="true">★★★★★</span>
             <span className="fb-cta-text">

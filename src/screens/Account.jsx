@@ -153,6 +153,13 @@ function AfterSteps() {
             <p className="after-desc">{a.desc}</p>
             <p className="after-caution">{a.caution}</p>
             {a.tip && <Why title="TDF 이름의 숫자는 뭔가요?">{TDF_TIP}</Why>}
+            {a.example && (
+              <Why title="예를 들면 어떻게 나누나요?">
+                {a.example.map((e) => (
+                  <p key={e}>{e}</p>
+                ))}
+              </Why>
+            )}
           </li>
         ))}
       </ol>

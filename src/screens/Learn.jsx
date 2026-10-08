@@ -23,7 +23,7 @@ function Tags({ tags }) {
   )
 }
 
-export default function Learn({ exp, onBack, onGlobal, onWords }) {
+export default function Learn({ exp, onBack, onGlobal, onWords, onExtras }) {
   const mine = levelFor(exp)
   const [level, setLevel] = useState(mine)
   const books = BOOKS.filter((b) => b.level === level)
@@ -52,6 +52,11 @@ export default function Learn({ exp, onBack, onGlobal, onWords }) {
           코스피·나스닥부터 커버드콜까지, 막히는 단어를 쉬운 말로. 배당만으로 살 수 있을지 계산도
           해봐요
         </span>
+      </button>
+
+      <button type="button" className="feature-link feature-link-gold" onClick={onExtras}>
+        <span className="feature-link-title">이런 것도 있어요: 금테크</span>
+        <span className="feature-link-sub">증권사에서 1g씩 금을 모으고, 100g이 되면 골드바로 받는 방법</span>
       </button>
 
       <section className="learn-section" aria-labelledby="books-title">
