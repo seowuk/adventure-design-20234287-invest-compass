@@ -85,6 +85,7 @@ export default function Result({
   onShowAccount,
   onLearn,
   onGlobal,
+  onSim,
 }) {
   const d = diagnose(answers)
   const [picked, setPicked] = useState(null)
@@ -153,7 +154,11 @@ export default function Result({
             </button>
           ))}
         </div>
-        <Why title="이 진단은 얼마나 믿을 만한가요?">
+        <button type="button" className="sim-link" onClick={onSim}>
+          <strong>말이 아니라 행동으로 확인해보기</strong>
+          <span>모의투자로 가상의 하락장을 직접 겪어보고, 진단 결과와 비교해요</span>
+        </button>
+                <Why title="이 진단은 얼마나 믿을 만한가요?">
           {HOW_IT_WORKS.map((p) => (
             <p key={p}>{p}</p>
           ))}

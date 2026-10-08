@@ -7,6 +7,10 @@ import TopBar from '../components/TopBar'
 const LABELS = ['', '별로예요', '아쉬워요', '보통이에요', '좋아요', '최고예요']
 const SENT_KEY = 'invest-compass:feedback-at'
 
+// 글을 쓰지 않아도 누르기만 하면 남길 수 있는 선택지
+const HELPFUL = ['성향 진단', '계좌 안내', '복리 계산기', '하락 시나리오', '모의투자', '해외 투자', '용어 사전', '금테크']
+const CONFUSING = ['용어가 어려웠어요', '화면이 너무 많아요', '결과가 나와 안 맞았어요', '숫자가 많아 복잡해요', '딱히 없었어요']
+
 const QUESTIONS = [
   { name: 'lacking', label: '부족했던 점', placeholder: '이해하기 어려웠거나 정보가 모자랐던 부분' },
   { name: 'regret', label: '아쉬웠던 점', placeholder: '불편했거나 기대와 달랐던 부분' },
@@ -33,6 +37,11 @@ export default function Feedback({ onBack }) {
   const [rating, setRating] = useState(0)
   const [hover, setHover] = useState(0)
   const [texts, setTexts] = useState({ lacking: '', regret: '', wish: '' })
+  const [helpful, setHelpful] = useState([])
+  const [confusing, setConfusing] = useState([])
+
+  const toggle = (list, setList, item) =>
+    setList(list.includes(item) ? list.filter((x) => x !== item) : [...list, item])
   const [status, setStatus] = useState('idle') // idle | sending | done | local | offline | rejected
   const [code, setCode] = useState(null)
   const [sentBefore] = useState(() => {
@@ -60,6 +69,8 @@ export default function Feedback({ onBack }) {
       const body = new URLSearchParams({
         'form-name': 'feedback',
         rating: String(rating),
+        helpful: helpful.join(', '),
+        confusing: confusing.join(', '),
         ...texts,
         'bot-field': '',
       })
@@ -138,6 +149,44 @@ export default function Feedback({ onBack }) {
           </p>
         </fieldset>
 
+        <fieldset className="fb-pick">
+          <legend className="field-label">
+            가장 도움이 된 기능 <span className="fb-optional">(여러 개 선택 가능)</span>
+          </legend>
+          <div className="chips">
+            {HELPFUL.map((h) => (
+              <button
+                key={h}
+                type="button"
+                className="chip"
+                aria-pressed={helpful.includes(h)}
+                onClick={() => toggle(helpful, setHelpful, h)}
+              >
+                {h}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset className="fb-pick">
+          <legend className="field-label">
+            헷갈렸던 부분 <span className="fb-optional">(여러 개 선택 가능)</span>
+          </legend>
+          <div className="chips">
+            {CONFUSING.map((c) => (
+              <button
+                key={c}
+                type="button"
+                className="chip"
+                aria-pressed={confusing.includes(c)}
+                onClick={() => toggle(confusing, setConfusing, c)}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+
         {QUESTIONS.map((q) => (
           <label key={q.name} className="fb-field">
             <span className="field-label">
@@ -158,7 +207,8 @@ export default function Feedback({ onBack }) {
         <input type="text" name="bot-field" className="sr-only" tabIndex={-1} autoComplete="off" aria-hidden="true" />
 
         <p className="fb-privacy">
-          이름이나 연락처는 받지 않아요. 남긴 내용은 이 앱을 만든 사람만 볼 수 있어요. 개인정보는
+          이름이나 연락처는 받지 않아요. 다만 스팸을 막기 위해 접속 정보(IP 주소)가 사이트 운영
+          서비스(Netlify)에 함께 기록돼요. 남긴 내용은 이 앱을 만든 사람만 볼 수 있어요. 개인정보는
           적지 말아주세요.
         </p>
 

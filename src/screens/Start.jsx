@@ -62,6 +62,7 @@ export default function Start({
   onDividend,
   onFeedback,
   onExtras,
+  onSim,
 }) {
   const date = diag ? formatDate(diag.at) : ''
 
@@ -111,6 +112,11 @@ export default function Start({
               처음부터 다시 진단하기
             </button>
           </div>
+          <button type="button" className="sim-cta" onClick={onSim}>
+            <span className="sim-cta-kicker">모의투자 체험</span>
+            <strong>가상의 1,000만원으로 3년을 버텨보세요</strong>
+            <span>떨어질 때 내가 실제로 어떻게 움직이는지 확인해요</span>
+          </button>
           <QuickMenu items={menu} />
           <button type="button" className="extra-cta" onClick={onExtras}>
             <span className="extra-badge">이런 것도 있어요</span>
@@ -147,6 +153,11 @@ export default function Start({
               <span className="btn-sub">{QUESTIONS.length}문항, 1분이면 끝나요</span>
             </button>
           </div>
+          <button type="button" className="sim-cta" onClick={onSim}>
+            <span className="sim-cta-kicker">모의투자 체험</span>
+            <strong>가상의 1,000만원으로 3년을 버텨보세요</strong>
+            <span>떨어질 때 내가 실제로 어떻게 움직이는지 확인해요</span>
+          </button>
           <QuickMenu items={menu} />
           <button type="button" className="extra-cta" onClick={onExtras}>
             <span className="extra-badge">이런 것도 있어요</span>

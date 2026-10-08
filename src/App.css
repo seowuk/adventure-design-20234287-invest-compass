@@ -2539,3 +2539,446 @@
   font-size: 16px;
   color: var(--ink);
 }
+
+/* ============================================================
+   모의투자 — 새 디자인 방향 시험
+   카드 반복 대신 큰 글씨, 나침반 눈금, 선으로 나눈 숫자
+   ============================================================ */
+
+.sim-kicker {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--accent-text);
+}
+
+.sim-title {
+  margin: 0 0 14px;
+  font-size: clamp(30px, 7vw, 42px);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.04em;
+  word-break: keep-all;
+}
+
+.sim-rules {
+  margin: 8px 0 28px;
+  padding: 0;
+  list-style: none;
+  counter-reset: rule;
+  border-top: 1px solid var(--line);
+}
+
+.sim-rules li {
+  counter-increment: rule;
+  display: grid;
+  grid-template-columns: 2em 1fr;
+  gap: 8px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 15px;
+  line-height: 1.6;
+  word-break: keep-all;
+}
+
+.sim-rules li::before {
+  content: counter(rule);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--accent-text);
+}
+
+/* 진행: 나침반 눈금 */
+.sim-progress {
+  margin-bottom: 22px;
+}
+
+.sim-month {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 10px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.sim-month strong {
+  font-size: 20px;
+  color: var(--ink);
+}
+
+.sim-step {
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.sim-ticks {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 18px;
+}
+
+.sim-ticks i {
+  flex: 1;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--line);
+}
+
+.sim-ticks i.moment {
+  height: 18px;
+}
+
+.sim-ticks i.on {
+  background: var(--cobalt);
+}
+
+/* 상황 헤드라인: 카드 대신 굵은 왼쪽 선 */
+.sim-moment {
+  padding: 4px 0 4px 16px;
+  border-left: 5px solid var(--cobalt);
+  animation: step-in 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.sim-moment.mood-down {
+  border-left-color: var(--warn);
+}
+
+.sim-moment.mood-flat {
+  border-left-color: var(--muted);
+}
+
+.sim-headline {
+  margin: 0 0 6px;
+  font-size: clamp(24px, 6vw, 32px);
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.035em;
+  word-break: keep-all;
+}
+
+.mood-down .sim-headline {
+  color: var(--warn);
+}
+
+.sim-detail {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-2);
+  word-break: keep-all;
+}
+
+.sim-chart {
+  margin: 18px -4px 6px;
+}
+
+.sim-chart-legend {
+  margin: 2px 4px 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* 숫자: 선으로만 나눈다 */
+.sim-numbers {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  margin: 16px 0 22px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.sim-numbers > div {
+  padding: 14px 12px 14px 0;
+}
+
+.sim-numbers > div + div {
+  padding-left: 12px;
+  border-left: 1px solid var(--line);
+}
+
+.sim-numbers dt {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.sim-numbers dd {
+  margin: 4px 0 0;
+  font-size: 15px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  word-break: keep-all;
+}
+
+.sim-numbers .sim-big {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.sim-numbers .sim-delta {
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+@media (max-width: 420px) {
+  .sim-numbers {
+    grid-template-columns: 1fr 1fr;
+  }
+  .sim-numbers > div:first-child {
+    grid-column: 1 / -1;
+    border-bottom: 1px solid var(--line);
+  }
+  .sim-numbers > div:nth-child(2) {
+    padding-left: 0;
+    border-left: 0;
+  }
+}
+
+/* 선택 버튼 */
+.sim-choices {
+  display: grid;
+  gap: 10px;
+}
+
+.sim-choice {
+  display: grid;
+  gap: 2px;
+  padding: 16px 18px;
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.1s;
+}
+
+.sim-choice:hover:not(:disabled) {
+  border-color: var(--cobalt);
+}
+
+.sim-choice:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.sim-choice:focus-visible {
+  outline: 2px solid var(--cobalt);
+  outline-offset: 2px;
+}
+
+.sim-choice:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.sim-choice strong {
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.sim-choice span {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.sim-choice.is-sell strong {
+  color: var(--warn);
+}
+
+.sim-choice.is-buy strong {
+  color: var(--accent-text);
+}
+
+/* 결과 */
+.sim-final {
+  margin: 0;
+  font-size: clamp(40px, 10vw, 56px);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.sim-final-sub {
+  margin: 6px 0 24px;
+  font-size: 15px;
+  color: var(--text-2);
+}
+
+.sim-compare {
+  margin: 0 0 28px;
+  border-top: 1px solid var(--line);
+}
+
+.sim-compare > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.sim-compare dt {
+  font-size: 15px;
+  color: var(--text-2);
+  word-break: keep-all;
+}
+
+.sim-compare dd {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.sim-compare .is-me dt,
+.sim-compare .is-me dd {
+  color: var(--accent-text);
+  font-weight: 800;
+}
+
+.sim-behavior,
+.sim-vs {
+  margin-bottom: 24px;
+}
+
+.sim-behavior h2,
+.sim-vs h2 {
+  margin: 0 0 10px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  word-break: keep-all;
+}
+
+.sim-behavior p,
+.sim-vs p {
+  margin: 0 0 10px;
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--text-2);
+  word-break: keep-all;
+}
+
+.sim-vs-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-bottom: 12px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.sim-vs-row strong {
+  margin-left: 4px;
+  font-size: 18px;
+  color: var(--ink);
+}
+
+.sim-actions {
+  margin-top: 20px;
+}
+
+/* 홈 화면 입구 */
+.sim-cta {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  margin-top: 20px;
+  padding: 20px;
+  border: 0;
+  border-left: 6px solid var(--sun);
+  border-radius: 6px 18px 18px 6px;
+  background: var(--night);
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.sim-cta:active {
+  transform: scale(0.985);
+}
+
+.sim-cta:focus-visible {
+  outline: 3px solid var(--sun);
+  outline-offset: 3px;
+}
+
+.sim-cta-kicker {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--sun);
+}
+
+.sim-cta strong {
+  font-size: 18px;
+  font-weight: 800;
+  word-break: keep-all;
+}
+
+.sim-cta > span:last-child {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.72);
+  word-break: keep-all;
+}
+
+/* 결과 화면 입구 */
+.sim-link {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  margin: 16px 0 0;
+  padding: 14px 16px;
+  border: 2px solid var(--cobalt);
+  border-radius: 14px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sim-link:focus-visible {
+  outline: 2px solid var(--cobalt);
+  outline-offset: 2px;
+}
+
+.sim-link strong {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--accent-text);
+}
+
+.sim-link span {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-2);
+  word-break: keep-all;
+}
+
+/* 평가: 선택지 묶음 */
+.fb-pick {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.fb-pick legend {
+  margin-bottom: 8px;
+  padding: 0;
+}
+
+.fb-pick .chips {
+  margin-top: 0;
+}
