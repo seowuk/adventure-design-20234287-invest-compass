@@ -1,182 +1,120 @@
-import { useState } from 'react'
 import TopBar from '../components/TopBar'
-import Summary from '../components/Summary'
-import QuickMenu from '../components/QuickMenu'
-import { QUESTIONS } from '../data/questions'
+import TabBar from '../components/TabBar'
+import Onboarding from '../components/Onboarding'
+import HomePlanCard from '../components/HomePlanCard'
+import { loadPlanInput } from '../lib/plan'
 import { formatDate } from '../lib/storage'
+import { classifyFunds } from '../lib/accounts'
+import { diagnose } from '../lib/diagnosis'
+import { TYPES } from '../data/results'
+import { FUND_TYPES } from '../data/accounts'
 
-// 누르면 바늘이 몇 바퀴 돌다가 흔들리며 원래 방향으로 돌아온다
-function CompassDial() {
-  const [spin, setSpin] = useState({ n: 0, end: 35, dir: 1 })
-
-  const turn = () => {
-    const turns = 2 + Math.floor(Math.random() * 3) // 2~4바퀴
-    const dir = Math.random() < 0.5 ? 1 : -1 // 시계 방향 또는 반대
-    setSpin((s) => ({ n: s.n + 1, end: 35 + dir * 360 * turns, dir }))
-  }
-
-  return (
-    <button type="button" className="dial-btn" onClick={turn} aria-label="나침반 돌리기">
-      <svg className="dial" viewBox="0 0 120 120" aria-hidden="true">
-        <circle cx="60" cy="60" r="58" fill="var(--cobalt)" />
-        {Array.from({ length: 24 }, (_, i) => (
-          <line
-            key={i}
-            x1="60"
-            y1="9"
-            x2="60"
-            y2={i % 6 === 0 ? 19 : 14}
-            stroke="rgba(255,255,255,0.55)"
-            strokeWidth={i % 6 === 0 ? 2.2 : 1.2}
-            strokeLinecap="round"
-            transform={`rotate(${i * 15} 60 60)`}
-          />
-        ))}
-        <g
-          key={spin.n}
-          className={spin.n ? 'dial-needle is-spinning' : 'dial-needle'}
-          style={{ '--spin-end': `${spin.end}deg`, '--overshoot': `${spin.dir * 24}deg` }}
-        >
-          <path d="M60 22 L68 60 L52 60 Z" fill="var(--sun)" />
-          <path d="M60 98 L68 60 L52 60 Z" fill="#fff" opacity="0.9" />
-          <circle cx="60" cy="60" r="5" fill="var(--ink)" />
-        </g>
-      </svg>
-    </button>
-  )
-}
-
+// 홈: 처음 온 사람은 소개 4장, 그다음부터는 "나만의 자금 계획"이 메인
 export default function Start({
   diag,
   funds,
+  onboarded,
   onStart,
+  onBrowse,
   onShowResult,
   onShowAccount,
   onFunds,
-  onCalculator,
-  onClear,
-  onLearn,
-  onWords,
-  onGlobal,
-  onBrokers,
-  onDividend,
-  onFeedback,
-  onExtras,
+  onPlan,
   onSim,
+  onGoal,
+  onTab,
 }) {
+  const savedPlan = loadPlanInput()
+
+  if (!onboarded && !diag && !savedPlan) {
+    return <Onboarding onStart={onStart} onBrowse={onBrowse} />
+  }
+
+  const type = diag ? TYPES[diagnose(diag.answers).type] : null
+  const fund = funds ? FUND_TYPES[classifyFunds(funds.answers).type] : null
   const date = diag ? formatDate(diag.at) : ''
 
-  const menu = [
-    { icon: 'calc', label: '복리 계산기', sub: '얼마가 될지 바로 계산', onClick: onCalculator },
-    { icon: 'globe', label: '해외 투자', sub: 'ETF와 해외 주식 비교', onClick: onGlobal },
-    { icon: 'words', label: '용어 사전', sub: '막히는 단어 쉽게 풀기', onClick: onWords },
-    { icon: 'books', label: '책·사이트', sub: '수준별 공부 자료', onClick: onLearn },
-    { icon: 'phone', label: '증권사 고르기', sub: '앱 특징과 비교 기준', onClick: onBrokers },
-    { icon: 'coins', label: '배당 계산', sub: '배당만으로 살 수 있을까', onClick: onDividend },
-  ]
-
   return (
-    <div className="screen">
+    <div className="screen home">
       <TopBar hideHome />
 
-      <section className="start-hero">
-        <CompassDial />
-        <h1 className="start-title">
-          종목은 고르지 않습니다.
-          <br />
-          방향만 알려드립니다.
-        </h1>
-        {!diag && (
-          <p className="start-lead">몇 가지 질문에 답하면 나에게 맞는 투자 방향을 알려드려요.</p>
-        )}
-      </section>
+      <p className="home-greet">{diag ? `다시 오셨네요 · ${date} 진단` : '반가워요'}</p>
+      <h1 className="page-title">
+        <span className="t-strong">나만의</span>
+        <span className="t-serif">자금 계획</span>
+      </h1>
 
-      {diag ? (
-        <section className="saved" aria-labelledby="saved-title">
-          <h2 id="saved-title">
-            다시 오셨네요
-            {date && <span className="saved-date">{date} 진단</span>}
-          </h2>
-          <Summary
-            answers={diag.answers}
-            funds={funds?.answers}
-            onShowResult={onShowResult}
-            onShowAccount={onShowAccount}
-            onFunds={onFunds}
-          />
-          <div className="start-actions">
-            <button type="button" className="btn-primary" onClick={onShowResult}>
-              내 결과 다시 보기
-            </button>
-            <button type="button" className="btn-secondary" onClick={onStart}>
-              처음부터 다시 진단하기
-            </button>
-          </div>
-          <button type="button" className="sim-cta" onClick={onSim}>
-            <span className="sim-cta-kicker">모의투자 체험</span>
-            <strong>가상의 1,000만원으로 3년을 버텨보세요</strong>
-            <span>떨어질 때 내가 실제로 어떻게 움직이는지 확인해요</span>
-          </button>
-          <QuickMenu items={menu} />
-          <button type="button" className="extra-cta" onClick={onExtras}>
-            <span className="extra-badge">이런 것도 있어요</span>
-            <span className="extra-text">
-              <strong>금테크, 1g씩 모아 골드바로</strong>
-              <span>증권사에서 금을 소액으로 사고파는 방법</span>
-            </span>
-          </button>
-          <button type="button" className="fb-cta" onClick={onFeedback}>
-            <span className="fb-cta-stars" aria-hidden="true">★★★★★</span>
-            <span className="fb-cta-text">
-              <strong>이 앱 어땠나요?</strong>
-              <span>별점과 아쉬운 점을 남겨주세요</span>
-            </span>
-          </button>
-          <p className="saved-note">
-            결과는 이 기기의 이 브라우저에만 저장돼요. 서버로 보내지 않아요.{' '}
-            <button type="button" className="inline-link" onClick={onClear}>
-              이 기기에서 지우기
-            </button>
-          </p>
-        </section>
+      {savedPlan ? (
+        <HomePlanCard planInput={savedPlan} onOpen={onPlan} />
       ) : (
-        <>
-          <ul className="promises">
-            <li>로그인 없이 바로 써요</li>
-            <li>개인정보를 모으지 않아요</li>
-            <li>특정 종목을 추천하지 않아요</li>
-          </ul>
-
-          <div className="start-actions">
-            <button type="button" className="btn-primary" onClick={onStart}>
-              진단 시작하기
-              <span className="btn-sub">{QUESTIONS.length}문항, 1분이면 끝나요</span>
+        <div className="hp-empty">
+          <div className="hp-empty-preview" aria-hidden="true">
+            <HomePlanCard demo />
+          </div>
+          <div className="hp-empty-cta">
+            <p>매달 모으는 돈을 어디에 얼마씩 나눌지, 1분이면 내 계획이 생겨요</p>
+            <button type="button" className="ob-primary" onClick={onPlan}>
+              내 계획 만들기
             </button>
           </div>
-          <button type="button" className="sim-cta" onClick={onSim}>
-            <span className="sim-cta-kicker">모의투자 체험</span>
-            <strong>가상의 1,000만원으로 3년을 버텨보세요</strong>
-            <span>떨어질 때 내가 실제로 어떻게 움직이는지 확인해요</span>
-          </button>
-          <QuickMenu items={menu} />
-          <button type="button" className="extra-cta" onClick={onExtras}>
-            <span className="extra-badge">이런 것도 있어요</span>
-            <span className="extra-text">
-              <strong>금테크, 1g씩 모아 골드바로</strong>
-              <span>증권사에서 금을 소액으로 사고파는 방법</span>
-            </span>
-          </button>
-          <button type="button" className="fb-cta" onClick={onFeedback}>
-            <span className="fb-cta-stars" aria-hidden="true">★★★★★</span>
-            <span className="fb-cta-text">
-              <strong>이 앱 어땠나요?</strong>
-              <span>별점과 아쉬운 점을 남겨주세요</span>
-            </span>
-          </button>
-        </>
+        </div>
       )}
 
-      <p className="disclaimer">본 서비스는 교육 목적이며 투자 자문이 아닙니다.</p>
+      <div className="home-chips">
+        {type ? (
+          <button type="button" className="home-chip" onClick={onShowResult}>
+            <span>내 출발점</span>
+            <strong>{type.name}</strong>
+          </button>
+        ) : (
+          <button type="button" className="home-chip is-cta" onClick={onStart}>
+            <span>1분 진단</span>
+            <strong>투자 성향 알아보기</strong>
+          </button>
+        )}
+        {fund ? (
+          <button type="button" className="home-chip" onClick={onShowAccount}>
+            <span>내 돈</span>
+            <strong>{fund.name}</strong>
+          </button>
+        ) : (
+          type && (
+            <button type="button" className="home-chip is-cta" onClick={onFunds}>
+              <span>3문항 더</span>
+              <strong>내 돈의 성격</strong>
+            </button>
+          )
+        )}
+      </div>
+
+      <h2 className="home-sub">이어서 해볼 것</h2>
+      <ul className="hub-list">
+        <li>
+          <button type="button" className="hub-row" onClick={onSim}>
+            <span className="hub-text">
+              <strong>떨어질 때의 나를 미리 만나기</strong>
+              <span>모의투자 · 가상의 1,000만원으로 3년</span>
+            </span>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <path d="m9 6 6 6-6 6" />
+            </svg>
+          </button>
+        </li>
+        <li>
+          <button type="button" className="hub-row" onClick={onGoal}>
+            <span className="hub-text">
+              <strong>1억, 몇 년이면 될까</strong>
+              <span>매달 넣는 돈별로 걸리는 시간</span>
+            </span>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <path d="m9 6 6 6-6 6" />
+            </svg>
+          </button>
+        </li>
+      </ul>
+
+      <p className="disclaimer">교육 목적의 서비스이며 투자 자문이 아니에요.</p>
+      <TabBar current="start" onTab={onTab} />
     </div>
   )
 }

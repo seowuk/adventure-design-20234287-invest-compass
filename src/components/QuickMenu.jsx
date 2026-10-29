@@ -1,5 +1,18 @@
 // 시작 화면의 앱형 바로가기 메뉴
 const ICONS = {
+  split: (
+    <>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 3.5V12l6.2 5.8M12 12 4.6 15.8" strokeLinecap="round" strokeLinejoin="round" />
+    </>
+  ),
+  target: (
+    <>
+      <circle cx="12" cy="12" r="8.5" />
+      <circle cx="12" cy="12" r="4.5" />
+      <circle cx="12" cy="12" r="1" fill="currentColor" />
+    </>
+  ),
   phone: (
     <>
       <rect x="6.5" y="3" width="11" height="18" rx="2.5" />
@@ -49,7 +62,12 @@ export default function QuickMenu({ items }) {
   return (
     <nav className="quick" aria-label="바로가기">
       {items.map((it) => (
-        <button key={it.label} type="button" className="quick-tile" onClick={it.onClick}>
+        <button
+          key={it.label}
+          type="button"
+          className={`quick-tile${it.wide ? ' is-wide' : ''}${it.saved ? ' is-saved' : ''}`}
+          onClick={it.onClick}
+        >
           <span className="quick-icon">
             <Icon name={it.icon} />
           </span>

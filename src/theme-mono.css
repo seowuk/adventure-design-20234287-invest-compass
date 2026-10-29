@@ -1,0 +1,275 @@
+/* ================================================================
+   투자 나침반 디자인 v3 "모노" (레퍼런스: Moto Finance, Awwwards SOTD 2026.9.24)
+   Dembrandt로 moto-card.com에서 뽑은 토큰을 우리 서비스에 맞게 옮겼다.
+
+   가져온 것
+   - 두 색 체계: 거의 검정 #080808 + 밝은 회색 #E1E5E5, 회색 단계
+   - 한 가지 굵기 원칙 (굵기를 낮춰 차분하게)
+   - 알약 모양 버튼, 카드 모서리 20px, 8px 간격
+   - 강조색을 거의 쓰지 않기
+
+   바꾼 것
+   - 보조 글자색: 원본(#666F76)은 대비 4:1로 기준 미달이라 같은 계열에서 진하게
+     (밝은 화면 #4F575D 5.8:1, 어두운 화면 #9AA1A6 5.8:1)
+   - 글꼴: Neue Montreal은 상업 글꼴이라 Pretendard 유지, 굵기만 600으로
+   - 노랑(핵심 숫자)과 초록·빨강(오름·내림)은 의미가 있어서 남김
+   - 3D, 큰 사진, 고급 회원제 말투는 가져오지 않음
+
+   html에 data-design="mono"가 있을 때만 적용된다 (홈 화면 맨 아래에서 전환)
+   ================================================================ */
+
+/* ---------- 색: 밝은 화면 ---------- */
+:root[data-design='mono'] {
+  --paper: #e1e5e5;
+  --surface: #f2f4f4;
+  --ink: #080808;
+  --muted: #4f575d;
+  --text-2: #2b3135;
+  --line: #c0c4c6;
+  --tint: rgba(8, 8, 8, 0.06);
+  --accent-text: #080808;
+  --stage: #080808; /* 결과 판 */
+  --on-stage: #e1e5e5;
+  --night: #080808;
+  --sky: #c0c4c6;
+  --cobalt: #080808; /* 파란 바탕 자리를 검정으로 */
+  --why-bg: #f2f4f4;
+  --glass: rgba(225, 229, 229, 0.88);
+  --glass-strong: #f2f4f4;
+  --grad-brand: #080808;
+  --grad-text: linear-gradient(90deg, #080808, #080808);
+  --shadow-sm: none;
+  --shadow-md: 0 6px 18px rgba(8, 8, 8, 0.08);
+  --shadow-glow: none;
+  --radius-card: 20px;
+}
+
+/* ---------- 색: 어두운 화면 (Moto 원래 모습) ---------- */
+@media (prefers-color-scheme: dark) {
+  :root[data-design='mono']:not([data-theme='light']) {
+    --paper: #080808;
+    --surface: #20272c;
+    --ink: #e1e5e5;
+    --muted: #9aa1a6;
+    --text-2: #c0c4c6;
+    --line: #212528;
+    --tint: rgba(225, 229, 229, 0.08);
+    --accent-text: #e1e5e5;
+    --stage: #20272c;
+    --on-stage: #e1e5e5;
+    --night: #20272c;
+    --sky: #9aa1a6;
+    --cobalt: #e1e5e5;
+    --why-bg: #20272c;
+    --glass: rgba(8, 8, 8, 0.85);
+    --glass-strong: #20272c;
+    --grad-brand: #e1e5e5;
+    --grad-text: linear-gradient(90deg, #e1e5e5, #e1e5e5);
+    --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* ---------- 바탕: 오로라와 그라디언트 끄기 ---------- */
+:root[data-design='mono'] body {
+  background: var(--paper);
+  letter-spacing: -0.015em;
+}
+
+:root[data-design='mono'] body::before {
+  display: none;
+}
+
+/* ---------- 글자: 굵기를 낮춰 차분하게 ---------- */
+:root[data-design='mono'] :is(h1, h2, h3, strong, b),
+:root[data-design='mono'] [class*='title'],
+:root[data-design='mono'] [class*='name'],
+:root[data-design='mono'] [class*='big'],
+:root[data-design='mono'] [class*='amount'],
+:root[data-design='mono'] [class*='value'],
+:root[data-design='mono'] [class*='label'],
+:root[data-design='mono'] [class*='num'],
+:root[data-design='mono'] [class*='final'],
+:root[data-design='mono'] [class*='headline'],
+:root[data-design='mono'] [class*='kicker'] {
+  font-weight: 600;
+}
+
+:root[data-design='mono'] :is(.sim-title, .learn-title, .pc-name, .goal-big, .pc-out-big, .sim-final, .type-name) {
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+}
+
+/* ---------- 상단 바: 유리 대신 단색 + 가는 선 ---------- */
+:root[data-design='mono'] .topbar {
+  background: var(--glass);
+  border-bottom: 1px solid var(--line);
+}
+
+:root[data-design='mono'] .topbar .brand {
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  color: var(--ink);
+}
+
+:root[data-design='mono'] .topbar .back,
+:root[data-design='mono'] .topbar .home-btn {
+  border-radius: 999px;
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+/* ---------- 버튼: 알약 모양 단색 ---------- */
+:root[data-design='mono'] .btn-primary,
+:root[data-design='mono'] .btn-primary:hover {
+  border-radius: 999px;
+  background: var(--ink);
+  background-size: auto;
+  color: var(--paper);
+  box-shadow: none;
+}
+
+:root[data-design='mono'] .btn-primary:hover {
+  opacity: 0.88;
+  transform: none;
+}
+
+:root[data-design='mono'] .btn-primary .btn-sub {
+  color: var(--paper);
+  opacity: 0.7;
+}
+
+:root[data-design='mono'] .btn-secondary {
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+}
+
+:root[data-design='mono'] .chip {
+  border-radius: 999px;
+}
+
+:root[data-design='mono'] .chip[aria-pressed='true'] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+/* 선택형 버튼들: 선택되면 검정 테두리 */
+:root[data-design='mono'] :is(.option, .plan-opt, .sim-pct-btn, .goal-row, .sim-amount-btn)[aria-pressed='true'],
+:root[data-design='mono'] .goal-row.is-selected {
+  border-color: var(--ink);
+  background: var(--tint);
+}
+
+:root[data-design='mono'] :is(.option, .plan-opt, .sim-pct-btn, .goal-row, .sim-choice, .sim-amount-btn, .quick-tile, .card, .summary-tile) {
+  border-color: var(--line);
+  box-shadow: none;
+}
+
+/* ---------- 결과 판: 파랑 대신 검정 ---------- */
+:root[data-design='mono'] :is(.type-stage, .stage, .goal-detail, .plan-result, .plan-card, .sim-cta, .feature-link) {
+  background: var(--stage);
+  color: var(--on-stage);
+  box-shadow: none;
+}
+
+:root[data-design='mono'] .plan-card::after {
+  display: none;
+}
+
+:root[data-design='mono'] .sim-cta {
+  border-left-color: var(--sun);
+}
+
+:root[data-design='mono'] .feature-link:hover {
+  background: var(--stage);
+  opacity: 0.92;
+}
+
+/* 결과 판 안의 흐린 글자들이 판 색에 맞게 보이도록 */
+:root[data-design='mono'] :is(.goal-detail-kicker, .pc-title, .pc-out-label, .plan-outcome-label) {
+  color: var(--on-stage);
+  opacity: 0.7;
+}
+
+/* ---------- 요약 타일·접이식 설명 ---------- */
+:root[data-design='mono'] .summary-tile,
+:root[data-design='mono'] .summary-tile:hover:not(:disabled) {
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+
+:root[data-design='mono'] .summary-tile::before {
+  background: var(--ink);
+  animation: none;
+  height: 2px;
+}
+
+:root[data-design='mono'] .summary-label {
+  color: var(--muted);
+}
+
+:root[data-design='mono'] .why summary::before {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* ---------- 작은 강조 요소 ---------- */
+:root[data-design='mono'] :is(.progress span, .after-num, .reason-num, .meter i.on, .sim-ticks i.on, .bullets li::before) {
+  background: var(--ink);
+  color: var(--paper);
+  animation: none;
+}
+
+:root[data-design='mono'] .switch[aria-checked='true'] .switch-track {
+  background: var(--ink);
+}
+
+:root[data-design='mono'] .switch[aria-checked='true'] .switch-thumb {
+  background: var(--paper);
+}
+
+:root[data-design='mono'] .quick-icon,
+:root[data-design='mono'] .quick-tile.is-wide .quick-icon,
+:root[data-design='mono'] .quick-tile.is-wide + .quick-tile.is-wide .quick-icon {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+:root[data-design='mono'] .quick-tile.is-saved .quick-sub {
+  color: var(--ink);
+}
+
+/* 홈 나침반: 파란 원은 브랜드라 남기되, 모노에서는 검정 원으로 */
+:root[data-design='mono'] .dial circle:first-of-type {
+  fill: var(--ink);
+}
+
+/* ---------- 디자인 전환 버튼 ---------- */
+.design-switch {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 18px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.design-switch button {
+  padding: 5px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.design-switch button[aria-pressed='true'] {
+  border-color: var(--ink);
+  color: var(--ink);
+}

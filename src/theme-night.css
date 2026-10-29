@@ -1,0 +1,252 @@
+/* ================================================================
+   투자 나침반 디자인 v4 "밤하늘" (기본)
+   레퍼런스: Wealthfront 소개 화면(Mobbin), Phantom 목록 화면(Mobbin)
+   짙은 남보라 그라디언트 = 밤하늘, 그 위의 나침반으로 길을 찾는다는 이야기
+
+   - 색은 한 계열(남보라) + 흰 글자. 노랑은 핵심 숫자, 초록·빨강은 들어옴·오름·내림에만
+   - 카드는 반투명 + 옅은 흰 테두리, 버튼은 흰색 알약 / 반투명 알약
+   - 제목은 굵은 고딕 + 명조 (App.css의 .t-strong / .t-serif)
+   - 어두운 화면 전용이라 기기의 밝은·어두운 설정과 상관없이 같은 모습
+   ================================================================ */
+
+:root[data-design='night'] {
+  color-scheme: dark;
+  --paper: rgba(255, 255, 255, 0.05);
+  --surface: rgba(255, 255, 255, 0.08);
+  --surface-2: rgba(255, 255, 255, 0.14);
+  --ink: #ffffff;
+  --muted: rgba(255, 255, 255, 0.68);
+  --text-2: rgba(255, 255, 255, 0.84);
+  --line: rgba(255, 255, 255, 0.14);
+  --tint: rgba(255, 255, 255, 0.1);
+  --accent-text: #ffffff;
+  --cobalt: rgba(255, 255, 255, 0.16);
+  --sky: #c9c3ff;
+  --sun: #ffd84d;
+  --night: rgba(255, 255, 255, 0.08);
+  --up: #63e6a8;
+  --down: #ff8a7a;
+  --warn: #ff9c7a;
+  --warn-bg: rgba(255, 138, 122, 0.14);
+  --warn-text: #ffd2c8;
+  --btn-bg: #ffffff;
+  --btn-fg: #24175e;
+  --tabbar-bg: rgba(28, 18, 72, 0.82);
+  --why-bg: rgba(255, 255, 255, 0.06);
+  --glass: rgba(30, 18, 78, 0.72);
+  --glass-strong: rgba(255, 255, 255, 0.1);
+  --grad-brand: #ffffff;
+  --grad-text: linear-gradient(90deg, #ffffff, #ffffff);
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-glow: none;
+  --radius-card: 24px;
+}
+
+/* 밤하늘 바탕 */
+:root[data-design='night'] body {
+  color: #fff;
+  background: linear-gradient(180deg, #1c0f47 0%, #2b1d78 52%, #4335b3 100%) fixed;
+  background-color: #1c0f47;
+}
+
+:root[data-design='night'] body::before {
+  display: none;
+}
+
+/* ---------- 상단 바 ---------- */
+:root[data-design='night'] .topbar {
+  background: rgba(28, 15, 71, 0.6);
+  border-bottom: 1px solid var(--line);
+}
+
+:root[data-design='night'] .topbar .brand {
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  color: #fff;
+}
+
+:root[data-design='night'] .topbar .back,
+:root[data-design='night'] .topbar .home-btn {
+  border-radius: 999px;
+  border-color: var(--line);
+  background: var(--surface);
+  color: #fff;
+}
+
+/* ---------- 버튼: 흰색 알약 / 반투명 알약 ---------- */
+:root[data-design='night'] .btn-primary,
+:root[data-design='night'] .btn-primary:hover {
+  border-radius: 999px;
+  background: #fff;
+  background-size: auto;
+  color: #24175e;
+  box-shadow: none;
+}
+
+:root[data-design='night'] .btn-primary:hover {
+  opacity: 0.92;
+  transform: none;
+}
+
+:root[data-design='night'] .btn-primary .btn-sub {
+  color: #24175e;
+  opacity: 0.65;
+}
+
+:root[data-design='night'] .btn-secondary,
+:root[data-design='night'] .btn-secondary:hover {
+  border: 0;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: #fff;
+  box-shadow: none;
+}
+
+:root[data-design='night'] .btn-link,
+:root[data-design='night'] .inline-link {
+  color: #fff;
+}
+
+:root[data-design='night'] .chip {
+  border-radius: 999px;
+  border-color: var(--line);
+  background: var(--surface);
+  color: #fff;
+}
+
+:root[data-design='night'] .chip[aria-pressed='true'] {
+  border-color: #fff;
+  background: #fff;
+  color: #24175e;
+}
+
+/* ---------- 결과 판과 카드: 반투명 유리 ---------- */
+:root[data-design='night'] :is(.type-stage, .stage, .goal-detail, .plan-result, .plan-card, .sim-cta, .feature-link, .summary-tile, .card, .quick-tile, .option, .plan-opt, .sim-pct-btn, .goal-row, .sim-choice, .sim-amount, .sim-amount-btn, .review-item, .after-step, .account, .crash, .country, .listing-card, .broker, .word, .reasons li, .criteria > div, .gold-steps li, .plan-bucket, .switch, .fb-stars) {
+  border-color: var(--line);
+  background: var(--surface);
+  color: #fff;
+  box-shadow: none;
+}
+
+:root[data-design='night'] :is(.option, .plan-opt, .sim-pct-btn, .goal-row, .sim-amount-btn)[aria-pressed='true'],
+:root[data-design='night'] .goal-row.is-selected {
+  border-color: #fff;
+  background: var(--surface-2);
+}
+
+:root[data-design='night'] .plan-card::after,
+:root[data-design='night'] .summary-tile::after {
+  display: none;
+}
+
+:root[data-design='night'] .summary-tile::before {
+  background: var(--sun);
+  animation: none;
+  height: 2px;
+}
+
+:root[data-design='night'] .summary-tile:hover:not(:disabled) {
+  background: var(--surface-2);
+}
+
+/* 판 안의 흐린 글자 */
+:root[data-design='night'] :is(.goal-detail-kicker, .pc-title, .pc-out-label, .plan-outcome-label, .type-caption) {
+  color: var(--sky);
+}
+
+/* ---------- 작은 강조 요소 ---------- */
+:root[data-design='night'] :is(.progress span, .after-num, .reason-num, .meter i.on, .sim-ticks i.on, .bullets li::before) {
+  background: #fff;
+  color: #24175e;
+  animation: none;
+}
+
+:root[data-design='night'] .progress {
+  background: var(--surface-2);
+}
+
+:root[data-design='night'] .switch[aria-checked='true'] .switch-track {
+  background: #fff;
+}
+
+:root[data-design='night'] .switch[aria-checked='true'] .switch-thumb {
+  background: #24175e;
+}
+
+:root[data-design='night'] .why summary::before {
+  background: #fff;
+  color: #24175e;
+}
+
+:root[data-design='night'] :is(input[type='number'], input[type='search'], input[type='text'], textarea) {
+  border-color: var(--line);
+  background: var(--surface);
+  color: #fff;
+}
+
+:root[data-design='night'] input::placeholder,
+:root[data-design='night'] textarea::placeholder {
+  color: var(--muted);
+}
+
+/* ---------- 그래프: 파란 선을 흰 선으로 ---------- */
+:root[data-design='night'] .sim-chart .recharts-area-curve {
+  stroke: #fff;
+}
+
+:root[data-design='night'] .sim-chart .recharts-area-area {
+  fill: #fff;
+  fill-opacity: 0.12;
+}
+
+:root[data-design='night'] .recharts-cartesian-axis-tick-value {
+  fill: var(--muted);
+}
+
+/* ---------- 표 ---------- */
+:root[data-design='night'] .table th,
+:root[data-design='night'] .table td {
+  border-color: var(--line);
+  color: #fff;
+}
+
+:root[data-design='night'] .table thead th {
+  background: var(--surface-2);
+}
+
+/* 경고 상자 */
+:root[data-design='night'] :is(.warn, .caution-box, .plan-note, .gold-withdraw, .div-tax) {
+  background: var(--warn-bg);
+  color: var(--warn-text);
+}
+
+:root[data-design='night'] .plan-note-good {
+  background: var(--surface-2);
+  color: #fff;
+}
+
+/* 디자인 전환 버튼 */
+:root[data-design='night'] .design-switch button[aria-pressed='true'] {
+  border-color: #fff;
+  color: #fff;
+}
+
+/* 계획 요약 카드의 번호 테두리 */
+:root[data-design='night'] .pc-num {
+  box-shadow: 0 0 0 4px rgba(28, 15, 71, 0.9);
+}
+
+/* 계산기 아래 고정 막대: 뒤 글자와 겹치지 않게 불투명하게 */
+:root[data-design='night'] .dock {
+  background: rgba(32, 20, 86, 0.97);
+  border-color: var(--line);
+  color: #fff;
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+/* 노란 배지 위 글자는 진하게 */
+:root[data-design='night'] .stage-badge {
+  color: #24175e;
+}

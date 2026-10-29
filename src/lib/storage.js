@@ -41,6 +41,12 @@ export function clearSaved() {
   try {
     localStorage.removeItem(ANSWERS)
     localStorage.removeItem(FUNDS)
+    // 이 앱이 기기에 남긴 나머지 기록도 함께 지운다
+    localStorage.removeItem('invest-compass:plan')
+    localStorage.removeItem('invest-compass:sim-last')
+    localStorage.removeItem('invest-compass:feedback-at')
+    localStorage.removeItem('invest-compass:checkins')
+    localStorage.removeItem('invest-compass:onboarded')
   } catch {
     // 무시
   }

@@ -26,7 +26,10 @@ export default function Extras({ onBack }) {
     <div className="screen">
       <TopBar onBack={onBack} />
 
-      <h1 className="learn-title">이런 것도 있어요</h1>
+      <h1 className="page-title">
+        <span className="t-strong">이런 것도</span>
+        <span className="t-serif">있어요</span>
+      </h1>
       <p className="learn-lead">{EXTRAS_LEAD}</p>
 
       <section className="learn-section" aria-labelledby="gold-title">

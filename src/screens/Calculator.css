@@ -557,3 +557,10 @@
 .crash .why-body {
   padding: 0 20px 16px;
 }
+
+/* 폰에서는 아래 고정 막대만큼 바닥을 비워 마지막 내용이 가려지지 않게 */
+@media (max-width: 879px) {
+  .page {
+    padding-bottom: calc(110px + env(safe-area-inset-bottom, 0px));
+  }
+}

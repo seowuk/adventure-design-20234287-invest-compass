@@ -20,7 +20,10 @@ export default function Brokers({ onBack }) {
     <div className="screen">
       <TopBar onBack={onBack} />
 
-      <h1 className="learn-title">증권사 앱 고르기</h1>
+      <h1 className="page-title">
+        <span className="t-strong">증권사 앱</span>
+        <span className="t-serif">고르기</span>
+      </h1>
       <p className="learn-lead">
         어디가 제일 좋다는 정답은 없어요. 무엇을 비교해야 하는지와, 주요 증권사 앱의 특징을
         모았어요.

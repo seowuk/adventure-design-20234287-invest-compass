@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import TopBar from '../components/TopBar'
 import { usHoursKst } from '../lib/marketHours'
 import Why from '../components/Why'
@@ -56,6 +57,61 @@ function ProsCons({ data }) {
   )
 }
 
+// 순위 목록 (실시간 시세 대신 시가총액과 업종만, 로고 대신 이름 두 글자)
+// 앞 두 글자가 겹치는 기업은 따로 정한다
+const MONO = { Microsoft: 'MS', 'Micron Technology': 'MU', 'Berkshire Hathaway': 'BH' }
+function TopList() {
+  const sectors = ['전체', ...new Set(TOP_US.list.map((c) => c.sector))]
+  const [sector, setSector] = useState('전체')
+  const rows = TOP_US.list.map((c, i) => ({ ...c, rank: i + 1 })).filter((c) => sector === '전체' || c.sector === sector)
+
+  return (
+    <div className="tl">
+      <div className="tl-pills" role="group" aria-label="업종 고르기">
+        <span className="tl-pill is-static">시가총액순</span>
+        {sectors.map((x) => (
+          <button key={x} type="button" className="tl-pill" aria-pressed={sector === x} onClick={() => setSector(x)}>
+            {x}
+          </button>
+        ))}
+      </div>
+
+      <p className="tl-banner">
+        이 10곳은 <strong>S&amp;P 500 ETF 하나</strong>에 이미 다 들어 있어요
+      </p>
+
+      <div className="tl-head" aria-hidden="true">
+        <span>#</span>
+        <span>기업</span>
+        <span>시가총액</span>
+      </div>
+      <ol className="tl-rows">
+        {rows.map((c) => (
+          <li key={c.en} className="tl-row">
+            <span className={`tl-rank${c.rank <= 3 ? ` is-medal m${c.rank}` : ''}`}>{c.rank}</span>
+            <span className="tl-mono" aria-hidden="true">
+              {MONO[c.en] ?? c.en.replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase()}
+            </span>
+            <span className="tl-name">
+              <strong>{c.name}</strong>
+              <span>
+                {c.ticker} · {c.sector}
+              </span>
+            </span>
+            <span className="tl-cap">
+              {c.cap.toFixed(1)}
+              <small>조 달러</small>
+            </span>
+          </li>
+        ))}
+      </ol>
+      <p className="basis">
+        {TOP_US.asOf}. {TOP_US.note}
+      </p>
+    </div>
+  )
+}
+
 export default function Global({ onBack }) {
   const us = usHoursKst()
   const cell = (row, key) =>
@@ -65,7 +121,10 @@ export default function Global({ onBack }) {
     <div className="screen">
       <TopBar onBack={onBack} />
 
-      <h1 className="learn-title">해외 투자, 어떻게 볼까</h1>
+      <h1 className="page-title">
+        <span className="t-strong">해외 투자,</span>
+        <span className="t-serif">어떻게 볼까</span>
+      </h1>
       <p className="learn-lead">
         무엇을 사라는 게 아니라, 방식마다 무엇을 얻고 무엇을 감당해야 하는지 비교해드려요.
       </p>
@@ -178,26 +237,8 @@ export default function Global({ onBack }) {
       </section>
 
       <section className="learn-section" aria-labelledby="top-title">
-        <h2 id="top-title">미국 대표 기업 시가총액 상위 10곳</h2>
-        <p className="learn-lead">{TOP_US.bridge}</p>
-        <ol className="top-list">
-          {TOP_US.list.map((c, i) => (
-            <li key={c.en}>
-              <span className="top-rank">{i + 1}</span>
-              <div className="top-body">
-                <p className="top-name">
-                  {c.name}
-                  <span>{c.en}</span>
-                </p>
-                <p className="top-what">{c.what}</p>
-              </div>
-              <span className="top-sector">{c.sector}</span>
-            </li>
-          ))}
-        </ol>
-        <p className="basis">
-          {TOP_US.asOf}. {TOP_US.note}
-        </p>
+        <h2 id="top-title">미국 대표 기업 10곳</h2>
+        <TopList />
         <Why title="상위 기업 목록에서 보이는 것">
           <p>{TOP_US.concentration}</p>
           <p>{TOP_US.outside}</p>

@@ -194,6 +194,7 @@ export default function Account({
   onCalculate,
   onShowResult,
   onLearn,
+  onPlan,
 }) {
   const { type, guideKey } = classifyFunds(funds)
   const fund = FUND_TYPES[type]
@@ -331,6 +332,10 @@ export default function Account({
               {investType.name} 예시 수익률 연 {investType.rate}%로 시작해요
             </span>
           )}
+        </button>
+        <button type="button" className="btn-primary" onClick={onPlan}>
+          내 돈 나눠 담기 예시 계획 보기
+          <span className="btn-sub">비상금부터 어떤 순서로 어디에</span>
         </button>
         <button type="button" className="btn-secondary" onClick={onLearn}>
           공부할 책과 사이트 보기

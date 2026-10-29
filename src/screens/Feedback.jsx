@@ -117,7 +117,10 @@ export default function Feedback({ onBack }) {
     <div className="screen">
       <TopBar onBack={onBack} />
 
-      <h1 className="learn-title">이 앱, 어땠나요?</h1>
+      <h1 className="page-title">
+        <span className="t-strong">이 앱,</span>
+        <span className="t-serif">어땠나요?</span>
+      </h1>
       <p className="learn-lead">
         {sentBefore
           ? '지난번에도 남겨주셨네요. 고마워요. 달라진 점이 있으면 또 알려주세요.'

@@ -401,10 +401,9 @@ export default function Calculator({ initialRate = 5, onBack }) {
 
       <div className="layout">
         <section className="controls" aria-labelledby="calc-title">
-          <h1 id="calc-title">
-            {modeInfo.title[0]}
-            <br />
-            {modeInfo.title[1]}
+          <h1 id="calc-title" className="page-title">
+            <span className="t-strong">{modeInfo.title[0]}</span>
+            <span className="t-serif">{modeInfo.title[1]}</span>
           </h1>
 
           <div className="mode" role="group" aria-label="투자 방식">

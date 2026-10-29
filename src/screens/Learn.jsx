@@ -32,7 +32,10 @@ export default function Learn({ exp, onBack, onGlobal, onWords, onExtras }) {
     <div className="screen">
       <TopBar onBack={onBack} />
 
-      <h1 className="learn-title">더 알아보고 싶다면</h1>
+      <h1 className="page-title">
+        <span className="t-strong">더 알아보고</span>
+        <span className="t-serif">싶다면</span>
+      </h1>
       <p className="learn-lead">
         {exp
           ? `진단 때 답한 투자 경험에 맞춰 ${LEVELS[mine].name} 단계부터 보여드려요.`

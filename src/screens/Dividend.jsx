@@ -65,7 +65,10 @@ export default function Dividend({ onBack }) {
     <div className="screen">
       <TopBar onBack={onBack} />
 
-      <h1 className="learn-title">배당만으로 살 수 있을까?</h1>
+      <h1 className="page-title">
+        <span className="t-strong">배당만으로</span>
+        <span className="t-serif">살 수 있을까?</span>
+      </h1>
       <p className="learn-lead">
         매달 배당이 들어오는 삶은 누구나 꿈꿔요. 얼마가 있어야 하는지, 그리고 시간이 지나면 그
         돈의 가치가 어떻게 되는지 숫자로 확인해봐요.
