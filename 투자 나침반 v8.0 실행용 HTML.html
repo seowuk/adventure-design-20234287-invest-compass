@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>투자 나침반 v8.0 — 성향에 맞는 ETF 고르기</title>
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{--bg:#141233;--surface:#242341;--surface-2:#2f2e4a;--line:rgba(255,255,255,.14);--text:#f4f2ff;--muted:rgba(244,242,255,.72);--accent:#f4f2ff;--on-accent:#1a1640;--ok:#63e6a8;--care:#ffd66b;--far:#ff7b7b;--up:#63e6a8;--down:#ff7b7b;--info:#8ab4ff;--r-card:18px;--r-ctl:12px;--r-pill:999px;--r-bar:3px;--tab-h:64px;color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0}
+body{font-family:"Pretendard Variable",Pretendard,-apple-system,system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;word-break:keep-all;overflow-wrap:anywhere;-webkit-font-smoothing:antialiased}
+body[data-screen="home"]::before,body[data-screen="quiz"]::before,body[data-screen="result"]::before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(900px 500px at 20% -10%,#3a2f8a 0%,transparent 60%),radial-gradient(700px 500px at 100% 100%,#2b1f5e 0%,transparent 55%),var(--bg)}
+#app{max-width:560px;margin:0 auto;padding:16px 16px calc(var(--tab-h) + 32px + env(safe-area-inset-bottom))}
+body[data-screen="etf"] #app{padding-bottom:calc(var(--tab-h) + 120px + env(safe-area-inset-bottom))}
+h1{font-size:26px;font-weight:800;letter-spacing:-.03em;margin:4px 0 8px;line-height:1.25}
+h2{font-size:16px;font-weight:700;letter-spacing:-.02em;margin:24px 0 8px}
+h3{font-size:15px;font-weight:700;margin:16px 0 8px}
+p{margin:8px 0}.muted{color:var(--muted)}.small{font-size:13.5px}
+.eyebrow{font-size:12.5px;font-weight:700;letter-spacing:.04em;color:var(--muted)}
+.up{color:var(--up)}.down{color:var(--down)}.far-text{color:var(--far)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:16px;margin:12px 0}
+.list.card{padding:4px 12px}
+button{font:inherit;color:inherit;cursor:pointer;border:1px solid var(--line);background:rgba(255,255,255,.07);border-radius:var(--r-ctl);padding:12px 16px;min-height:44px;transition:background .12s,transform .12s}
+button:hover{background:rgba(255,255,255,.11)}button:active{transform:scale(.99)}
+button.primary{background:var(--accent);color:var(--on-accent);border-color:transparent;font-weight:800}button.primary:hover{background:#fff}
+button.ghost{background:transparent}button.sm{padding:8px 12px;min-height:36px;font-size:13.5px}
+button.link{border:0;background:none;padding:0;min-height:0;color:var(--text);font-weight:600;text-decoration:underline;text-underline-offset:3px;border-radius:var(--r-bar)}
+button.link.danger{color:var(--far)}
+button.link.name{font-size:16px;font-weight:700;text-decoration:none;text-align:left}
+input,select{font:inherit;font-size:16px;color:inherit;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:var(--r-ctl);padding:12px 16px;width:100%;min-height:48px}
+input:focus-visible,button:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.row.nowrap{flex-wrap:nowrap}.between{justify-content:space-between}.grow{flex:1;min-width:0}
+.num{font-variant-numeric:tabular-nums}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:600;padding:4px 8px;border-radius:var(--r-pill);border:1px solid var(--line);white-space:nowrap}
+.badge.ok{color:var(--ok);border-color:rgba(99,230,168,.5)}.badge.care{color:var(--care);border-color:rgba(255,214,107,.5)}.badge.far{color:var(--far);border-color:rgba(255,123,123,.5)}.badge.neutral{color:var(--muted)}
+.banner{border-radius:var(--r-ctl);padding:12px 16px;border:1px solid var(--line);margin-top:12px}
+.banner.ok{border-color:rgba(99,230,168,.45);background:rgba(99,230,168,.08)}.banner.care{border-color:rgba(255,214,107,.45);background:rgba(255,214,107,.08)}.banner.far{border-color:rgba(255,123,123,.5);background:rgba(255,123,123,.1)}.banner.none{background:var(--surface);color:var(--muted)}
+.yearbox{border-radius:var(--r-ctl);padding:12px 16px;background:var(--surface-2)}
+.searchbar{position:sticky;top:0;z-index:5;background:var(--bg);margin:-16px -16px 0;padding:12px 16px 8px}
+.chips{display:flex;gap:8px;overflow-x:auto;margin:4px 0 12px;padding-bottom:4px;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;padding:8px 16px;border-radius:var(--r-pill);font-size:13.5px;min-height:36px}.chip.on{background:var(--accent);color:var(--on-accent);border-color:transparent;font-weight:700}
+.list{list-style:none;margin:0;padding:0}.list li{border-top:1px solid var(--line)}.list li:first-child{border-top:0}
+.item{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 4px;border:0;background:none;border-radius:0}
+.item .t{flex:1;min-width:0}.item strong{display:block;font-size:16px;letter-spacing:-.01em}.item .s{display:block;font-size:13.5px;color:var(--muted);margin-top:4px}
+.arrow{color:var(--muted);flex:none}
+.spark{width:84px;height:28px;flex:none;display:block;overflow:visible}.spark .sl{stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}.spark .sz{stroke:rgba(255,255,255,.24);stroke-width:1}.spark circle{fill:var(--up)}.spark circle.neg{fill:var(--down)}
+.bars{display:flex;align-items:flex-end;gap:4px;height:150px;position:relative;margin:40px 0 32px}
+.bars::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px solid rgba(255,255,255,.24)}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;position:relative;border:0;background:none;padding:0;border-radius:var(--r-bar);min-height:0}
+.bar i{display:block;width:100%;min-height:3px;position:absolute;left:0;border:1px solid rgba(255,255,255,.3);border-radius:var(--r-bar);background:linear-gradient(180deg,rgba(99,230,168,.92),rgba(99,230,168,.34));box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 0 14px rgba(99,230,168,.22);transform-origin:50% 100%;transition:opacity .2s,filter .2s,box-shadow .2s,transform .25s cubic-bezier(.2,.9,.25,1.4)}
+.bar.neg i{background:linear-gradient(0deg,rgba(255,123,123,.92),rgba(255,123,123,.34));box-shadow:inset 0 -1px 0 rgba(255,255,255,.45),0 0 14px rgba(255,123,123,.2);transform-origin:50% 0}
+.bars.has-on .bar:not(.on) i{opacity:.42}
+.bar.on i{filter:brightness(1.15) saturate(1.1);transform:scaleX(1.18);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 0 0 1px rgba(255,255,255,.55),0 0 22px rgba(99,230,168,.55)}
+.bar.neg.on i{box-shadow:inset 0 -1px 0 rgba(255,255,255,.6),0 0 0 1px rgba(255,255,255,.55),0 0 22px rgba(255,123,123,.5)}
+.bar span{position:absolute;bottom:-24px;font-size:12.5px;color:var(--muted)}.bar.on span{color:var(--text)}
+.bar .val{position:absolute;left:50%;--tx:-50%;z-index:2;pointer-events:none;white-space:nowrap;font-size:12.5px;font-weight:700;line-height:1.3;padding:3px 8px;border-radius:var(--r-pill);color:var(--up);background:rgba(20,18,51,.78);border:1px solid rgba(255,255,255,.3);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 6px 16px rgba(0,0,0,.35);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);opacity:0;transform:translate(var(--tx),6px) scale(.85);transition:opacity .16s,transform .24s cubic-bezier(.2,.9,.25,1.4)}
+.bar.neg .val{color:var(--down)}.bar:nth-child(-n+2) .val{left:0;--tx:0%}.bar:nth-last-child(-n+2) .val{left:auto;right:0;--tx:0%}
+.bar.on .val{opacity:1;transform:translate(var(--tx),0) scale(1)}
+@media(hover:hover){.bar:hover .val{opacity:1;transform:translate(var(--tx),0) scale(1)}}
+.bar:nth-child(odd) span{display:none}@media(min-width:600px){.bar:nth-child(odd) span{display:block}}
+.legend,.keys{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12.5px;color:var(--muted);margin:0 0 12px}
+.legend i,.keys i{display:inline-block;width:8px;height:8px;border-radius:var(--r-bar);margin-right:4px}
+.legend .u{background:var(--up)}.legend .d{background:var(--down)}.keys .eq{background:var(--info)}.keys .etc{background:rgba(244,242,255,.4)}.keys i.rf{width:2px;height:12px;border-radius:0;background:var(--accent);vertical-align:-2px}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.stat{background:var(--surface-2);border-radius:var(--r-ctl);padding:12px}.stat .l{font-size:12.5px;color:var(--muted)}.stat .v{font-size:20px;font-weight:800;letter-spacing:-.02em}
+table{width:100%;border-collapse:collapse}td,th{padding:8px 4px;text-align:left;border-top:1px solid var(--line)}th{color:var(--muted);font-weight:600;font-size:12.5px}td.r,th.r{text-align:right}
+.hbar{height:8px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:var(--r-pill);overflow:hidden}.hbar i{display:block;height:100%;border-radius:var(--r-pill);background:linear-gradient(90deg,rgba(138,180,255,.5),rgba(138,180,255,.95));box-shadow:inset 0 1px 0 rgba(255,255,255,.5);transform-origin:0 50%}
+.ref{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:var(--accent)}
+.keys{margin:4px 0 0}
+.weights input{width:72px;flex:none;min-height:44px;padding:8px;text-align:right}
+.wrow{padding:12px 0}.wrow .row+.row{margin-top:4px}
+.check{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line)}.check:first-child{border-top:0}
+.check .ic{flex:none;width:20px;height:20px;border-radius:var(--r-pill);border:1px solid currentColor;display:grid;place-items:center;font-size:12.5px;font-weight:800;line-height:1;margin-top:2px}
+.check.ok .ic{color:var(--ok)}.check.care .ic{color:var(--care)}.check.far .ic{color:var(--far)}.check.note .ic{color:var(--info)}
+.check strong{display:block}.check div>span{font-size:13.5px;color:var(--muted)}
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:8;display:flex;height:calc(var(--tab-h) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:rgba(20,18,51,.94);backdrop-filter:blur(12px);border-top:1px solid var(--line)}
+.tabbar button{position:relative;flex:1;border:0;background:none;border-radius:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12.5px;color:var(--muted);padding:4px;min-height:0}
+.tabbar button.on{color:var(--text);font-weight:700}.tabbar button.on::before{content:"";position:absolute;top:0;left:50%;width:32px;margin-left:-16px;height:2px;border-radius:var(--r-bar);background:var(--accent)}
+.tabbar svg{width:24px;height:24px}
+.addbar{position:fixed;left:0;right:0;bottom:calc(var(--tab-h) + env(safe-area-inset-bottom));z-index:7;background:var(--surface-2);border-top:1px solid var(--line);padding:8px 16px}
+.addbar-in{max-width:528px;margin:0 auto}.addbar .row{flex-wrap:nowrap;gap:8px}
+.addbar input{width:64px;flex:none;min-height:44px;padding:8px;text-align:right}.addbar select{flex:1;min-width:0;min-height:44px;padding:8px 12px}.addbar button{flex:none;white-space:nowrap}.addbar .unit{color:var(--muted)}
+.addbar p{margin:4px 0 0;font-size:12.5px}
+.topbar{display:flex;align-items:center;gap:12px;margin-bottom:8px}.topbar .back{width:44px;height:44px;padding:0;border-radius:var(--r-pill);display:grid;place-items:center}
+.quiz-opt{display:block;width:100%;text-align:left;padding:16px;margin-top:8px}
+.progress{height:4px;background:rgba(255,255,255,.1);border-radius:var(--r-bar)}.progress i{display:block;height:100%;background:var(--accent);border-radius:var(--r-bar)}
+.hero{display:block;width:100%;text-align:left;padding:20px 16px;border-radius:var(--r-card);background:var(--surface-2);border:1px solid rgba(244,242,255,.45)}
+button.hero:hover{background:#38375a}
+.hero strong{font-size:20px;display:block;letter-spacing:-.03em;margin:4px 0}
+.disclaimer{font-size:12.5px;color:var(--muted);margin-top:24px;line-height:1.5}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.toast{position:fixed;left:50%;bottom:calc(var(--tab-h) + 24px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#fff;color:var(--on-accent);padding:12px 16px;border-radius:var(--r-ctl);font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.4);z-index:9}
+body[data-screen="etf"] .toast{bottom:calc(var(--tab-h) + 96px + env(safe-area-inset-bottom))}
+.same{margin-top:12px}.same-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.same-grid span{font-size:13.5px;padding:4px 8px;border-radius:var(--r-pill);border:1px solid var(--line);white-space:nowrap}.same-grid .pos b{color:var(--up)}.same-grid .neg b{color:var(--down)}
+.card ol{margin:8px 0 0;padding-left:20px}.card ol li+li{margin-top:4px}
+.plain{margin:0;padding-left:20px;display:grid;gap:8px}details.sib summary{cursor:pointer;font-weight:600}details.sib[open] summary{margin-bottom:8px}
+@media(min-width:900px){#app{max-width:880px}.addbar-in{max-width:848px}}
+/* v7.9 글라스 차트 */
+.card.glass{position:relative;overflow:hidden;isolation:isolate;background:linear-gradient(150deg,rgba(255,255,255,.10),rgba(255,255,255,.035) 60%);border-color:rgba(255,255,255,.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.26),0 14px 36px rgba(5,4,24,.42);-webkit-backdrop-filter:blur(16px) saturate(140%);backdrop-filter:blur(16px) saturate(140%)}
+.card.glass::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(240px 150px at 20% 70px,rgba(138,180,255,.22),transparent 70%),radial-gradient(210px 140px at 88% 110px,rgba(99,230,168,.13),transparent 70%)}
+.card.glass::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.13) 50%,transparent 62%);transform:translateX(-130%)}
+.card.glass .yearbox{background:rgba(20,18,51,.38);border:1px solid rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
+.card.glass .stat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.14)}
+.totalwrap{position:relative;padding:6px 0}
+.total{display:flex;height:28px;border-radius:var(--r-ctl);overflow:hidden;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 -8px 16px rgba(0,0,0,.18)}
+.total .seg{flex:none;height:100%;min-height:0;padding:0;border:0;border-radius:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.45);transform-origin:0 50%;transition:filter .2s,opacity .2s}
+.total .seg+.seg{box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 1px 0 0 rgba(20,18,51,.55)}
+.total .seg.eq,.total .seg.eq:hover{background:linear-gradient(180deg,rgba(138,180,255,.95),rgba(138,180,255,.5))}
+.total .seg.etc,.total .seg.etc:hover{background:linear-gradient(180deg,rgba(244,242,255,.5),rgba(244,242,255,.22))}
+.total.has-on .seg:not(.on){opacity:.45}.total .seg.on{filter:brightness(1.2)}.total .seg:focus-visible{outline-offset:-2px}
+.segbox{font-size:13.5px;color:var(--muted);margin:8px 0 0;min-height:22px}.segbox.on{color:var(--text);font-weight:600}
+@keyframes barGrow{from{transform:scaleY(0);opacity:0}}
+@keyframes segGrow{from{transform:scaleX(0);opacity:0}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}}
+@keyframes sheen{to{transform:translateX(130%)}}
+#app.enter .bar i{animation:barGrow .6s cubic-bezier(.2,.9,.25,1.2) backwards;animation-delay:calc(var(--i,0)*24ms + 80ms)}
+#app.enter .total .seg{animation:segGrow .7s cubic-bezier(.2,.9,.25,1) backwards;animation-delay:calc(var(--i,0)*60ms + 80ms)}
+#app.enter .hbar i{animation:segGrow .6s cubic-bezier(.2,.9,.25,1) backwards;animation-delay:calc(var(--i,0)*40ms + 120ms)}
+#app.enter .card.glass::after{animation:sheen 1.1s .2s ease-out}
+#app.enter .card.glass .stat{animation:fadeUp .4s ease backwards;animation-delay:.5s}
+#yearbox>*{animation:fadeUp .28s ease backwards}
+@media(prefers-reduced-motion:reduce){button,.bar i,.bar .val,.total .seg{transition:none}#app.enter .bar i,#app.enter .total .seg,#app.enter .hbar i,#app.enter .card.glass::after,#app.enter .card.glass .stat,#yearbox>*{animation:none}}
+[hidden]{display:none!important}
+.care-text{color:var(--care)}.far-text{color:var(--far)}
+.modes{display:flex;gap:4px;padding:4px;border-radius:var(--r-pill);background:rgba(255,255,255,.06);margin-bottom:12px}
+.modes button{flex:1;min-height:40px;padding:6px 8px;border:0;border-radius:var(--r-pill);background:none;color:var(--muted);font-size:13.5px;font-weight:600}
+.modes button.on{background:var(--accent);color:var(--on-accent)}
+.weights input.amt{width:140px}.money{font-variant-numeric:tabular-nums}.wrow .sub{margin-top:2px}
+.pfhead{margin:24px 0 8px}.pfhead h2{margin:0}
+.pflist{list-style:none;margin:8px 0 0;padding:0}.pflist li+li{border-top:1px solid var(--line)}
+.pfrow{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:8px 0;border:0;border-radius:0;background:none;color:inherit;font:inherit;text-align:left}
+button.pfrow:hover{background:rgba(255,255,255,.04)}
+.pflist .grow{flex:1;min-width:0}.pflist .wcol{width:44px;text-align:right;flex:none}.pflist .actcol{width:52px;text-align:right;flex:none}.pflist .amtcol{width:68px;text-align:right;flex:none}
+.pflist .head,.ghost-list .pfrow{min-height:0;padding:6px 0}
+.pffoot{margin-top:12px;padding-top:12px;border-top:1px solid var(--line);display:grid;gap:4px}
+.ghostmix{opacity:.45;margin:8px 0}.ghost-list{opacity:.7}
+.kradd label{display:block}.kradd label>span{display:block;margin-bottom:6px}.kradd input{width:100%;box-sizing:border-box}
+/* v7.9 */
+.autoline{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px;padding:8px 12px;border-radius:var(--r-ctl);background:rgba(255,255,255,.06);font-size:13.5px;color:var(--muted)}
+.autoline span{flex:1;min-width:180px}.autoline.ok{color:var(--text);box-shadow:inset 0 0 0 1px rgba(99,230,168,.4)}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.cmp.one{grid-template-columns:1fr}
+.cmp .hd{font-size:13.5px;font-weight:700;padding:0 4px}.cmp .lab{grid-column:1/-1;font-size:13.5px;color:var(--muted);margin-top:8px}
+.cmp .stat{min-width:0}.cmp .stat .s{font-size:12.5px;color:var(--muted);margin-top:4px;word-break:keep-all}
+.rng{position:relative;height:12px;margin-top:12px;border-radius:var(--r-pill);background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px var(--line)}
+.rng i{position:absolute;top:0;bottom:0}.rng .span{border-radius:var(--r-pill);background:linear-gradient(90deg,rgba(138,180,255,.45),rgba(138,180,255,.95))}
+.rng .mid{width:3px;margin-left:-1.5px;top:-3px;bottom:-3px;border-radius:var(--r-bar);background:var(--text)}
+.rng .paid{width:0;top:-3px;bottom:-3px;border-left:2px dashed var(--care)}
+
+/* v7.9 꺾은선 그래프 */
+.bars.line{gap:0}
+.bars.line::before{top:var(--z,50%)}
+.bars.line .bar{z-index:1}
+.linesvg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:0;filter:drop-shadow(0 6px 10px rgba(5,4,24,.35))}
+.linesvg .ln{stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}
+.bars.line .bar i{width:10px;height:10px;min-height:0;left:50%;margin:-5px 0 0 -5px;border-radius:50%;border:2px solid var(--up);background:var(--bg);box-shadow:0 0 10px rgba(99,230,168,.45);transform-origin:50% 50%;transition:opacity .2s,background .2s,box-shadow .2s,transform .22s cubic-bezier(.2,.9,.25,1.4)}
+.bars.line .bar.neg i{border-color:var(--down);background:var(--bg);box-shadow:0 0 10px rgba(255,123,123,.45);transform-origin:50% 50%}
+.bars.line.has-on .bar:not(.on) i{opacity:.5}
+.bars.line .bar.on i{filter:none;transform:scale(1.5);background:var(--up);box-shadow:0 0 0 4px rgba(99,230,168,.22),0 0 16px rgba(99,230,168,.6)}
+.bars.line .bar.neg.on i{background:var(--down);box-shadow:0 0 0 4px rgba(255,123,123,.22),0 0 16px rgba(255,123,123,.55)}
+.bars.line .bar.on::before{content:"";position:absolute;top:0;bottom:0;left:50%;border-left:1px dashed rgba(255,255,255,.34)}
+.bars.line .bar:nth-last-of-type(-n+2) .val{left:auto;right:0;--tx:0%}
+.legend .z{width:14px;height:0;border-top:1px solid rgba(255,255,255,.5);border-radius:0;vertical-align:middle}
+@media(hover:hover){.bars.line .bar:hover i{transform:scale(1.3)}.bars.line .bar.on:hover i{transform:scale(1.5)}}
+@keyframes lineReveal{from{clip-path:inset(-20% 100% -20% 0)}to{clip-path:inset(-20% 0 -20% 0)}}
+@keyframes dotPop{from{transform:scale(0);opacity:0}}
+#app.enter .linesvg{animation:lineReveal .9s .1s ease-out backwards}
+#app.enter .bars.line .bar i{animation:dotPop .35s cubic-bezier(.2,.9,.25,1.4) backwards;animation-delay:calc(var(--i,0)*36ms + 160ms)}
+@media(prefers-reduced-motion:reduce){#app.enter .linesvg,#app.enter .bars.line .bar i{animation:none}.bars.line .bar i{transition:none}}
+
+/* ===== v8.0 홈 대시보드 · 코스피 카드 ===== */
+:root{--c-eq:#8ab4ff;--c-bond:#cfa6ff;--c-cash:rgba(244,242,255,.66);--c-gold:#d8b48a;--c-etc:rgba(244,242,255,.28)}
+.hero.next{display:flex;align-items:center;gap:12px}
+.hero.next .t{flex:1;min-width:0}
+.hero.next .t>span{display:block}
+.hero.care{border-color:rgba(255,214,107,.55)}.hero.far{border-color:rgba(255,123,123,.6)}.hero.ok{border-color:rgba(99,230,168,.5)}
+.dash-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin-top:12px}
+.dash-grid>.card{margin:0;min-width:0}
+.dhead{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:24px;margin:0 0 12px}
+.dh{margin:0 0 12px;font-size:12.5px;color:var(--muted);font-weight:700;letter-spacing:.04em}
+.dhead .dh{margin:0}
+.dbig{font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1.25}
+.dbig small{font-size:13.5px;font-weight:600;color:var(--muted);letter-spacing:0}
+.drows{margin-top:12px}
+.drow{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:13.5px;padding:8px 0;border-top:1px solid var(--line)}
+.drow b{white-space:nowrap}
+.dstack{display:flex;height:16px;border-radius:var(--r-pill);overflow:hidden;background:rgba(255,255,255,.06)}
+.dstack.dim{opacity:.6}
+.dstack i{display:block;height:100%;transform-origin:0 50%}
+.dstack i+i{box-shadow:inset 1px 0 0 rgba(20,18,51,.75)}
+.g-equity{background:var(--c-eq)}.g-bond{background:var(--c-bond)}.g-cash{background:var(--c-cash)}.g-gold{background:var(--c-gold)}.g-etc{background:var(--c-etc)}
+.dcmp{display:grid;grid-template-columns:56px minmax(0,1fr) 72px;align-items:center;gap:12px;font-size:13.5px;margin-top:8px}
+.dcmp b{text-align:right;white-space:nowrap}
+.dlegend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12.5px;color:var(--muted);margin-top:12px}
+.dlegend i{display:inline-block;width:8px;height:8px;border-radius:var(--r-bar);margin-right:4px}
+.dic{flex:none;width:20px;height:20px;border-radius:var(--r-pill);border:1px solid currentColor;display:grid;place-items:center;font-size:12.5px;font-weight:800;line-height:1}
+.dic.ok,.lv-ok{color:var(--ok)}.dic.care,.lv-care{color:var(--care)}.dic.far,.lv-far{color:var(--far)}
+.dverdict{display:flex;gap:8px;align-items:flex-start;margin-top:12px;padding:12px;border-radius:var(--r-ctl);background:var(--surface-2);font-size:13.5px;line-height:1.5}
+.dlist{margin:12px 0 0;padding-top:12px;border-top:1px solid var(--line);line-height:1.6}
+.dcounts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.dcounts div{background:var(--surface-2);border-radius:var(--r-ctl);padding:12px 4px;text-align:center}
+.dcounts strong{display:block;font-size:20px;font-weight:800;line-height:1.3}
+.dcounts span{font-size:12.5px;color:var(--muted)}
+.dchk{list-style:none;margin:12px 0 0;padding:0}
+.dchk li{display:flex;gap:8px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line);font-size:13.5px;line-height:1.45}
+.dgauge{position:relative;height:8px;border-radius:var(--r-pill);background:rgba(255,255,255,.1);margin:36px 8px}
+.dgauge i{position:absolute}
+.dgauge .zone{top:0;bottom:0;right:0;border-radius:0 var(--r-pill) var(--r-pill) 0;background:rgba(99,230,168,.38)}
+.dgauge .lim{top:-5px;bottom:-5px;width:2px;margin-left:-1px;border-radius:var(--r-bar);background:var(--text)}
+.dgauge .me{top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;border:2px solid var(--surface);background:var(--ok)}
+.dgauge .me.care{background:var(--care)}.dgauge .me.far{background:var(--far)}
+.dgauge em{position:absolute;font-style:normal;font-size:12.5px;color:var(--muted);white-space:nowrap;transform:translateX(-50%)}
+.dgauge em.l{transform:none}.dgauge em.r{transform:translateX(-100%)}
+.dgauge em.top{top:-26px}.dgauge em.bot{top:16px;color:var(--text);font-weight:600}
+.card.kospi .kospi-close{font-size:26px;font-weight:800;letter-spacing:-.03em}
+.card.kospi .kospi-chart{display:block;width:100%;height:72px;margin:8px 0 4px;color:var(--info)}
+.kstats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.kstats .stat{min-width:0}.kstats .stat .s{font-size:12.5px;color:var(--muted);margin-top:4px}
+.card.kospi .kospi-how{margin:8px 0 0;padding-left:20px;line-height:1.6}
+.card.kospi .kospi-how li+li{margin-top:4px}
+#app.enter .dash-grid>.card{animation:fadeUp .4s ease backwards}
+#app.enter .dash-grid>.card:nth-child(2){animation-delay:.05s}#app.enter .dash-grid>.card:nth-child(3){animation-delay:.1s}#app.enter .dash-grid>.card:nth-child(4){animation-delay:.15s}#app.enter .dash-grid>.card:nth-child(5){animation-delay:.2s}#app.enter .dash-grid>.card:nth-child(n+6){animation-delay:.25s}
+#app.enter .dstack i{animation:segGrow .6s cubic-bezier(.2,.9,.25,1) backwards;animation-delay:.2s}
+@media(prefers-reduced-motion:reduce){#app.enter .dash-grid>.card,#app.enter .dstack i{animation:none}}
+@media(min-width:900px){#app:has(.dash-grid){max-width:1180px}.dash-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.dash-grid .span2{grid-column:span 2}.tabbar{justify-content:center}.tabbar button{flex:0 1 180px}}
+</style></head>
+<body><div id="app" aria-live="polite"></div><nav class="tabbar" id="nav" aria-label="주요 메뉴"></nav>
+<script>
+'use strict';
+/* ===================== 데이터 ===================== */
+const AS_OF='2025-09';          // 상품·보수·구성종목 기준일 (근사치). 분기마다 갱신
+const SERIES_YEARS=Array.from({length:20},(_,i)=>2005+i); // PF_SERIES 와 같은 길이
+const PF_CLASSES=[
+{id:'sp500',name:'S&P 500',group:'equity',fx:true,series:'sp500',alias:'미국 대형주 500 에스앤피 snp s&p voo spy 넓은 지수',desc:'미국 대표 기업 500곳. 가장 흔한 "넓은 지수"',etfs:[['KODEX 미국S&P500','kr',0.0099],['TIGER 미국S&P500','kr',0.07],['ACE 미국S&P500','kr',0.07],['RISE 미국S&P500','kr',0.01],['SOL 미국S&P500','kr',0.05],['KODEX 미국S&P500(H)','kr',0.0099,true,true],['VOO','us',0.03],['IVV','us',0.03],['SPLG','us',0.02],['SPY','us',0.0945]]},
+{id:'ndx',name:'나스닥 100',group:'equity',fx:true,series:'ndx',alias:'나스닥 기술주 qqq 빅테크 성장주',desc:'미국 기술 대형주 100곳. 오르내림이 S&P 500보다 큼',etfs:[['KODEX 미국나스닥100','kr',0.0099],['TIGER 미국나스닥100','kr',0.07],['ACE 미국나스닥100','kr',0.07],['RISE 미국나스닥100','kr',0.01],['QQQ','us',0.20],['QQQM','us',0.15]]},
+{id:'kospi200',name:'코스피 200',group:'equity',fx:false,series:'kospi',alias:'한국 국내 주식 코스피 kodex200 tiger200 삼성전자',desc:'한국 대표 기업 200곳. 환율 영향 없음',etfs:[['KODEX 200','kr',0.15],['TIGER 200','kr',0.05],['RISE 200','kr',0.017],['KIWOOM 200','kr',0.13,false,true],['EWY (iShares MSCI Korea)','us',0.59]]},
+{id:'world',name:'MSCI World (선진국 전체)',group:'equity',fx:true,series:'world',alias:'전세계 글로벌 선진국 월드 urth vt 전 세계 분산',desc:'선진국 23개국 주식. 미국 비중이 약 70%',etfs:[['KODEX MSCI선진국','kr',0.30,false,true],['URTH','us',0.24],['VT (전 세계·신흥국 포함)','us',0.07]]},
+{id:'em',name:'신흥국 주식',group:'equity',fx:true,series:null,alias:'이머징 신흥국 중국 인도 대만 vwo iemg',desc:'중국·인도·대만 등. 변동이 크고 환율 영향도 큼',etfs:[['PLUS 신흥국MSCI(합성 H)','kr',0.50,true,true],['VWO','us',0.08],['IEMG','us',0.09]]},
+{id:'divg',name:'미국 배당성장',group:'equity',fx:true,series:null,alias:'배당 다우존스 schd vig 배당성장 배당주',desc:'배당을 꾸준히 늘려온 미국 기업. 성장보다 배당 중심',etfs:[['SOL 미국배당다우존스','kr',0.01],['ACE 미국배당다우존스','kr',0.01],['TIGER 미국배당다우존스','kr',0.01],['SCHD','us',0.06],['VIG','us',0.05]]},
+{id:'ustlt',name:'미국 장기 국채',group:'bond',fx:true,series:'ustlt',alias:'채권 미국채 30년 장기채 tlt edv 국채',desc:'만기 20년 이상 미국 국채. 금리에 따라 주식만큼 크게 움직임',etfs:[['ACE 미국30년국채액티브(H)','kr',0.05,true],['TIGER 미국30년국채스트립액티브(합성 H)','kr',0.15,true,true],['TLT','us',0.15],['EDV','us',0.06]]},
+{id:'usagg',name:'미국 종합 채권',group:'bond',fx:true,series:null,alias:'채권 bnd agg 종합채권 회사채',desc:'미국 국채·회사채 전체. 장기채보다 변동이 작음',etfs:[['BND','us',0.03],['AGG','us',0.03]]},
+{id:'krcash',name:'국내 단기채·금리형',group:'cash',fx:false,series:'krcash',alias:'단기채 cd금리 kofr 파킹 현금 예금 대기자금 안전',desc:'예금과 비슷하게 움직이는 현금성 자산',etfs:[['KODEX CD금리액티브(합성)','kr',0.02],['TIGER KOFR금리액티브(합성)','kr',0.03],['KODEX 단기채권','kr',0.15],['TIGER 단기채권액티브','kr',0.07],['SGOV (미국 초단기 국채)','us',0.09]]},
+{id:'gold',name:'금',group:'gold',fx:true,series:'gold',alias:'골드 금현물 gld iau 금테크 안전자산',desc:'이자·배당 없음. 주식과 다르게 움직이는 편',etfs:[['ACE KRX금현물','kr',0.50],['TIGER 골드선물(H)','kr',0.39,true],['KODEX 골드선물(H)','kr',0.68,true],['GLD','us',0.40],['IAU','us',0.25],['GLDM','us',0.10]]},
+{id:'semis',name:'반도체',group:'theme',fx:true,series:'sox',alias:'반도체 필라델피아 sox soxx smh 엔비디아 테마',desc:'업종 집중. 좋을 때와 나쁠 때 차이가 매우 큼',etfs:[['TIGER 미국필라델피아반도체나스닥','kr',0.49],['KODEX 미국반도체','kr',0.09,false,true],['SOXX','us',0.35],['SMH','us',0.35]]},
+{id:'cc',name:'커버드콜·월배당',group:'income',fx:true,series:null,alias:'커버드콜 월배당 배당 분배금 인컴 프리미엄 타겟커버드콜 옵션 jepi jepq qyld xyld',desc:'분배금을 받는 대신 상승분 일부를 포기하는 구조',etfs:[['TIGER 미국배당다우존스타겟커버드콜2호','kr',0.39,false,true],['KODEX 미국배당커버드콜액티브','kr',0.19,false,true],['TIGER 미국나스닥100커버드콜(합성)','kr',0.37,false,true],['JEPI','us',0.35,false,true],['JEPQ','us',0.35,false,true],['QYLD','us',0.60,false,true],['XYLD','us',0.60,false,true]]},
+{id:'lev',name:'레버리지·인버스',group:'lev',fx:true,series:null,alias:'레버리지 인버스 2x 3x tqqq soxl 곱버스 단타',desc:'매일 수익률을 배로 따라감. 오래 들고 가는 적립과 맞지 않음',etfs:[['KODEX 레버리지','kr',0.64],['KODEX 200선물인버스2X','kr',0.64],['TQQQ','us',0.84],['SOXL','us',0.75]]}];
+const PF_SERIES={
+sp500:[4.9,15.8,5.5,-37.0,26.5,15.1,2.1,16.0,32.4,13.7,1.4,12.0,21.8,-4.4,31.5,18.4,28.7,-18.1,26.3,25.0],
+ndx:[1.9,7.3,19.2,-41.6,54.6,20.1,3.7,18.4,36.9,19.4,9.8,7.3,33.0,0.0,39.5,48.9,27.5,-32.4,55.1,25.9],
+kospi:[54.0,4.0,32.3,-40.7,49.7,21.9,-11.0,9.4,0.7,-4.8,2.4,3.3,21.8,-17.3,7.7,30.8,3.6,-24.9,18.7,-9.6],
+world:[9.5,20.1,9.0,-40.7,30.0,11.8,-5.5,15.8,26.7,4.9,-0.9,7.5,22.4,-8.7,27.7,15.9,21.8,-18.1,23.8,18.7],
+ustlt:[8.6,0.9,10.3,33.9,-21.5,9.3,34.0,2.6,-13.4,27.3,-1.8,1.2,9.2,-1.6,14.1,18.2,-4.6,-31.2,2.8,-8.1],
+krcash:[3.6,4.5,5.2,5.5,2.6,2.7,3.4,3.3,2.7,2.5,1.8,1.5,1.4,1.7,1.7,0.9,0.8,2.5,3.7,3.5],
+gold:[18.0,23.0,31.0,5.0,24.0,30.0,10.0,7.0,-28.0,-1.5,-10.0,8.5,13.0,-1.6,18.3,25.0,-3.6,-0.3,13.0,27.0],
+sox:[11.0,-8.6,-12.0,-48.0,70.0,14.0,-11.0,6.0,39.0,30.0,-3.0,37.0,38.0,-6.9,60.0,51.0,41.0,-35.8,65.0,19.0]};
+
+const HOLD={
+sp500:[['엔비디아',7.5],['마이크로소프트',6.5],['애플',6.0],['아마존',3.9],['메타',2.9],['브로드컴',2.5],['알파벳 A',2.3],['알파벳 C',1.9],['테슬라',1.8],['버크셔 해서웨이',1.6]],
+ndx:[['엔비디아',9.5],['마이크로소프트',8.5],['애플',7.8],['아마존',5.5],['브로드컴',5.0],['메타',3.7],['테슬라',3.3],['알파벳 A',2.8],['알파벳 C',2.7],['넷플릭스',2.3]],
+kospi200:[['삼성전자',28.0],['SK하이닉스',14.0],['현대차',3.2],['두산에너빌리티',2.3],['KB금융',2.3],['셀트리온',2.0],['기아',2.0],['NAVER',1.9],['한화에어로스페이스',1.8],['신한지주',1.6]],
+world:[['엔비디아',5.3],['마이크로소프트',4.6],['애플',4.2],['아마존',2.7],['메타',2.0],['브로드컴',1.7],['알파벳 A',1.6],['알파벳 C',1.3],['테슬라',1.3],['JP모건',1.1]],
+em:[['TSMC',10.0],['텐센트',5.0],['알리바바',3.0],['삼성전자',3.0],['샤오미',1.5],['HDFC은행',1.1],['메이투안',1.0],['릴라이언스',1.0],['핀둬둬',0.9],['인포시스',0.7]],
+divg:[['셰브론',4.3],['애브비',4.2],['코카콜라',4.1],['암젠',4.1],['시스코',4.0],['알트리아',4.0],['홈디포',3.9],['버라이즌',3.9],['텍사스 인스트루먼트',3.9],['블랙록',3.8]],
+semis:[['엔비디아',9.0],['브로드컴',8.5],['AMD',7.5],['TSMC',6.5],['퀄컴',5.5],['인텔',5.0],['ASML',4.5],['램리서치',4.5],['마이크론',4.5],['KLA',4.0]],
+ustlt:null,usagg:null,krcash:null,gold:null,lev:null,cc:null};
+const HOLD_NOTE={ustlt:'기업이 아니라 만기 20년 이상 미국 국채 약 40종을 담아요. 금리가 1%p 오르면 가격이 15~20% 내릴 수 있어요.',usagg:'미국 국채 약 45%, 주택담보채권 약 26%, 회사채 약 24%. 만기가 섞여 있어 장기채보다 덜 흔들려요.',krcash:'하루짜리 CD·KOFR 금리나 1년 안 국고채를 담아요. 거의 예금처럼 움직여요.',gold:'금 현물 또는 금 선물 100%. 기업이 없으니 배당·이자가 없어요.',lev:'기업을 직접 담지 않고 선물·스왑으로 기초지수 하루 수익률의 2~3배를 따라가요. 오르락내리락하면 원금이 녹는 구조예요.',cc:'주식(또는 지수)을 들고 있으면서 콜옵션을 팔아, 그 대가를 분배금으로 줘요. 지수가 크게 오를 때는 상승분 일부를 포기하고, 떨어질 때는 대부분 그대로 떨어져요.'};
+const WORLD_REGION=[['미국',72],['일본',6],['영국',4],['캐나다',3],['프랑스',3],['기타',12]];
+
+/* 성향 기준값 — 앱의 '주장'이므로 자료에 맞춰 조정 */
+const PROFILES={
+ cautious:{name:'신중형',equity:30,one:'잃지 않는 게 먼저. 주식은 30%부터, 나머지는 채권·현금성으로.',
+   defaults:{krcash:40,ustlt:20,sp500:20,world:10,gold:10},
+   fit:{1:['ok','성향에 맞아요'],2:['ok','성향에 맞아요'],3:['care','균형형부터. 10% 이내로'],4:['far','신중형과 거리가 멀어요'],5:['far','맞지 않아요'],6:['care','모으는 시기엔 조금만']},
+   max:{3:10,4:0,5:0,6:10,gold:15},worstYear:-15,oneCo:5},
+ balanced:{name:'균형형',equity:50,one:'오르내림을 어느 정도 받아들이고 절반을 주식에.',
+   defaults:{sp500:30,world:10,kospi200:10,ustlt:20,krcash:20,gold:10},
+   fit:{1:['ok','성향에 맞아요'],2:['ok','성향에 맞아요'],3:['ok','30% 이내면 맞아요'],4:['care','10% 이내로만'],5:['far','맞지 않아요'],6:['care','모으는 시기엔 조금만']},
+   max:{3:30,4:10,5:0,6:15,gold:15},worstYear:-25,oneCo:7},
+ active:{name:'적극형',equity:70,one:'큰 하락도 견딜 수 있다면 주식 70%. 그래도 테마는 조금만.',
+   defaults:{sp500:35,ndx:15,world:10,kospi200:10,ustlt:15,krcash:10,gold:5},
+   fit:{1:['ok','성향에 맞아요'],2:['ok','성향에 맞아요'],3:['ok','성향에 맞아요'],4:['care','15% 이내로만'],5:['far','적극형이어도 맞지 않아요'],6:['care','모으는 시기엔 조금만']},
+   max:{3:100,4:15,5:0,6:20,gold:15},worstYear:-35,oneCo:10},
+};
+const TIER={krcash:1,usagg:1,sp500:2,world:2,kospi200:2,divg:2,ustlt:2,gold:2,ndx:3,em:4,semis:4,lev:5,cc:6};
+const GROUP_LABEL={equity:'주식',bond:'채권',cash:'현금성',gold:'금',theme:'테마',lev:'레버리지',income:'분배금형',etc:'기타'};
+const QUIZ=[
+ {q:'모아 둔 1,000만원이 한 달 만에 800만원이 됐어요. 나는…',a:[['더 떨어질까 무서워서 판다',0],['불안하지만 그대로 둔다',1],['오히려 더 산다',2]]},
+ {q:'이 돈을 쓰기 전까지 남은 시간은?',a:[['3년 안',0],['3~7년',1],['7년 이상, 당장 쓸 일 없음',2]]},
+ {q:'수입이 끊겨도 버틸 수 있는 비상금은?',a:[['거의 없다',0],['1~3개월치',1],['3개월치 이상',2]]},
+ {q:'1년 뒤 결과 두 가지 중 어느 쪽이 편한가요?',a:[['확실히 +3%',0],['반반으로 -5% 또는 +12%',1],['반반으로 -20% 또는 +35%',2]]},
+ {q:'투자 뉴스를 보면…',a:[['불안해서 자꾸 확인한다',0],['가끔 본다',1],['거의 신경 안 쓴다',2]]},
+ {q:'지금까지 투자 경험은?',a:[['예금·적금만',0],['펀드·ETF 조금',1],['주식 직접 매매 2년 이상',2]]},
+];
+const classify=ans=>{const s=ans.reduce((a,b)=>a+b,0);return s<=4?'cautious':s<=8?'balanced':'active'};
+
+/* ===================== 저장 ===================== */
+const KEY='invest-compass:v7';
+const fresh=()=>({version:7,profile:null,holdings:[],monthly:300000});
+let state=load();
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.version===7)return d}catch{}return fresh()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));return true}catch{toast('저장하지 못했어요. 브라우저 저장 공간을 확인해 주세요.');return false}}
+let toastTimer;function toast(m){document.querySelector('.toast')?.remove();const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.remove(),2200)}
+
+/* ===================== 계산 ===================== */
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const won=n=>Math.round(n).toLocaleString('ko-KR')+'원';
+const manwon=n=>{const m=Math.round(n/10000);return m>=10000?(m/10000).toFixed(1).replace(/\.0$/,'')+'억원':m.toLocaleString('ko-KR')+'만원'};
+const pct=(n,d=1)=>(Math.round(n*10**d)/10**d).toLocaleString('ko-KR',{maximumFractionDigits:d})+'%';
+const cls=id=>PF_CLASSES.find(c=>c.id===id)||krCls(id);
+const goOf=c=>c.custom?'kr/'+c.kr.code:'etf/'+c.id;
+const profile=()=>state.profile?PROFILES[state.profile.type]:null;
+function fit(c){const p=profile();if(!p)return null;if(c.custom){const k=krFit(c.kr);return k?{lv:k.lv,text:k.text,tier:4}:null}const t=TIER[c.id];const [lv,text]=p.fit[t];return{lv,text,tier:t}}
+function seriesStats(key){const s=PF_SERIES[key];if(!s)return null;let g=1;s.forEach(r=>g*=1+r/100);const cagr=(g**(1/s.length)-1)*100;const worstI=s.indexOf(Math.min(...s));
+ let peak=1,v=1,mdd=0;s.forEach(r=>{v*=1+r/100;peak=Math.max(peak,v);mdd=Math.min(mdd,(v/peak-1)*100)});
+ return{cagr,worst:s[worstI],worstYear:SERIES_YEARS[worstI],neg:s.filter(r=>r<0).length,mdd,n:s.length}}
+function holdingsTotal(){return state.holdings.reduce((a,h)=>a+(Number(h.weight)||0),0)}
+function groupShare(){const g={};state.holdings.forEach(h=>{const c=cls(h.cls);const k=c.group==='theme'||c.group==='lev'||c.group==='income'?'equity':c.group;g[k]=(g[k]||0)+Number(h.weight||0);g['_'+c.group]=(g['_'+c.group]||0)+Number(h.weight||0)});return g}
+function etfInfo(h){const c=cls(h.cls);let e=c.etfs.find(x=>x[0]===h.etf);if(!e&&h.etf&&!c.custom){const k=krIndex().find(x=>x.name===h.etf);if(k)return{name:k.name,mkt:'kr',fee:null,hedged:k.name.includes('(H)')||k.name.includes(' H)'),unsure:true}}e=e||c.etfs[0];return{name:e[0],mkt:e[1],fee:e[2],hedged:!!e[3],unsure:!!e[4]}}
+/* ===== v7.1 추가: 같은 해 다른 자산 · 분배율 안내 · 점검일 · 물가 기준선 ===== */
+const SERIES_NAME={sp500:'S&P 500',ndx:'나스닥 100',kospi:'코스피 200',world:'선진국 전체',ustlt:'미국 장기채',krcash:'현금성',gold:'금',sox:'반도체'};
+const sgn=n=>(n>0?'+':'')+pct(n,1);
+function sameYear(key,i){const rows=Object.keys(PF_SERIES).filter(k=>k!==key).map(k=>[SERIES_NAME[k]||k,PF_SERIES[k][i]]).sort((a,b)=>b[1]-a[1]);const y=SERIES_YEARS[i];
+ const note=y===2008?'금은 연말엔 플러스였지만, 연중에는 고점에서 20% 넘게 빠졌어요.':(PF_SERIES.sp500[i]<0&&PF_SERIES.ustlt[i]<0)?'주식과 장기채가 같이 떨어진 해예요. 나눠 담아도 덜 막히는 해가 있어요.':'';
+ return `<div class="same"><div class="small muted">같은 해 다른 자산 (연말 기준)</div><div class="same-grid">${rows.map(([n,r])=>`<span class="${r<0?'neg':'pos'}">${esc(n)} <b class="num">${sgn(r)}</b></span>`).join('')}</div>${note?`<p class="small muted" style="margin:8px 0 0">※ ${note}</p>`:''}</div>`}
+const YIELD_NOTE={cc:'<h3>분배율이 높아 보일 때 확인할 것</h3><ol class="small"><li>가격이 떨어져서 분배율이 높아 보이는 건 아닌지 (분배율 = 분배금 ÷ 가격)</li><li>분배금이 번 돈이 아니라 원금에서 나오는 건 아닌지</li><li>분배금을 받아 쓰면 복리로 불어나지 않아요. 모으는 시기라면 다시 넣어야 해요.</li></ol>',divg:'<p class="small muted">분배율이 높아 보이면 가격이 떨어져서 그런 건 아닌지 먼저 확인하세요. 분배율 = 분배금 ÷ 가격이에요.</p>'};
+const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+const validDay=v=>/^\d{4}-\d{2}-\d{2}$/.test(String(v||''));
+const nextCheck=()=>{if(!validDay(state.checkedAt))return null;const [y,m]=state.checkedAt.split('-');return `${+y+1}-${m}`};
+const checkLine=()=>validDay(state.checkedAt)?`마지막 점검 ${state.checkedAt.slice(0,7)} · 다음 점검 ${nextCheck()}`:'아직 점검 기록이 없어요';
+const LV_ICON={ok:'✓',care:'!',far:'✕',note:'i'},LV_WORD={ok:'맞음',care:'주의',far:'경고',note:'참고'};
+const checkRow=()=>`<div class="check note" style="align-items:center"><span class="ic" aria-hidden="true">i</span><div class="grow"><strong>${checkLine()}</strong><span>1년에 한 번, 또는 비중이 5%p 이상 벌어지면 다시 맞춰요.</span></div><button class="sm" data-act="mark-checked">${validDay(state.checkedAt)?'오늘 다시 점검함':'점검함으로 기록'}</button></div>`;
+const INFL=2.5; // 물가 가정(연 %)
+function inflLine(sim){let x=0;for(let j=1;j<=sim.years;j++)x+=state.monthly*12*(1+INFL/100)**j;return `<p class="small" style="margin:12px 0 0">물가가 연 ${INFL}% 올랐다고 가정하면, 넣은 돈이 제자리만 지켜도 <strong class="num">약 ${manwon(x)}</strong>이어야 해요. 위 금액은 그보다 ${sim.v>=x?'많아요':'적어요'}.</p>`}
+/* ===== v7.8: 보유 금액 입력 · 홈 구성 카드 ===== */
+const digits=s=>String(s??'').split('.')[0].replace(/\D/g,''),commas=n=>{n=Math.round(Number(n));return Number.isFinite(n)&&n>0?String(n).replace(/\B(?=(\d{3})+(?!\d))/g,','):''};
+function moneyFmt(el){const raw=el.value,pos=el.selectionStart==null?raw.length:el.selectionStart;let d=digits(raw),before=digits(raw.slice(0,pos)).length;
+ const lead=(d.match(/^0+(?=\d)/)||[''])[0].length;d=d.slice(lead).slice(0,12);before=Math.min(Math.max(0,before-lead),d.length);
+ const f=d.replace(/\B(?=(\d{3})+(?!\d))/g,',');if(f===raw)return;el.value=f;let p=0,c=0;while(p<f.length&&c<before){if(f[p]>='0'&&f[p]<='9')c++;p++}try{el.setSelectionRange(p,p)}catch{}}
+const isMoney=el=>!!(el&&el.classList&&el.classList.contains('money'));
+document.addEventListener('input',e=>{if(isMoney(e.target)&&!e.isComposing)moneyFmt(e.target)});
+document.addEventListener('compositionend',e=>{if(isMoney(e.target))moneyFmt(e.target)});
+const AMT_MAX=1e11,r1=v=>Math.round(v*10)/10,dateOk=d=>typeof d==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(d);
+const isEqH=h=>['equity','theme','lev','income'].includes(cls(h.cls).group);
+const amtFmt=n=>{n=Math.round(Number(n)||0);if(n>=1e8)return manwon(n);return n>=10000?(Math.round(n/1000)/10).toLocaleString('ko-KR')+'만원':n.toLocaleString('ko-KR')+'원'};
+const amtMap=()=>state.amts&&typeof state.amts==='object'&&!Array.isArray(state.amts)?state.amts:{};
+const amtOf=h=>{const v=Number(amtMap()[h.cls]);return Number.isFinite(v)&&v>0?Math.min(Math.round(v),AMT_MAX):0};
+const amtTotal=()=>state.holdings.reduce((a,h)=>a+amtOf(h),0);
+const actualW=h=>{const t=amtTotal();return t?amtOf(h)/t*100:0};
+const pctMode=()=>state.mode!=='amt';
+function driftCheck(){const t=amtTotal();if(!t||holdingsTotal()!==100)return null;
+ if(planFollows())return{lv:'note',t:'계획 비중은 보유 금액 비율을 그대로 쓰고 있어요',s:'목표 비중을 따로 정하려면 "계획 비중(%)"에서 숫자를 바꾸세요. 그때부터 계획과 실제가 얼마나 벌어졌는지 보여드려요.'};
+ const big=state.holdings.map(h=>({h,plan:Number(h.weight)||0,act:amtOf(h)/t*100})).filter(x=>Math.abs(x.act-x.plan)>=5).sort((a,b)=>Math.abs(b.act-b.plan)-Math.abs(a.act-a.plan));
+ if(!big.length)return {lv:'ok',t:'계획과 실제 보유가 5%p 안에서 맞아요',s:`보유 합계 ${amtFmt(t)} 기준${dateOk(state.amtAt)?` · ${state.amtAt} 입력`:''}`};
+ return {lv:'care',t:`계획과 실제가 5%p 이상 벌어진 지수 ${big.length}개`,s:big.slice(0,3).map(x=>`${cls(x.h.cls).name} 계획 ${x.plan}% → 실제 ${r1(x.act)}%`).join(' · ')+'. 새로 넣는 돈을 모자란 쪽에 먼저 넣으면 팔지 않고 맞출 수 있어요.'}}
+function amtPlan(){const t=amtTotal();if(!t)return null;const raw=state.holdings.map(h=>amtOf(h)/t*100),fl=raw.map(Math.floor),rest=100-fl.reduce((a,b)=>a+b,0);raw.map((v,i)=>[v-fl[i],i]).sort((a,b)=>b[0]-a[0]).slice(0,rest).forEach(([,i])=>fl[i]++);return fl}
+const planFollows=()=>{if(holdingsTotal()===0)return true;const f=amtPlan();return!!f&&state.holdings.every((h,i)=>(Number(h.weight)||0)===f[i])};
+function amtToPlan(){const t=amtTotal();if(!t)return false;const raw=state.holdings.map(h=>amtOf(h)/t*100),fl=raw.map(Math.floor),rest=100-fl.reduce((a,b)=>a+b,0);
+ raw.map((v,i)=>[v-fl[i],i]).sort((a,b)=>b[0]-a[0]).slice(0,rest).forEach(([,i])=>fl[i]++);state.holdings.forEach((h,i)=>{h.weight=fl[i]});return true}
+function mixBar(wOf,p){const H=state.holdings,bar=[...H].sort((a,b)=>isEqH(b)-isEqH(a)),sum=H.reduce((a,h)=>a+wOf(h),0),eqW=H.filter(isEqH).reduce((a,h)=>a+wOf(h),0);
+ return `<div class="totalwrap"><div class="total" role="group" aria-label="비중 합계 ${r1(sum)}%, 주식형 ${r1(eqW)}%. 막대를 누르면 지수별 비중이 보여요">${bar.map((h,k)=>{const w=r1(wOf(h)),n=esc(cls(h.cls).name);return `<button class="seg ${isEqH(h)?'eq':'etc'}" data-seg="${k}" data-label="${n} · ${w}% · ${isEqH(h)?'주식형':'그 외'}" aria-pressed="false" aria-label="${n} ${w}%" style="width:${w}%;--i:${k}"></button>`}).join('')}</div>${p?`<span class="ref" style="left:${p.equity}%"></span>`:''}</div><div class="keys num"><span><i class="eq"></i>주식형 ${r1(eqW)}%</span><span><i class="etc"></i>그 외 ${r1(sum-eqW)}%</span>${p?`<span><i class="rf"></i>${p.name} 기준 ${p.equity}%</span>`:''}</div><p class="segbox num" id="segbox" aria-live="polite">막대를 누르면 지수 이름과 비중이 보여요.</p>`}
+/* ===== v7.8 추가: 보유 금액 → 비중 자동 계산 · 내 구성과 성향 기준 구성 비교 ===== */
+const amtCount=()=>state.holdings.filter(h=>amtOf(h)>0).length;
+const allAmt=()=>state.holdings.length>0&&amtCount()===state.holdings.length;
+const autoOn=()=>state.auto!==false;
+function autoSync(){if(!autoOn()||!allAmt())return;const f=amtPlan();if(f&&state.holdings.some((h,i)=>(Number(h.weight)||0)!==f[i])){amtToPlan();save()}}
+function autoLine(){const n=state.holdings.length,k=amtCount();
+ if(!autoOn())return `<div class="autoline"><span>목표 비중을 직접 정한 상태예요. 금액을 넣어도 비중은 그대로 두고, 계획과 실제의 차이만 보여줘요.</span>${k?'<button class="sm" data-act="auto-on">보유 금액으로 자동 계산</button>':''}</div>`;
+ if(k===n)return `<div class="autoline ok"><span>보유 금액 ${n}개를 모두 넣어서 비중을 자동으로 채웠어요. 비중 숫자를 직접 바꾸면 그때부터 목표 비중으로 따로 관리해요.</span></div>`;
+ return `<div class="autoline"><span>보유 금액 ${n}개 중 ${k}개 입력 · 나머지를 넣으면 비중이 자동으로 채워져요. 갖고 있지 않은 종목은 '빼기'를 누르세요.</span></div>`}
+const CMP_SPAN=10;
+const baseHoldings=p=>Object.entries(p.defaults).map(([id,w])=>{const c=cls(id),kr=c.etfs.filter(x=>x[1]==='kr'&&!x[3]).sort((a,b)=>a[2]-b[2])[0]||c.etfs[0];return{cls:id,etf:kr[0],weight:w}});
+function mixYears(H){const all=H.filter(h=>cls(h.cls)&&Number(h.weight)>0),S=all.filter(h=>PF_SERIES[cls(h.cls).series]);
+ const allW=all.reduce((a,h)=>a+Number(h.weight),0),tot=S.reduce((a,h)=>a+Number(h.weight),0);if(!tot)return null;
+ return{ys:SERIES_YEARS.map((_,i)=>S.reduce((a,h)=>a+PF_SERIES[cls(h.cls).series][i]*Number(h.weight),0)/tot),
+  fee:S.reduce((a,h)=>a+(Number(etfInfo(h).fee)||0)*Number(h.weight),0)/tot,cover:tot/allW*100,excluded:all.filter(h=>!S.includes(h)).map(h=>cls(h.cls).name)}}
+function mixStats(M,monthly){const ys=M.ys,wi=ys.indexOf(Math.min(...ys));let v=1,peak=1,mdd=0;ys.forEach(r=>{v*=1+r/100;peak=Math.max(peak,v);mdd=Math.min(mdd,(v/peak-1)*100)});
+ const c=monthly*12,paid=c*CMP_SPAN,ends=[];for(let s=0;s+CMP_SPAN<=ys.length;s++){let a=0;for(let i=s;i<s+CMP_SPAN;i++)a=(a+c)*(1+(ys[i]-M.fee)/100);ends.push({y:SERIES_YEARS[s],v:a})}
+ const so=[...ends].sort((a,b)=>a.v-b.v),n=so.length,med=n%2?so[(n-1)/2].v:(so[n/2-1].v+so[n/2].v)/2;
+ return{worst:ys[wi],worstYear:SERIES_YEARS[wi],neg:ys.filter(r=>r<0).length,years:ys.length,mdd,lo:so[0],hi:so[n-1],med,paid,n,under:ends.filter(e=>e.v<paid).length}}
+function compareCard(p){const m=state.monthly,paid=m*12*CMP_SPAN,mine=mixYears(state.holdings),A=mine?mixStats(mine,m):null,bh=p?baseHoldings(p):null,base=bh?mixYears(bh):null,B=base?mixStats(base,m):null;
+ const same=!!bh&&state.holdings.length===bh.length&&bh.every(b=>state.holdings.some(h=>h.cls===b.cls&&Number(h.weight)===b.weight));
+ const top=Math.max(paid,A?A.hi.v:0,B?B.hi.v:0)*1.04,pos=v=>Math.max(0,Math.min(100,v/top*100));
+ const short=n=>manwon(n).replace(/원$/,'');
+ const cols=p?[['지금 내 구성',A],[p.name+' 기준 구성',B]]:[['지금 내 구성',A]];
+ const none='<div class="stat"><div class="s">비중을 넣거나, 연도별 데이터가 있는 지수를 담으면 계산돼요.</div></div>';
+ const row=(lab,f)=>`<div class="lab">${lab}</div>${cols.map(([,S])=>S?f(S):none).join('')}`;
+ let infl=0;for(let j=1;j<=CMP_SPAN;j++)infl+=m*12*(1+INFL/100)**j;
+ const dW=A&&B?A.worst-B.worst:0,dM=A&&B?A.med-B.med:0;
+ const verdict=A&&B&&!same?`<p class="small">가장 나빴던 해에 내 구성은 기준 구성보다 ${Math.abs(dW)<0.5?'비슷하게':dW<0?pct(-dW,1)+'p 더 깊게':pct(dW,1)+'p 덜'} 떨어졌고, ${CMP_SPAN}년 뒤 중간값은 ${Math.abs(dM)<paid*0.02?'비슷했어요':dM>0?manwon(dM)+' 많았어요':manwon(-dM)+' 적었어요'}. 더 많이 불어난 쪽의 숫자는 그 하락을 팔지 않고 지나갔을 때만 해당해요.</p>`:'';
+ return `<h2>${p?`내 구성과 ${p.name} 기준 구성 비교`:'이 구성으로 매달 넣었다면'}</h2><div class="card"><label><span class="small muted">매달 넣는 돈(원)</span><input id="monthly" class="money" type="text" inputmode="numeric" autocomplete="off" value="${commas(m)}"></label>
+ <div class="cmp${p?'':' one'}">${cols.map(([t])=>`<div class="hd">${esc(t)}</div>`).join('')}
+ ${row('가장 나빴던 해',S=>`<div class="stat"><div class="v num ${S.worst<0?'down':''}">${pct(S.worst,1)}</div><div class="s num">${S.worstYear}년 · 1,000만원이 ${manwon(1e7*(1+S.worst/100))}</div></div>`)}
+ ${row('마이너스였던 해',S=>`<div class="stat"><div class="v num">${S.years}년 중 ${S.neg}번</div><div class="s num">연말 기준 최대 하락 ${pct(S.mdd,1)}</div></div>`)}
+ ${row(`매달 ${amtFmt(m)}씩 ${CMP_SPAN}년 뒤 · 넣은 돈 ${manwon(paid)} (보수 반영)`,S=>`<div class="stat"><div class="l">중간값</div><div class="v num">${manwon(S.med)}</div><div class="s num">${short(S.lo.v)} ~ ${manwon(S.hi.v)}</div><div class="rng" aria-hidden="true"><i class="span" style="left:${pos(S.lo.v).toFixed(1)}%;width:${(pos(S.hi.v)-pos(S.lo.v)).toFixed(1)}%"></i><i class="mid" style="left:${pos(S.med).toFixed(1)}%"></i><i class="paid" style="left:${pos(paid).toFixed(1)}%"></i></div><div class="s num">${S.lo.y}년 시작이 가장 적었고 ${S.hi.y}년 시작이 가장 많았어요.${S.under?` 넣은 돈보다 적게 끝난 경우 ${S.n}번 중 ${S.under}번.`:''}</div></div>`)}</div>
+ ${verdict}${same?'<p class="small muted">지금 구성이 기준 구성과 같아요. 비중을 바꾸거나 다른 지수를 담으면 차이가 보여요.</p>':''}
+ ${mine&&mine.cover<99.5?`<p class="small care-text">내 구성 중 ${pct(mine.cover,0)}만 계산에 들어갔어요. 연도별 데이터가 없는 ${esc(mine.excluded.join(', '))}은(는) 빠졌어요. 빠진 상품이 테마·업종형이면 실제 하락은 이보다 깊었을 수 있어요.</p>`:''}
+ <p class="small muted">막대는 시작한 해(${SERIES_YEARS[0]}~${SERIES_YEARS[SERIES_YEARS.length-CMP_SPAN]}년, ${SERIES_YEARS.length-CMP_SPAN+1}가지)에 따라 달라진 ${CMP_SPAN}년 뒤 금액의 범위예요. 흰 선은 중간값, 노란 점선은 넣은 돈이에요. 물가가 연 ${INFL}%씩 오르면, 넣은 돈이 제 가치를 지키려면 약 ${manwon(infl)}이어야 해요.</p>
+ <p class="small">이 ${SERIES_YEARS.length}년(${SERIES_YEARS[0]}~${SERIES_YEARS[SERIES_YEARS.length-1]})은 미국 주식이 특히 많이 오른 기간이라, 주식 비중이 높을수록 금액이 크게 나와요. 2000년대 초반처럼 미국 주식이 10년 가까이 제자리였던 시기는 이 데이터에 없어요. 금액보다 가장 나빴던 해를 먼저 보세요.</p>
+ <p class="small muted">과거 ${SERIES_YEARS.length}년 지수의 연간 근사치로 계산했고 미래 수익이 아니에요. 시작 시점이 ${SERIES_YEARS.length-CMP_SPAN+1}가지뿐이고 기간이 서로 겹쳐요. 연중 하락은 더 깊었고, 환율·환헤지 비용·세금은 넣지 않았어요.${p?'':' <button class="link" data-go="quiz">진단</button>을 하면 성향 기준 구성과 나란히 비교해요.'}</p></div>`}
+function weightRows(){const H=state.holdings,pm=pctMode(),t=amtTotal();
+ return `<ul class="list weights" style="margin-top:8px">${H.map((h,i)=>{const c=cls(h.cls),e=etfInfo(h),w=Number(h.weight)||0,a=amtOf(h),act=t?a/t*100:null,d=act==null?null:act-w;
+  const top=pm?`<input type="number" inputmode="numeric" min="0" max="100" value="${h.weight}" data-w="${i}" aria-label="${esc(c.name)} 비중"><span class="muted">%</span>`:`<input class="amt money" type="text" inputmode="numeric" autocomplete="off" value="${commas(a)}" placeholder="0" data-amt="${i}" aria-label="${esc(c.name)} 보유 금액(원)"><span class="muted">원</span>`;
+  const sub=pm?`<div class="sub small muted num">이번 달 ${amtFmt(state.monthly*w/100)}${act!=null?` · 실제 ${r1(act)}%`:''}</div>`:autoOn()?`<div class="sub small muted num">${a?`비중 ${r1(act)}%${allAmt()?'':' · 입력한 금액 기준'}`:'금액을 넣으면 비중이 계산돼요'}</div>`:`<div class="sub small num ${d!=null&&Math.abs(d)>=5?'care-text':'muted'}">계획 ${w}%${act!=null?` → 실제 ${r1(act)}% (${d>=0?'+':''}${r1(d)}%p)`:''}</div>`;
+  return `<li class="wrow"><div class="row nowrap"><button class="link name grow" data-go="${goOf(c)}">${esc(c.name)}</button>${top}</div>${sub}<div class="row between nowrap"><span class="small muted grow">${c.custom?esc(KRX_TAB[c.kr.tab]||'국내 상장 ETF'):esc(e.name)} · ${e.fee==null?'보수 미확인':e.fee+'%'} · ${e.mkt==='us'?'미국':'국내'}${e.hedged?' · 환헤지':''} ${badge(c)}</span><button class="sm ghost" data-rm="${i}" aria-label="${esc(c.name)} 빼기">빼기</button></div></li>`}).join('')}</ul>`}
+function homeCard(p,ck,warn,tot){const H=state.holdings,t=amtTotal(),eqG=k=>['equity','theme','lev','income'].includes(cls(k).group);
+ if(!H.length){const D=Object.entries(p.defaults).sort((a,b)=>eqG(b[0])-eqG(a[0]));
+  return `<div class="row between pfhead"><h2>내 구성</h2></div><div class="card"><p class="small muted">아직 담은 지수가 없어요. ${p.name} 기본 구성은 이렇게 생겼어요.</p><div class="ghostmix" aria-hidden="true"><div class="total">${D.map(([k,v],i)=>`<i class="seg ${eqG(k)?'eq':'etc'}" style="width:${v}%;--i:${i}"></i>`).join('')}</div></div><ul class="pflist ghost-list">${[...D].sort((x,y)=>y[1]-x[1]).map(([k,v])=>`<li class="pfrow"><span class="grow">${esc(cls(k).name)}</span><span class="num wcol">${v}%</span><span class="num muted amtcol">${amtFmt(state.monthly*v/100)}</span></li>`).join('')}</ul><div class="row" style="margin-top:12px"><button class="primary grow" data-act="load-defaults">이 구성으로 시작하기</button><button class="grow" data-go="search">직접 찾기</button></div><p class="small muted">출발점일 뿐이고 담은 뒤에 바꿀 수 있어요. 금액은 매달 ${amtFmt(state.monthly)} 기준이에요.</p></div>`}
+ const rows=H.map(h=>({h,w:Number(h.weight)||0})).sort((a,b)=>b.w-a.w),show=rows.slice(0,5),more=rows.length-show.length,worst=ck.find(c=>/나빴던 해/.test(c.t)),hasFar=ck.some(c=>c.lv==='far');
+ return `<div class="row between pfhead"><h2>내 구성</h2><button class="link small" data-go="portfolio">수정</button></div><div class="card">${mixBar(h=>Number(h.weight)||0,p)}${tot!==100?`<p class="small care-text num">합계 ${tot}% · ${tot<100?`${100-tot}% 남았어요`:`${tot-100}% 넘었어요`}</p>`:''}
+ <ul class="pflist"><li class="pfrow head small muted"><span class="grow">지수</span><span class="wcol">계획</span>${t?'<span class="actcol">실제</span>':''}<span class="amtcol">이번 달</span></li>${show.map(({h,w})=>{const c=cls(h.cls),act=t?amtOf(h)/t*100:0;return `<li><button class="pfrow" data-go="${goOf(c)}"><span class="grow">${esc(c.name)}</span><span class="num wcol">${w}%</span>${t?`<span class="num actcol ${Math.abs(act-w)>=5?'care-text':'muted'}">${r1(act)}%</span>`:''}<span class="num muted amtcol">${amtFmt(state.monthly*w/100)}</span></button></li>`}).join('')}${more>0?`<li class="pfrow small muted">외 ${more}개</li>`:''}</ul>
+ <div class="pffoot small num">${worst?`<div class="${worst.lv==='far'?'far-text':worst.lv==='care'?'care-text':''}">${esc(worst.t)}</div>`:''}<div class="${hasFar?'far-text':warn?'care-text':'muted'}">확인할 것 ${warn}건 · ${checkLine()}</div>${t?`<div class="muted">보유 합계 ${amtFmt(t)}${dateOk(state.amtAt)?` · ${state.amtAt} 입력`:''}</div>`:`<div class="muted">매달 ${amtFmt(state.monthly)} 기준 · <button class="link" data-act="mode-amt">보유 금액 입력하기</button></div>`}</div></div>`}
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('button');if(!b)return;
+ if(b.dataset.mode){state.mode=b.dataset.mode==='amt'?'amt':'pct';save();render();return}
+ if(b.dataset.act==='mode-amt'){state.mode='amt';save();go('portfolio');return}
+ if(b.dataset.act==='auto-on'){if(confirm('직접 정한 목표 비중을 지우고, 보유 금액 비율로 자동 계산할까요?')){state.auto=true;amtToPlan();save();render()}return}});
+document.addEventListener('change',e=>{const el=e.target;if(!el||!el.dataset||el.dataset.amt==null)return;const h=state.holdings[+el.dataset.amt];if(!h)return;const raw=digits(el.value),v=Number(raw),A={...amtMap()},fo=planFollows(),was=allAmt();
+ if(raw===''||v===0)delete A[h.cls];else if(Number.isFinite(v)&&v>0&&v<=AMT_MAX)A[h.cls]=Math.round(v);else{render();return}
+ state.amts=A;state.amtAt=today();if(autoOn()&&(fo||allAmt()))amtToPlan();save();render();if(autoOn()&&allAmt()&&!was)toast('금액을 모두 넣어서 비중을 자동으로 채웠어요')});
+
+function checks(){const p=profile(),H=state.holdings,out=[];if(!H.length)return out;if(holdingsTotal()===0)return[{lv:'note',t:'아직 비중이 없어요',s:'계획 비중(%)을 넣거나 보유 금액(원)을 넣으면 점검이 시작돼요.'}];const tot=holdingsTotal()||1,g=groupShare();
+ const eq=(g.equity||0)/tot*100;
+ if(p){const diff=eq-p.equity;if(Math.abs(diff)<=10)out.push({lv:'ok',t:`주식 비중 ${pct(eq,0)} · ${p.name} 기준 ${p.equity}%와 비슷해요`,s:'성향과 구성이 맞아요.'});
+  else if(diff>0)out.push({lv:diff>25?'far':'care',t:`주식 비중 ${pct(eq,0)} · ${p.name} 기준(${p.equity}%)보다 ${pct(diff,0)} 높아요`,s:'진단에서 답한 것보다 공격적인 구성이에요. 큰 하락 때 그대로 둘 수 있는지 다시 생각해 보세요.'});
+  else out.push({lv:'care',t:`주식 비중 ${pct(eq,0)} · ${p.name} 기준(${p.equity}%)보다 ${pct(-diff,0)} 낮아요`,s:'성향보다 보수적이에요. 틀린 건 아니지만 오래 둘 돈이면 기대 수익이 낮아져요.'});}
+ const theme=(g._theme||0)/tot*100,lev=(g._lev||0)/tot*100,gold=(g._gold||0)/tot*100;
+ if(lev>0)out.push({lv:'far',t:`레버리지·인버스 ${pct(lev,0)}`,s:'매일 수익률을 배로 따라가는 구조라 오래 들고 가는 적립과 맞지 않아요. 2022년 TQQQ는 약 -79%였어요.'});
+ if(p&&theme>p.max[4])out.push({lv:p.max[4]===0?'far':'care',t:`테마(반도체 등) ${pct(theme,0)} · ${p.name} 기준 ${p.max[4]}% 이내`,s:'업종 하나에 거는 돈이에요. 2008년 반도체 지수는 -48%였어요.'});
+ const ndx=H.filter(h=>h.cls==='ndx').reduce((a,h)=>a+Number(h.weight||0),0)/tot*100;if(p&&ndx>p.max[3])out.push({lv:'care',t:`나스닥 100 ${pct(ndx,0)} · ${p.name} 기준 ${p.max[3]}% 이내`,s:'기술주에 치우친 지수예요. 2022년 -32%.'});
+ if(gold>15)out.push({lv:'care',t:`금 ${pct(gold,0)}`,s:'금은 이자·배당이 없어요. 보통 5~15%를 넘기지 않아요.'});
+ const ids=H.map(h=>h.cls);const dup=ids.filter((x,i)=>ids.indexOf(x)!==i);if(dup.length)out.push({lv:'care',t:`같은 지수를 두 상품으로 담았어요: ${[...new Set(dup)].map(d=>cls(d).name).join(', ')}`,s:'분산이 아니에요. 보수가 낮은 하나로 합치세요.'});
+ if(ids.includes('sp500')&&ids.includes('ndx'))out.push({lv:'note',t:'S&P 500과 나스닥 100이 함께 있어요',s:'나스닥 100의 기업 대부분이 S&P 500에도 들어 있어요. 기술주 비중이 실제보다 커져요.'});
+ if(ids.includes('world')&&(ids.includes('sp500')||ids.includes('ndx')))out.push({lv:'note',t:'MSCI World와 미국 지수가 함께 있어요',s:'World의 약 72%가 미국이에요. 미국 비중이 생각보다 높아질 수 있어요.'});
+ const maxOne=Math.max(...H.map(h=>Number(h.weight||0)))/tot*100;if(maxOne>70&&H.length>1)out.push({lv:'care',t:`한 지수에 ${pct(maxOne,0)}`,s:'분산 효과가 거의 없어요.'});
+ let hsFull=false;
+ {const HS=H.filter(h=>cls(h.cls).series&&Number(h.weight)>0),ts=HS.reduce((a,h)=>a+Number(h.weight),0);
+  hsFull=HS.length>0&&HS.length===H.filter(h=>Number(h.weight)>0).length;
+  if(HS.length&&ts){const ser=h=>PF_SERIES[cls(h.cls).series];
+   const yrs=SERIES_YEARS.map((y,i)=>({y,i,r:HS.reduce((a,h)=>a+ser(h)[i]*Number(h.weight),0)/ts,down:HS.filter(h=>ser(h)[i]<0).length}));
+   const w=yrs.reduce((a,x)=>x.r<a.r?x:a),negs=yrs.filter(x=>x.r<0).length,allDown=yrs.filter(x=>x.down===HS.length).map(x=>x.y+'년');
+   const best=HS.reduce((a,h)=>ser(h)[w.i]>ser(a)[w.i]?h:a),lim=p?p.worstYear:-25;const parts=[];
+   if(HS.length>1){parts.push(allDown.length?`${hsFull?'담은':'데이터가 있는'} ${HS.length}개가 모두 떨어진 해: ${allDown.join(', ')}.`:`${hsFull?'담은':'데이터가 있는'} ${HS.length}개가 한꺼번에 떨어진 해는 없었어요.`);
+    parts.push(`${w.y}년에는 ${HS.length}개 중 ${w.down}개가 떨어졌고, ${ser(best)[w.i]>=0?'가장 버틴 것은':'가장 덜 떨어진 것은'} ${cls(best.cls).name} ${sgn(ser(best)[w.i])}.`)}
+   else parts.push('지수가 하나뿐이라 그 해 하락을 메워 줄 자산이 없었어요.');
+   parts.push(`월 ${manwon(state.monthly)}씩 3년 모은 ${manwon(state.monthly*36)}이었다면 그 해 말 약 ${manwon(state.monthly*36*(1+w.r/100))}.`);
+   parts.push(`연말 기준·보수 제외라 연중에는 더 깊었어요.${hsFull?'':' 연도별 데이터가 없는 지수는 뺐어요.'}`);
+   out.push({lv:w.r>=lim?'ok':w.r>=lim-10?'care':'far',t:`가장 나빴던 해 ${w.y}년 ${sgn(w.r)} · ${SERIES_YEARS.length}년 중 마이너스 ${negs}번${p?` · ${p.name} 기준 ${lim}% 이내`:''}`,s:parts.join(' ')})}
+  const co={};H.forEach(h=>{const hd=HOLD[h.cls],wt=Number(h.weight||0);if(!hd||!wt)return;hd.forEach(([n,x])=>{const k=n.replace(/ [AC]$/,'');co[k]=co[k]||{n:k,w:0,c:new Set()};co[k].w+=x*wt/tot;co[k].c.add(h.cls)})});
+  const cos=Object.values(co).sort((a,b)=>b.w-a.w),ov=cos.filter(x=>x.c.size>1),oneLim=p?p.oneCo:7,tail=`${p?` ${p.name} 기준 한 회사 ${oneLim}% 이내.`:''} (상위 10종목만 계산, ${AS_OF} 근사치)`;
+  if(ov.length)out.push({lv:ov[0].w>=oneLim?'care':'note',t:`상위 10종목이 겹쳐요: ${ov.slice(0,3).map(x=>x.n).join(', ')}${ov.length>3?` 등 ${ov.length}곳`:''}`,s:`합치면 ${ov.slice(0,3).map(x=>`${x.n} 약 ${pct(x.w,1)}`).join(', ')}. 지수 이름은 달라도 같은 회사를 여러 번 담은 셈이에요.${tail}`});
+  if(cos.length&&cos[0].c.size===1&&cos[0].w>=oneLim)out.push({lv:'care',t:`${cos[0].n} 한 회사가 전체의 약 ${pct(cos[0].w,1)}`,s:`지수로 담아도 그 안에서 한 회사 비중이 커요.${tail}`});
+  const ccw=H.filter(h=>h.cls==='cc').reduce((a,h)=>a+Number(h.weight||0),0)/tot*100,ccLim=p?p.max[6]:15;
+  if(ccw>0)out.push({lv:ccw>ccLim?'care':'note',t:`커버드콜·월배당 ${pct(ccw,0)}${p?` · ${p.name} 기준 ${ccLim}% 이내`:''}`,s:'분배금을 받는 만큼 상승분을 포기해요. 모으는 시기에는 장기 수익이 지수보다 뒤처질 수 있고, 하락은 대부분 그대로 받아요.'});}
+ if(H.length&&eq===100)out.push({lv:'care',t:'전부 주식형이에요',s:'하락장에서 버틸 완충(채권·현금성)이 없어요.'});
+ const FK=H.filter(h=>etfInfo(h).fee!=null),fkW=FK.reduce((a,h)=>a+Number(h.weight||0),0),fee=fkW?FK.reduce((a,h)=>a+etfInfo(h).fee*Number(h.weight||0),0)/fkW:0;const feeLoss=1-((1.07-fee/100)/1.07)**10;
+ if(fkW)out.push({lv:fee>0.3?'care':'ok',t:`평균 총보수 연 ${(Math.round(fee*1000)/1000).toLocaleString('ko-KR',{maximumFractionDigits:3})}%`,s:`연 7% 가정 시 10년이면 보수로 최종 금액의 약 ${pct(feeLoss*100,1)}가 빠져요.${FK.length<H.length?` 보수를 모르는 상품 ${H.length-FK.length}개는 빼고 계산했어요.`:''}`});
+ const fx=H.filter(h=>cls(h.cls).fx&&!etfInfo(h).hedged).reduce((a,h)=>a+Number(h.weight||0),0)/tot*100;if(fx>0)out.push({lv:'note',t:`환율에 노출된 비중 ${pct(fx,0)}`,s:'원화가 강해지면 주가가 올라도 손실일 수 있어요. 장기면 보통 그대로 두는 편이에요.'});
+ const us=H.filter(h=>etfInfo(h).mkt==='us').reduce((a,h)=>a+Number(h.weight||0),0)/tot*100;if(us>0)out.push({lv:'note',t:`미국 상장 ETF ${pct(us,0)}`,s:'매매차익 연 250만원 초과분에 양도세 22%. ISA·연금계좌에는 담을 수 없어요. (2025년 기준, 확인 필요)'});
+ const krf=H.filter(h=>etfInfo(h).mkt==='kr'&&cls(h.cls).fx).reduce((a,h)=>a+Number(h.weight||0),0)/tot*100;if(krf>0)out.push({lv:'note',t:`국내 상장 해외 ETF ${pct(krf,0)}`,s:'일반 계좌는 배당소득세 15.4%. ISA·연금저축에 담으면 세금을 미루거나 줄일 수 있어요.'});
+ if(H.some(h=>etfInfo(h).unsure))out.push({lv:'note',t:'"확인 필요" 표시가 있는 상품이 있어요',s:'보수·구성은 운용사 페이지에서 한 번 더 확인하세요.'});
+ const drop=H.reduce((a,h)=>{const c=cls(h.cls);const d=c.group==='cash'?0:c.group==='bond'?-15:c.group==='gold'?-10:c.group==='lev'?-70:c.group==='theme'?-45:c.id==='ndx'?-35:c.id==='em'?-35:-30;return a+d*Number(h.weight||0)},0)/tot;
+ if(!hsFull)out.push({lv:drop<-30?'care':'note',t:`큰 하락장이 오면 약 ${pct(drop,1)}`,s:`2008·2022년 수준의 하락을 가정한 값. 월 ${manwon(state.monthly)}씩 3년 넣은 ${manwon(state.monthly*36)}이면 약 ${manwon(state.monthly*36*(1+drop/100))}이 돼요. 그래도 안 팔 수 있나요?`});
+ const CU=H.filter(h=>cls(h.cls).custom),cuW=CU.reduce((a,h)=>a+Number(h.weight||0),0)/tot*100;if(CU.length)out.push({lv:'note',t:`연도별 데이터가 없는 상품 ${CU.length}개 · ${pct(cuW,0)}`,s:'가장 나빴던 해와 적립 계산에서 빠져요. 주식형·테마형 구분은 이름과 분류로 한 것이고, 기초지수·보수·구성 종목은 확인하지 못했어요.'});
+ const dr=driftCheck();if(dr)out.push(dr);
+ return out}
+function simulate(monthly,startYear){const H=state.holdings.filter(h=>cls(h.cls).series);const tot=H.reduce((a,h)=>a+Number(h.weight||0),0);if(!tot||!H.length)return null;
+ const i0=SERIES_YEARS.indexOf(startYear);let v=0,paid=0,peak=0,mdd=0,worst=null;const rows=[];
+ for(let i=i0;i<SERIES_YEARS.length;i++){const r=H.reduce((a,h)=>a+PF_SERIES[cls(h.cls).series][i]*Number(h.weight||0),0)/tot;const fee=H.reduce((a,h)=>a+etfInfo(h).fee*Number(h.weight||0),0)/tot;
+  const yr=r-fee;v=(v+monthly*12)*(1+yr/100);paid+=monthly*12;peak=Math.max(peak,v);mdd=Math.min(mdd,v/peak-1);if(!worst||yr<worst.r)worst={y:SERIES_YEARS[i],r:yr};rows.push({y:SERIES_YEARS[i],r:yr,v})}
+ return{paid,v,worst,mdd:mdd*100,rows,years:SERIES_YEARS.length-i0,excluded:state.holdings.filter(h=>!cls(h.cls).series).map(h=>cls(h.cls).name)}}
+
+/* ===================== 라우팅 ===================== */
+const route=()=>{const h=location.hash.replace(/^#\/?/,'')||'home';const [name,arg]=h.split('/');return{name,arg}};
+const go=h=>{location.hash='/'+h};
+window.addEventListener('hashchange',render);
+let quizAns=[];let searchQ='',searchGroup='all',detailYear=null;let yearBoxFn=null,lastRoute=null;
+
+/* ===================== 화면 ===================== */
+const ARROW='<svg class="arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>';
+const badge=c=>{const f=fit(c);return f?`<span class="badge ${f.lv}">${f.text}</span>`:profile()?'<span class="badge neutral">성향 기준 없음</span>':'<span class="badge neutral">진단 전</span>'};
+const spark=key=>{const s=PF_SERIES[key];if(!s)return '<span class="badge neutral">데이터 준비 중</span>';const d=s.slice(-10),hi=Math.max(0,...d),lo=Math.min(0,...d),sp=(hi-lo)||1,W=84,H=28,p=3,f=v=>Math.round(v*10)/10,Y=r=>p+(hi-r)/sp*(H-2*p),X=i=>p+i/(d.length-1)*(W-2*p),z=f(Y(0)),zp=f(Y(0)/H*100),last=d[d.length-1],pts=d.map((r,i)=>f(X(i))+','+f(Y(r))).join(' ');return `<svg class="spark" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" aria-hidden="true"><defs><linearGradient id="sp-${key}" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="${H}"><stop offset="${zp}%" stop-color="#63e6a8" style="stop-color:var(--up)"/><stop offset="${zp}%" stop-color="#ff7b7b" style="stop-color:var(--down)"/></linearGradient></defs><line class="sz" x1="0" x2="${W}" y1="${z}" y2="${z}"/><polyline class="sl" points="${pts}" fill="none" stroke="url(#sp-${key})"/><circle class="${last<0?'neg':'pos'}" cx="${f(X(d.length-1))}" cy="${f(Y(last))}" r="2.4"/></svg>`};
+const topbar=(title,back='home')=>`<div class="topbar"><button class="back" data-go="${back}" aria-label="뒤로"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 6-6 6 6 6"/></svg></button><span class="muted">${title}</span></div>`;
+const disclaimer='<p class="disclaimer">교육 목적이며 투자 자문이 아니에요. 특정 상품을 추천하지 않고, 수익률은 과거 지수 기준으로 미래 수익이 아니에요. 상품·보수·구성종목은 '+AS_OF+' 기준 근사치라 운용사 공시로 확인하세요.</p>';
+
+
+/* ===================== 코스피 자동 갱신 (홈 화면) =====================
+   출처: 금융위원회_지수시세정보 (공공데이터포털, 한국거래소 전 영업일 종가)
+   작동: GitHub Actions가 평일 14시·19시(한국 시간)에 받아 market.json으로 저장 → 이 앱이 그 파일을 읽는다
+   인증키는 GitHub Secrets에만 있고 이 파일에는 없다. 인터넷이 없으면 아래 KOSPI_SNAPSHOT(파일에 넣어 둔 마지막 자료)을 쓴다 */
+const KOSPI_URL='https://raw.githubusercontent.com/seowuk/adventure-design-20234287-invest-compass/main/public/data/market.json';
+const KOSPI_SNAPSHOT={"updatedAt":"2026-11-11T16:51:42.990Z","kospi":{"latest":{"date":"2026-11-10","close":5239.13,"change":220.28,"changePct":4.39},"monthly":[{"month":"2023-11","close":2535.29},{"month":"2023-12","close":2655.28},{"month":"2024-01","close":2497.09},{"month":"2024-02","close":2642.36},{"month":"2024-03","close":2746.63},{"month":"2024-04","close":2692.06},{"month":"2024-05","close":2636.52},{"month":"2024-06","close":2797.82},{"month":"2024-07","close":2770.69},{"month":"2024-08","close":2674.31},{"month":"2024-09","close":2593.27},{"month":"2024-10","close":2556.15},{"month":"2024-11","close":2455.91},{"month":"2024-12","close":2399.49},{"month":"2025-01","close":2517.37},{"month":"2025-02","close":2532.78},{"month":"2025-03","close":2481.12},{"month":"2025-04","close":2556.61},{"month":"2025-05","close":2697.67},{"month":"2025-06","close":3071.7},{"month":"2025-07","close":3245.44},{"month":"2025-08","close":3186.01},{"month":"2025-09","close":3424.6},{"month":"2025-10","close":4107.5},{"month":"2025-11","close":3926.59},{"month":"2025-12","close":4214.17},{"month":"2026-01","close":5224.36},{"month":"2026-02","close":6244.13},{"month":"2026-03","close":5052.46},{"month":"2026-04","close":6598.87},{"month":"2026-05","close":8476.15},{"month":"2026-06","close":8476.48},{"month":"2026-07","close":6595.45},{"month":"2026-08","close":6820.02},{"month":"2026-09","close":6838.04},{"month":"2026-10","close":5730.74},{"month":"2026-11","close":5239.13}]}};
+let kospi={data:null,from:'loading'};
+const kNum=v=>typeof v==='number'&&Number.isFinite(v);
+function kospiValid(j){const k=j&&j.kospi,L=k&&k.latest;return !!(L&&/^\d{4}-\d{2}-\d{2}$/.test(String(L.date))&&kNum(L.close)&&L.close>0&&kNum(L.change)&&kNum(L.changePct)&&Array.isArray(k.monthly)&&k.monthly.length>=2&&k.monthly.every(m=>m&&/^\d{4}-\d{2}$/.test(String(m.month))&&kNum(m.close)&&m.close>0))}
+function loadKospi(){
+  const ctl=typeof AbortController!=='undefined'?new AbortController():null;const timer=ctl&&setTimeout(()=>ctl.abort(),6000);
+  fetch(KOSPI_URL,{cache:'no-cache',signal:ctl?ctl.signal:undefined})
+    .then(r=>r.ok?r.json():Promise.reject(new Error('HTTP '+r.status)))
+    .then(j=>{if(!kospiValid(j))throw new Error('자료 모양이 달라요');kospi={data:j,from:'live'}})
+    .catch(()=>{kospi={data:kospiValid(KOSPI_SNAPSHOT)?KOSPI_SNAPSHOT:null,from:'snapshot'}})
+    .finally(()=>{if(timer)clearTimeout(timer);const el=document.getElementById('kospi-card');if(el)el.outerHTML=kospiCard()}); // 화면 전체를 다시 그리지 않고 카드만 바꾼다(스크롤 유지)
+}
+const kDate=d=>`${Number(d.slice(5,7))}월 ${Number(d.slice(8,10))}일`;
+const kMonth=m=>`${m.slice(2,4)}년 ${Number(m.slice(5,7))}월`;
+// 월말 종가 + 이번 달은 최근 종가
+function kPts(M,L){const P=M.map(m=>({m:m.month,c:m.close})),lm=L.date.slice(0,7),z=P[P.length-1];if(z.m===lm)z.c=L.close;else if(lm>z.m)P.push({m:lm,c:L.close});return P}
+// 고점에서 저점까지 가장 깊었던 하락(월말 기준)
+function kospiDD(P){let peak=P[0],best={dd:0,from:P[0],to:P[0]};P.forEach(x=>{if(x.c>peak.c)peak=x;const dd=(x.c/peak.c-1)*100;if(dd<best.dd)best={dd,from:peak,to:x}});return best}
+function kospiChart(P){
+  const v=P.map(x=>x.c),W=300,H=72,pad=5,lo=Math.min(...v),hi=Math.max(...v),rng=hi-lo||1,f=n=>n.toFixed(1);
+  const pts=v.map((x,i)=>[pad+i*(W-pad*2)/(v.length-1),pad+(H-pad*2)*(1-(x-lo)/rng)]);
+  const line=pts.map(p=>f(p[0])+','+f(p[1])).join(' '),last=pts[pts.length-1],top=pts[v.indexOf(hi)];
+  return `<svg class="kospi-chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="코스피 월말 종가 흐름. 속이 빈 점이 가장 높았던 달"><polygon points="${pad},${H} ${line} ${W-pad},${H}" fill="currentColor" opacity=".12"/><polyline points="${line}" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/><circle cx="${f(top[0])}" cy="${f(top[1])}" r="3" stroke="currentColor" stroke-width="1.5" vector-effect="non-scaling-stroke" style="fill:var(--surface)"/><circle cx="${f(last[0])}" cy="${f(last[1])}" r="3.5" fill="currentColor"/></svg>`;
+}
+function kospiCard(){
+  if(kospi.from==='loading')return `<div class="card kospi" id="kospi-card"><h3 class="dh">코스피</h3><p class="muted small" style="margin:0">최신 종가를 불러오는 중…</p></div>`;
+  const d=kospi.data;if(!d)return '';
+  const L=d.kospi.latest,P=kPts(d.kospi.monthly,L),up=L.changePct>=0,first=P[0],lastP=P[P.length-1],chg=(L.close/first.c-1)*100,D=kospiDD(P),p=profile(),live=kospi.from==='live';
+  const yrs=Math.max(1,Math.round((P.length-1)/12)),n0=x=>Math.round(x).toLocaleString('ko-KR');
+  const kw=state.holdings.filter(h=>h.cls==='kospi200').reduce((a,h)=>a+(Number(h.weight)||0),0);
+  const tie=D.dd<0?(p?`${p.name}이 한 해에 견딜 하락으로 잡은 ${p.worstYear}%${D.dd<p.worstYear?'보다 깊어요. 코스피에만 넣었다면 기준을 넘는 하락을 겪은 셈이에요.':' 안쪽이에요.'}${kw>0?` 내 구성에는 코스피 200이 ${kw}% 들어 있어요.`:''}`:'<button class="link" data-go="quiz">진단</button>을 하면 이 하락이 내 성향 기준 안쪽인지 알려드려요.'):'';
+  return `<div class="card kospi" id="kospi-card">
+  <div class="dhead"><h3 class="dh">코스피 · ${kDate(L.date)} 종가</h3><span class="badge ${live?'ok':'neutral'}">${live?'최신 자료':'저장된 자료'}</span></div>
+  <div class="row between" style="align-items:baseline"><strong class="kospi-close num">${L.close.toLocaleString('ko-KR',{maximumFractionDigits:2})}</strong><span class="num small ${up?'up':'down'}" style="font-weight:700">${up?'▲':'▼'} ${Math.abs(L.change).toLocaleString('ko-KR',{maximumFractionDigits:2})} (${up?'+':''}${L.changePct.toFixed(2)}%)</span></div>
+  ${kospiChart(P)}
+  <div class="row between small muted num"><span>${kMonth(first.m)}</span><span>${kMonth(lastP.m)}</span></div>
+  <div class="kstats"><div class="stat"><div class="l">${yrs}년 중 가장 깊었던 하락</div><div class="v num ${D.dd<0?'down':''}">${D.dd<0?pct(D.dd,1):'없음'}</div><div class="s num">${D.dd<0?`${kMonth(D.from.m)} → ${kMonth(D.to.m)}`:'월말 기준'}</div></div><div class="stat"><div class="l">${yrs}년 전과 비교</div><div class="v num">${chg>0?'+':''}${pct(chg,0)}</div><div class="s num">${n0(first.c)} → ${n0(L.close)}</div></div></div>
+  ${tie?`<p class="small" style="margin:12px 0 0">${tie}</p>`:''}
+  ${live?'':`<p class="small muted" style="margin:8px 0 0">인터넷에 연결되지 않아 이 파일에 넣어 둔 ${kDate(L.date)} 자료를 보여줘요.</p>`}
+  <details class="sib" style="margin-top:12px"><summary class="small">이 숫자는 어디서 오나요?</summary>
+   <ol class="small muted kospi-how">
+    <li><b>출처</b>: 금융위원회가 공공데이터포털로 공개하는 한국거래소 지수 시세(전 영업일 종가)예요. 코스피 전체 지수라서 찾기의 코스피 200과는 조금 달라요.</li>
+    <li><b>자동 갱신</b>: GitHub가 평일 오후 2시·7시에 스스로 받아 와 파일로 저장하고, 이 앱은 그 파일을 읽어요. 인증키는 앱에 들어 있지 않아요.</li>
+    <li><b>날짜</b>: 종가는 다음 영업일 오후에 공개돼서, 화면의 날짜는 보통 하루~이틀 전이에요. 실시간 시세는 아니에요.</li>
+    <li><b>그래프</b>: 달마다 마지막 날 종가를 이은 선이에요. 속이 빈 점이 가장 높았던 달이에요.</li>
+    <li><b>하락 숫자</b>: 월말 종가로 잰 고점에서 저점까지의 하락이에요. 달 중간에는 더 깊었을 수 있고, 지수 상세의 연도별 수익률과는 재는 방법이 달라요.</li>
+   </ol></details>
+ </div>`;
+}
+
+/* ===================== 홈 대시보드 (v8.0) =====================
+   순서: 다음 할 일 → 내 구성(기준과 비교) → 점검 → 과거로 보면 → 기준 숫자 → 다음 점검 → 이번 달 나누기 → 코스피
+   값은 이미 있는 계산(checks, mixYears/mixStats, nextCheck)을 그대로 쓴다. 넓은 화면(900px 이상) 3열, 폰 1열
+   자산군 색은 --c-eq/--c-bond/--c-cash/--c-gold. 초록·노랑·빨강은 맞음·주의·경고에만 쓴다 */
+const DG=[['equity','주식'],['bond','채권'],['cash','현금성'],['gold','금'],['etc','기타']];
+function dgOf(id){const g=cls(id).group;return ['theme','lev','income'].includes(g)?'equity':(DG.some(x=>x[0]===g)?g:'etc')}
+function dShares(list){const t=list.reduce((a,[,w])=>a+(Number(w)||0),0)||1,o={};list.forEach(([id,w])=>{const k=dgOf(id);o[k]=(o[k]||0)+(Number(w)||0)/t*100});return o}
+const dStack=(sh,dim,label)=>{const on=DG.filter(([k])=>sh[k]>0);return `<div class="dstack${dim?' dim':''}" role="img" aria-label="${label}: ${on.map(([k,n])=>`${n} ${Math.round(sh[k])}%`).join(', ')}">${on.map(([k,n])=>`<i class="g-${k}" style="width:${r1(sh[k])}%" title="${n} ${Math.round(sh[k])}%"></i>`).join('')}</div>`};
+const dDay=d=>`${d.slice(0,4)}년 ${+d.slice(5,7)}월 ${+d.slice(8,10)}일`;
+function dash(p,ck,tot){
+ const H=state.holdings.filter(h=>Number(h.weight)>0),has=H.length>0,base=Object.entries(p.defaults),bs=dShares(base),mine=has?dShares(H.map(h=>[h.cls,h.weight])):null;
+ const sorted=[...H].sort((a,b)=>b.weight-a.weight),at=state.profile&&state.profile.at?String(state.profile.at).slice(0,10):'';
+ const legend=sets=>`<div class="dlegend">${DG.filter(([k])=>sets.some(s=>s&&s[k]>0)).map(([k,n])=>`<span><i class="g-${k}"></i>${n}</span>`).join('')}</div>`;
+ let verdict='';
+ if(has){const d=Math.round((mine.equity||0)-p.equity),lv=Math.abs(d)<=10?'ok':d>25?'far':'care';
+  const msg=Math.abs(d)<=10?(d===0?`주식 비중이 ${p.name} 기준과 같아요.`:`주식 비중이 ${p.name} 기준과 ${Math.abs(d)}%p 차이로 비슷해요.`):d>0?`주식이 ${p.name} 기준보다 ${d}%p 많아요. 큰 하락 때 그대로 둘 수 있는지 먼저 보세요.`:`주식이 ${p.name} 기준보다 ${-d}%p 적어요. 틀린 건 아니지만 진단보다 보수적이에요.`;
+  verdict=`<div class="dverdict"><span class="dic ${lv}" aria-hidden="true">${LV_ICON[lv]}</span><span><span class="sr">${LV_WORD[lv]}: </span>${msg}</span></div>`}
+ const mixCard=has?`<div class="card span2"><div class="dhead"><h3 class="dh">내 구성 · ${p.name} 기준과 비교</h3><button class="link small" data-go="portfolio">수정</button></div>
+   <div class="dcmp"><span>내 구성</span>${dStack(mine,false,'내 구성')}<b class="num">주식 ${Math.round(mine.equity||0)}%</b></div>
+   <div class="dcmp"><span class="muted">기준</span>${dStack(bs,true,p.name+' 기준')}<b class="num muted">주식 ${p.equity}%</b></div>${legend([mine,bs])}${verdict}
+   <p class="small muted dlist">${sorted.map(h=>`${esc(cls(h.cls).name)} ${h.weight}%`).join(' · ')}</p>
+   ${tot!==100?`<p class="small care-text num" style="margin:4px 0 0">비중 합계 ${tot}% · 100%로 맞추면 점검이 정확해져요</p>`:''}</div>`
+  :`<div class="card span2"><div class="dhead"><h3 class="dh">${p.name} 기준 구성 · 아직 담은 지수가 없어요</h3></div>
+   <div class="dcmp"><span class="muted">기준</span>${dStack(bs,false,p.name+' 기준')}<b class="num">주식 ${p.equity}%</b></div>${legend([bs])}
+   <p class="small muted dlist">${[...base].sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${esc(cls(k).name)} ${v}%`).join(' · ')}</p>
+   <div class="row" style="margin-top:12px;gap:8px"><button class="primary grow" data-act="load-defaults">이 구성으로 시작하기</button><button class="grow" data-go="search">직접 찾기</button></div>
+   <p class="small muted" style="margin:8px 0 0">출발점일 뿐이고 담은 뒤에 바꿀 수 있어요.</p></div>`;
+ const profileCard=`<div class="card"><div class="dhead"><h3 class="dh">${p.name} 기준 숫자</h3></div><p class="small muted" style="margin:0">${esc(p.one)}</p>
+  <div class="drows"><div class="drow"><span class="muted">주식 비중 기준</span><b class="num">${p.equity}%</b></div>
+  <div class="drow"><span class="muted">나스닥 100 상한</span><b class="num">${p.max[3]>=100?'제한 없음':p.max[3]+'%'}</b></div>
+  <div class="drow"><span class="muted">테마 상한</span><b class="num">${p.max[4]}%</b></div>
+  <div class="drow"><span class="muted">한 해 견딜 하락</span><b class="num">${p.worstYear}%까지</b></div></div>
+  ${/^\d{4}-\d{2}-\d{2}$/.test(at)?`<p class="muted small" style="margin:8px 0 0">${dDay(at)} 진단</p>`:''}</div>`;
+ if(!has)return `<div class="dash-grid">${mixCard}${profileCard}${kospiCard()}</div>`;
+ const cnt=lv=>ck.filter(c=>c.lv===lv).length,top=[...ck.filter(c=>c.lv==='far'),...ck.filter(c=>c.lv==='care')].slice(0,3);
+ const checkCard=`<div class="card"><div class="dhead"><h3 class="dh">점검</h3><button class="link small" data-go="portfolio">자세히</button></div>
+   <div class="dcounts">${[['ok','맞음'],['care','주의'],['far','경고']].map(([lv,l])=>`<div><strong class="num ${cnt(lv)?'lv-'+lv:'muted'}">${cnt(lv)}</strong><span>${l}</span></div>`).join('')}</div>
+   ${top.length?`<ul class="dchk">${top.map(c=>`<li><span class="dic ${c.lv}" aria-hidden="true">${LV_ICON[c.lv]}</span><span><span class="sr">${LV_WORD[c.lv]}: </span>${esc(c.t)}</span></li>`).join('')}</ul>`:`<p class="small muted" style="margin:12px 0 0">주의할 점이 없어요${cnt('note')?` · 참고 ${cnt('note')}건`:''}</p>`}</div>`;
+ const MY=mixYears(state.holdings),A=MY?mixStats(MY,state.monthly):null;
+ let pastCard=`<div class="card"><h3 class="dh">과거로 보면</h3><p class="muted small" style="margin:0">연도별 자료가 있는 지수를 담으면 이 구성의 가장 나빴던 해가 여기에 나와요.</p></div>`;
+ if(A){const w=A.worst,lim=p.worstYear,lv=w>=lim?'ok':w>=lim-10?'care':'far',word={ok:'기준 안쪽',care:'기준을 조금 넘음',far:'기준 밖'}[lv]; // 점검 화면과 같은 기준
+  const lo=Math.min(-50,Math.floor(Math.min(w,lim)/10)*10-10),pos=x=>Math.max(0,Math.min(100,(1-x/lo)*100)),al=x=>x<22?' l':x>78?' r':'',pl=pos(lim),pw=pos(w);
+  pastCard=`<div class="card"><div class="dhead"><h3 class="dh">과거로 보면</h3><span class="badge ${lv}">${word}</span></div>
+   <p class="muted small" style="margin:0">이 구성의 가장 나빴던 해</p><div class="dbig num ${w<0?'down':''}">${sgn(w)} <small>${A.worstYear}년</small></div>
+   <p class="small muted num" style="margin:4px 0 0">1,000만원이 ${manwon(1e7*(1+w/100))} · ${A.years}년 중 마이너스 ${A.neg}번</p>
+   <div class="dgauge" role="img" aria-label="${p.name} 기준 ${lim}%, 내 구성 ${sgn(w)}"><i class="zone" style="left:${pl.toFixed(1)}%"></i><i class="lim" style="left:${pl.toFixed(1)}%"></i><i class="me ${lv}" style="left:${pw.toFixed(1)}%"></i><em class="top${al(pl)}" style="left:${pl.toFixed(1)}%">${p.name} 기준 ${lim}%</em><em class="bot${al(pw)}" style="left:${pw.toFixed(1)}%">내 구성 ${sgn(w)}</em></div>
+   <p class="muted small" style="margin:0">초록 구간(0% ~ ${lim}%)이 ${p.name} 기준 안쪽이에요. 연말 기준이라 연중에는 더 깊었고, 과거가 앞으로를 보장하지 않아요.${MY.cover<99.5?` 연도별 자료가 있는 ${pct(MY.cover,0)}만 계산했어요.`:''}</p></div>`}
+ const nc=nextCheck(),due=!!nc&&nc<=today().slice(0,7);
+ const nextCard=`<div class="card"><div class="dhead"><h3 class="dh">다음 점검</h3>${due?'<span class="badge care">다시 볼 때</span>':''}</div>${nc?`<div class="dbig num">${nc.slice(0,4)}년 ${+nc.slice(5,7)}월</div><p class="muted small" style="margin:4px 0 0">마지막 점검 ${dDay(state.checkedAt)} · 1년에 한 번, 또는 비중이 5%p 이상 벌어지면 다시 봐요</p>`:`<div class="dbig">기록 없음</div><p class="muted small" style="margin:4px 0 0">내 구성의 점검 맨 아래에서 '점검함으로 기록'을 누르면 1년 뒤 다시 볼 달을 알려드려요.</p>`}
+  <div class="drows"><div class="drow"><span class="muted">담은 지수</span><b class="num">${state.holdings.length}개</b></div><div class="drow"><span class="muted">매달 넣을 돈</span><b class="num">${amtFmt(state.monthly)}</b></div></div></div>`;
+ const t=tot||100,shown=sorted.slice(0,6),rest=sorted.slice(6);
+ const splitCard=`<div class="card span2"><div class="dhead"><h3 class="dh">이번 달 ${amtFmt(state.monthly)} 나누기</h3><button class="link small" data-go="portfolio">금액 바꾸기</button></div>
+  <div>${shown.map(h=>`<div class="drow"><span>${esc(cls(h.cls).name)} <span class="muted num">${h.weight}%</span></span><b class="num">${amtFmt(state.monthly*h.weight/t)}</b></div>`).join('')}${rest.length?`<div class="drow"><span class="muted">외 ${rest.length}개</span><b class="num">${amtFmt(state.monthly*rest.reduce((a,h)=>a+Number(h.weight),0)/t)}</b></div>`:''}</div>
+  <p class="small muted" style="margin:8px 0 0">계획 비중대로 나눈 금액이에요. ETF는 보통 1주 단위로 사서 실제 금액은 조금 달라져요.</p></div>`;
+ return `<div class="dash-grid">${mixCard}${checkCard}${pastCard}${profileCard}${nextCard}${splitCard}${kospiCard()}</div>`;
+}
+
+function home(){const p=profile();
+ if(!p)return `<div class="eyebrow">투자 나침반</div><h1>내 성향을 알면<br>고를 ETF가 보여요</h1><p class="muted">종목은 고르지 않아요. 6문항으로 성향을 알고, 그 성향에 맞는 지수를 찾고, 담은 구성을 점검해요.</p>
+  <div class="hero" style="margin-top:16px"><div class="eyebrow">시작</div><strong>나는 어떤 투자자일까</strong><p class="muted small">6문항 · 1분</p><button class="primary" data-go="quiz" style="margin-top:8px;width:100%">진단 시작</button></div>${kospiCard()}
+  <p class="small muted" style="margin-top:16px">진단 없이 둘러보기: <button class="link" data-go="search">지수·ETF 찾기</button></p>${disclaimer}`;
+ const n=state.holdings.length,ck=checks(),warn=ck.filter(c=>c.lv==='far'||c.lv==='care').length,tot=holdingsTotal(),first=ck.find(c=>c.lv==='far')||ck.find(c=>c.lv==='care');
+ const next=!n?{t:'내 성향에 맞는 지수부터 담아보기',s:'기본 구성을 불러오거나 직접 찾아서 담아요',go:'portfolio'}:tot!==100?{t:'비중 합계를 100%로 맞추기',s:tot?`지금 ${tot}%`:'내 구성에서 비중이나 보유 금액을 넣어요',go:'portfolio',lv:'care'}:warn?{t:`점검에서 ${warn}건 확인하기`,s:first.t,go:'portfolio',lv:first.lv}:!validDay(state.checkedAt)?{t:'점검한 날짜 기록하기',s:'1년에 한 번 다시 보려고 남겨 둬요',go:'portfolio'}:nextCheck()<=today().slice(0,7)?{t:'1년이 지났어요. 구성 다시 점검하기',s:checkLine(),go:'portfolio',lv:'care'}:{t:'구성이 성향과 맞아요',s:'연도별 수익률에서 나쁜 해를 한 번 더 보세요',go:'portfolio',lv:'ok'};
+ return `<div class="row between"><span class="eyebrow">투자 나침반</span><button class="link small" data-go="result">진단 결과 보기</button></div><h1>${p.name} · 주식 ${p.equity}% 기준</h1>
+ <button class="hero next ${next.lv||''}" data-go="${next.go}" style="margin-top:8px"><span class="t"><span class="eyebrow">다음 할 일</span><strong>${esc(next.t)}</strong><span class="muted small">${esc(next.s)}</span></span>${ARROW}</button>${dash(p,ck,tot)}${disclaimer}`}
+
+function quiz(){const i=quizAns.length;if(i>=QUIZ.length){state.profile={type:classify(quizAns),answers:[...quizAns],at:new Date().toISOString()};save();quizAns=[];go('result');return ''}
+ const q=QUIZ[i];return `${topbar(`진단 ${i+1} / ${QUIZ.length}`)}<div class="progress" aria-hidden="true"><i style="width:${i/QUIZ.length*100}%"></i></div><h1 style="margin-top:16px">${esc(q.q)}</h1>${q.a.map(([t,v])=>`<button class="quiz-opt" data-ans="${v}">${esc(t)}</button>`).join('')}${i>0?'<p style="margin-top:16px"><button class="link" data-act="quiz-back">이전 문항</button></p>':''}`}
+
+function result(){const p=profile();if(!p)return home();const good=PF_CLASSES.filter(c=>fit(c).lv==='ok'),care=PF_CLASSES.filter(c=>fit(c).lv==='care'),far=PF_CLASSES.filter(c=>fit(c).lv==='far');
+ return `${topbar('진단 결과')}<div class="eyebrow">나는</div><h1>${p.name}</h1><p class="muted">${esc(p.one)}</p><p class="small muted num">${new Date(state.profile.at).toLocaleDateString('ko-KR')} 진단</p>
+ <div class="card"><h3 style="margin-top:0">그래서 아래 숫자가 이렇게 정해졌어요</h3><ul class="list"><li class="row between" style="padding:12px 0"><span>주식 비중 기준</span><strong class="num">${p.equity}%</strong></li><li class="row between" style="padding:12px 0"><span>나스닥 100 상한</span><strong class="num">${p.max[3]>=100?'제한 없음':p.max[3]+'%'}</strong></li><li class="row between" style="padding:12px 0"><span>테마(반도체 등) 상한</span><strong class="num">${p.max[4]}%</strong></li><li class="row between" style="padding:12px 0"><span>레버리지·인버스</span><strong>담지 않기</strong></li></ul><p class="small muted">이 숫자는 찾기·내 구성 화면의 배지와 경고 기준이 돼요. 성향을 다시 진단하면 모두 같이 바뀌어요.</p></div>
+ <h2>${p.name}에 맞는 범주</h2><ul class="list card">${good.map(c=>`<li><button class="item" data-go="etf/${c.id}"><span class="t"><strong>${esc(c.name)}</strong><span class="s">${esc(c.desc)}</span></span>${spark(c.series)}${ARROW}</button></li>`).join('')}</ul>
+ ${care.length?`<h2>조건부로</h2><ul class="list card">${care.map(c=>`<li><button class="item" data-go="etf/${c.id}"><span class="t"><strong>${esc(c.name)}</strong><span class="s">${esc(fit(c).text)}</span></span>${ARROW}</button></li>`).join('')}</ul>`:''}
+ <h2>거리가 먼 것</h2><ul class="list card">${far.map(c=>`<li><button class="item" data-go="etf/${c.id}"><span class="t"><strong>${esc(c.name)}</strong><span class="s">${esc(fit(c).text)}${c.series?` · 가장 나빴던 해 ${seriesStats(c.series).worstYear} ${pct(seriesStats(c.series).worst,1)}`:''}</span></span>${ARROW}</button></li>`).join('')}</ul>
+ <div class="row" style="margin-top:16px"><button class="primary grow" data-act="load-defaults">${p.name} 기본 구성으로 시작</button><button class="grow" data-go="search">직접 찾기</button></div><p class="small muted" style="margin-top:8px"><button class="link" data-go="quiz">다시 진단하기</button></p>${disclaimer}`}
+
+/* ===================== 국내 상장 ETF 전체 목록 (이름·종목코드 검색) ===================== */
+// 출처: 네이버 금융 ETF 목록. [종목코드, 이름, 분류] · 시가총액이 큰 순.
+// 목록을 갱신할 때는 KRX_ETF 배열과 KRX_ASOF만 바꾸면 돼요. 범주 연결(krClass)은 이름으로 판단해요.
+const KRX_ASOF='2026-11-11',KRX_SRC='네이버 금융';
+const KRX_ETF=[["360750","TIGER 미국S&P500",4],["069500","KODEX 200",1],["488770","KODEX 머니마켓액티브",7],["133690","TIGER 미국나스닥100",4],["379800","KODEX 미국S&P500",4],["379810","KODEX 미국나스닥100",4],["102110","TIGER 200",1],["396500","TIGER 반도체TOP10",2],["459580","KODEX CD금리액티브(합성)",6],["278530","KODEX 200TR",1],["498400","KODEX 200타겟위클리커버드콜",2],["381180","TIGER 미국필라델피아반도체나스닥",4],["458730","TIGER 미국배당다우존스",4],["122630","KODEX 레버리지",3],["091160","KODEX 반도체",2],["360200","ACE 미국S&P500",4],["0167A0","SOL AI반도체TOP2플러스",2],["357870","TIGER CD금리투자KIS(합성)",6],["229200","KODEX 코스닥150",1],["0043B0","TIGER 머니마켓액티브",6],["411060","ACE KRX금현물",5],["381170","TIGER 미국테크TOP10 INDXX",4],["423160","KODEX KOFR금리액티브(합성)",6],["0162Z0","RISE 삼성전자SK하이닉스채권혼합50",7],["148020","RISE 200",1],["310970","TIGER MSCI Korea TR",1],["367380","ACE 미국나스닥100",4],["273130","KODEX 종합채권(AA-이상)액티브",6],["455890","RISE 머니마켓액티브",6],["395160","KODEX AI반도체TOP2플러스",2],["481050","KODEX CD1년금리플러스액티브(합성)",6],["102780","KODEX 삼성그룹",2],["486290","TIGER 미국나스닥100타겟데일리커버드콜",4],["233740","KODEX 코스닥150레버리지",3],["395270","HANARO Fn K-반도체",2],["472150","TIGER 배당커버드콜액티브",2],["449170","TIGER KOFR금리액티브(합성)",6],["385540","RISE 종합채권(A-이상)액티브",6],["161510","PLUS 고배당주",2],["426030","TIME 미국나스닥100액티브",4],["214980","KODEX 단기채권PLUS",6],["487240","KODEX AI전력핵심설비",2],["278540","KODEX MSCI Korea TR",1],["139260","TIGER 200 IT",2],["284430","KODEX 200미국채혼합50",6],["441640","KODEX 미국배당커버드콜액티브",4],["305720","KODEX 2차전지산업",2],["477080","RISE CD금리액티브(합성)",6],["456600","TIME 글로벌AI인공지능액티브",4],["379780","RISE 미국S&P500",4],["368590","RISE 미국나스닥100",4],["453850","ACE 미국30년국채액티브(H)",6],["329200","TIGER 리츠부동산인프라",2],["105190","ACE 200",1],["0177N0","KODEX 삼성전자SK하이닉스채권혼합50",7],["487340","ACE 머니마켓액티브",6],["157450","TIGER 단기통안채",6],["294400","KIWOOM 200TR",1],["475630","TIGER CD1년금리액티브(합성)",7],["292150","TIGER 코리아TOP10",2],["465580","ACE 미국빅테크TOP7 Plus",4],["446770","ACE 글로벌반도체TOP4 Plus",4],["438080","ACE 미국S&P500미국채혼합50액티브",7],["448330","KODEX 삼성전자채권혼합",1],["442580","PLUS 글로벌HBM반도체",4],["436140","SOL 종합채권(AA-이상)액티브",6],["152100","PLUS 200",1],["469830","SOL 초단기채권액티브",6],["356540","ACE 종합채권(AA-이상)액티브",6],["0139F0","TIGER 12월자동연장금융채(AA-이상)액티브",6],["0072R0","TIGER KRX금현물",5],["226490","KODEX 코스피",1],["449180","KODEX 미국S&P500(H)",4],["487230","KODEX 미국AI전력핵심인프라",4],["446720","SOL 미국배당다우존스",4],["390390","KODEX 미국반도체",4],["451540","TIGER 종합채권(AA-이상)액티브",6],["232080","TIGER 코스닥150",1],["153130","KODEX 단기채권",6],["402970","ACE 미국배당다우존스",4],["0219E0","KODEX 200커버드콜액티브",2],["0193T0","KODEX SK하이닉스단일종목레버리지",2],["479520","RISE KOFR금리액티브(합성)",6],["494300","KODEX 미국나스닥100데일리커버드콜OTM",4],["252670","KODEX 200선물인버스2X",3],["0183J0","TIGER 미국우주테크",4],["091230","TIGER 반도체",2],["0048J0","KODEX 미국머니마켓액티브",6],["466940","TIGER 은행고배당플러스TOP10",2],["466920","SOL 조선TOP3플러스",2],["438100","ACE 미국나스닥100미국채혼합50액티브",7],["455850","SOL AI반도체소부장",2],["479080","1Q 머니마켓액티브",6],["496020","WON 전단채플러스액티브",6],["497570","TIGER 미국필라델피아AI반도체나스닥",4],["445290","KODEX 로봇액티브",2],["469150","ACE AI반도체TOP3+",2],["498410","KODEX 금융고배당TOP10타겟위클리커버드콜",2],["0007F0","KODEX 27-12 회사채(AA-이상)액티브",6],["305540","TIGER 2차전지테마",2],["0193W0","KODEX 삼성전자단일종목레버리지",2],["272580","TIGER 단기채권액티브",6],["295040","SOL 200TR",1],["114800","KODEX 인버스",3],["0025N0","TIGER TDF2045 적격",7],["476550","TIGER 미국30년국채커버드콜액티브(H)",6],["456610","TIGER 미국달러SOFR금리액티브(합성)",6],["315930","KODEX Top5PlusTR",2],["237350","KODEX 코스피100",1],["329750","TIGER 미국달러단기채권액티브",6],["494890","KODEX 200액티브",1],["481060","KODEX 미국30년국채타겟커버드콜(합성 H)",6],["495050","RISE 코리아밸류업",1],["0117L0","KODEX 26-12 금융채(AA-이상)액티브",6],["475720","RISE 200위클리커버드콜",3],["458760","TIGER 미국배당다우존스타겟커버드콜2호",4],["482730","TIGER 미국S&P500타겟데일리커버드콜",4],["457480","ACE 테슬라밸류체인액티브",4],["418660","TIGER 미국나스닥100레버리지(합성)",4],["364980","TIGER 2차전지TOP10",2],["0195S0","TIGER SK하이닉스단일종목레버리지",2],["490590","RISE 미국AI밸류체인데일리고정커버드콜",4],["0061Z0","RISE 단기특수은행채액티브",6],["441800","TIME Korea플러스배당액티브",1],["489250","KODEX 미국배당다우존스",4],["494310","KODEX 반도체레버리지",2],["449450","PLUS K방산",2],["144600","KODEX 은선물(H)",5],["069660","KIWOOM 200",1],["0117V0","TIGER 코리아AI전력기기TOP3플러스",2],["371460","TIGER 차이나전기차SOLACTIVE",4],["0127P0","ACE 미국대형성장주액티브",4],["314250","KODEX 미국빅테크10(H)",4],["0177R0","TIGER 반도체TOP10커버드콜액티브",2],["495850","KODEX 코리아밸류업",1],["484790","KODEX 미국30년국채액티브(H)",6],["434060","KODEX TDF2050액티브 적격",7],["462330","KODEX 2차전지산업레버리지",2],["477050","PLUS 머니마켓액티브",6],["365780","ACE 국고채10년",6],["451000","PLUS 종합채권(AA-이상)액티브",6],["251600","PLUS 고배당주채권혼합",7],["491620","RISE 미국테크100데일리고정커버드콜",4],["449190","KODEX 미국나스닥100(H)",4],["0019K0","TIME 미국나스닥100채권혼합50액티브",7],["455030","KODEX 미국달러SOFR금리액티브(합성)",6],["471230","KODEX 국고채10년액티브",6],["435420","TIGER 미국나스닥100채권혼합50",7],["0167B0","SOL 200타겟위클리커버드콜",2],["0091P0","TIGER 코리아원자력",2],["290130","RISE ESG사회책임투자",2],["0148J0","TIGER 코리아휴머노이드로봇산업",2],["0105E0","SOL 코리아고배당",2],["438330","TIGER 우량회사채액티브",6],["448290","TIGER 미국S&P500(H)",4],["0015B0","KoAct 미국나스닥성장기업액티브",4],["114260","KODEX 국고채3년",6],["138540","TIGER 현대차그룹플러스",2],["251350","KODEX MSCI선진국",4],["490490","SOL 미국배당미국채혼합50",7],["102970","KODEX 증권",2],["0094M0","RISE 코리아밸류업위클리고정커버드콜",2],["491010","TIGER 글로벌AI전력인프라액티브",4],["476800","KODEX 한국부동산리츠인프라",7],["476760","ACE 미국30년국채액티브",6],["0195R0","TIGER 삼성전자단일종목레버리지",2],["466950","TIGER 글로벌AI액티브",4],["385550","RISE 단기채권알파액티브",6],["462010","TIGER 2차전지소재Fn",2],["488080","TIGER 반도체TOP10레버리지",3],["367760","RISE 네트워크인프라",2],["0101N0","RISE AI전력인프라",2],["499660","TIGER CD금리플러스액티브(합성)",7],["0232A0","MIDAS 머니마켓액티브",6],["447770","TIGER 테슬라채권혼합Fn",7],["371160","TIGER 차이나항셍테크",4],["385560","RISE KIS국고채30년Enhanced",6],["0016X0","SOL 중단기회사채(A-이상)액티브",6],["0119H0","KODEX 28-12 회사채(AA-이상)액티브",6],["471990","KODEX AI반도체핵심장비",2],["277630","TIGER 코스피",1],["434730","HANARO 원자력iSelect",2],["396520","TIGER 차이나반도체FACTSET",4],["483280","KODEX 미국AI테크TOP10타겟커버드콜",4],["439860","KODEX ESG종합채권(A-이상)액티브",6],["0046A0","TIGER 미국초단기(3개월이하)국채",6],["480260","TIGER 27-04회사채(A+이상)액티브",6],["474220","TIGER 미국테크TOP10타겟커버드콜",4],["148070","KIWOOM 국고채10년",6],["315960","RISE 대형고배당10TR",2],["0060H0","TIGER 토탈월드스탁액티브",1],["279530","KODEX 고배당주",2],["448300","TIGER 미국나스닥100(H)",4],["0162M0","KODEX 금융채1~2년(AA-이상)PLUS액티브",6],["426020","TIME 미국S&P500액티브",4],["361580","RISE 200TR",1],["0254C0","KODEX 27-12 금융채(AA-이상)액티브",6],["0163Y0","KoAct 코스닥액티브",1],["458250","TIGER 미국30년국채스트립액티브(합성 H)",6],["496080","TIGER 코리아밸류업",1],["444200","SOL 코리아메가테크액티브",2],["423920","TIGER 미국필라델피아반도체레버리지(합성)",4],["494670","TIGER 조선TOP10",2],["0190C0","RISE 현대차고정피지컬AI",2],["0040Y0","SOL 팔란티어커버드콜OTM채권혼합",7],["245710","ACE 베트남VN30(합성)",4],["453810","KODEX 인도Nifty50",4],["0023A0","SOL 미국양자컴퓨팅TOP10",4],["0026S0","1Q 미국S&P500",4],["442570","RISE TDF2050액티브 적격",7],["241180","TIGER 일본니케이225",4],["451060","1Q 200액티브",1],["463250","TIGER K방산&우주",2],["454780","KIWOOM 종합채권(AA-이상)액티브",6],["472170","TIGER 미국테크TOP10채권혼합",7],["132030","KODEX 골드선물(H)",5],["0131V0","1Q 미국우주항공테크",4],["456880","ACE 미국달러SOFR금리(합성)",7],["293180","HANARO 200",1],["0052S0","1Q 미국S&P500미국채혼합50액티브",7],["0173Y0","KODEX 미국AI광통신네트워크",4],["497880","SOL CD금리&머니마켓액티브",6],["0144L0","KODEX 미국성장커버드콜액티브",4],["0008S0","TIGER 미국배당다우존스타겟데일리커버드콜",4],["136340","RISE 중기우량회사채",6],["448630","RISE 삼성그룹Top3채권혼합",7],["190620","ACE 단기통안채",6],["0052D0","TIGER 코리아배당다우존스",2],["0094K0","TIGER 28-04 회사채(A+이상)액티브",6],["0209D0","KODEX 전고체배터리ESS TOP2플러스",2],["091180","KODEX 자동차",2],["484880","SOL 금융지주플러스고배당",2],["0111P0","1Q 미국나스닥100미국채혼합50액티브",7],["462900","KoAct 바이오헬스케어액티브",2],["433330","SOL 미국S&P500",4],["453870","TIGER 인도니프티50",4],["439870","KODEX 국고채30년액티브",6],["469070","RISE AI&로봇",2],["0167Z0","KODEX 미국우주항공",4],["485540","KODEX 미국AI테크TOP10",4],["385720","TIME 코스피액티브",1],["475080","KODEX 테슬라커버드콜채권혼합액티브",7],["473330","SOL 미국30년국채커버드콜(합성)",6],["489030","PLUS 고배당주위클리커버드콜",2],["273140","KODEX 단기변동금리부채권액티브",6],["310960","TIGER 200TR",1],["461490","RISE 글로벌자산배분액티브",7],["385510","KODEX 신재생에너지액티브",2],["481190","SOL 미국테크TOP10",4],["473290","KODEX 26-12 회사채(AA-이상)액티브",6],["302450","RISE 코스피",1],["0210A0","ACE K반도체TOP2+",2],["441680","TIGER 미국나스닥100커버드콜(합성)",7],["474590","WON 반도체밸류체인액티브",2],["196230","RISE 단기통안채",6],["091170","KODEX 은행",2],["0182R0","1Q K반도체TOP2+",2],["270810","RISE 코스닥150",1],["0038A0","KODEX 미국휴머노이드로봇",4],["0183V0","KIWOOM 삼성전자&SK하이닉스채권혼합50",7],["472920","HK 종합채권(AA-이상)액티브",6],["305080","TIGER 미국채10년선물",6],["475300","SOL 반도체전공정",2],["364970","TIGER 바이오TOP10",2],["0043Y0","TIME 차이나AI테크액티브",4],["0092C0","SOL 27-12 회사채(AA-이상)액티브",6],["0053L0","TIGER 차이나휴머노이드로봇",4],["0153K0","KODEX 주주환원고배당주",2],["476450","KIWOOM 머니마켓액티브",6],["452360","SOL 미국배당다우존스(H)",4],["0080G0","KODEX 방산TOP10",2],["329650","KODEX TRF3070",7],["271050","KODEX WTI원유선물인버스(H)",5],["409820","KODEX 미국나스닥100레버리지(합성 H)",4],["307520","TIGER 지주회사",2],["493810","TIGER 미국AI빅테크10타겟데일리커버드콜",4],["0089D0","KODEX 금융고배당TOP10",2],["483320","ACE 엔비디아밸류체인액티브",4],["283580","KODEX 차이나CSI300",4],["488980","SOL 26-12 회사채(AA-이상)액티브",6],["437080","KODEX 미국종합채권ESG액티브(H)",6],["0091C0","KODEX 미국10년국채액티브(H)",6],["458260","TIGER 미국투자등급회사채액티브(H)",6],["471780","TIGER 코리아테크액티브",2],["486830","HANARO 머니마켓액티브",6],["243880","TIGER 200IT레버리지",2],["0182S0","1Q K반도체TOP2채권혼합50",7],["0099L0","ACE 우량회사채(AA-이상)액티브",6],["463050","TIME K바이오액티브",2],["302190","TIGER 중장기국채",6],["429000","TIGER 미국S&P500배당귀족",4],["422420","RISE 2차전지액티브",2],["0005A0","KODEX 미국S&P500데일리커버드콜OTM",4],["423170","SOL 글로벌AI반도체탑픽액티브",4],["448540","ACE 엔비디아채권혼합",7],["414780","TIGER 차이나과창판STAR50(합성)",4],["478150","TIME 글로벌우주테크&방산액티브",4],["244580","KODEX 바이오",2],["471040","KoAct 글로벌AI&로봇액티브",4],["0085P0","ACE 미국10년국채액티브",6],["490090","TIGER 미국AI빅테크10",4],["363570","KODEX 장기종합채권(AA-이상)액티브",6],["483340","ACE 구글밸류체인액티브",4],["0069M0","1Q 미국나스닥100",4],["433980","KODEX TDF2040액티브 적격",7],["261260","KODEX 미국달러선물인버스2X",7],["472160","TIGER 미국테크TOP10 INDXX(H)",4],["457990","PLUS 태양광&ESS",2],["117700","KODEX 건설",2],["480020","ACE 미국빅테크7+데일리타겟커버드콜(합성)",4],["471760","TIGER AI반도체핵심공정",2],["213610","KODEX 삼성그룹밸류",2],["498270","KIWOOM 미국양자컴퓨팅",4],["228790","TIGER 화장품",2],["495230","KoAct 코리아밸류업액티브",1],["483290","KODEX 미국배당다우존스타겟커버드콜",4],["480040","ACE 미국반도체데일리타겟커버드콜(합성)",4],["0082V0","KODEX TDF2060액티브 적격",7],["0233J0","TIGER 삼성전자SK하이닉스미국채혼합50",7],["0098F0","KODEX 원자력SMR",2],["0162Y0","TIME 코스닥액티브",1],["486450","SOL 미국AI전력인프라",4],["272560","RISE 단기국공채액티브",6],["200250","KIWOOM 인도Nifty50(합성)",4],["363580","KODEX 200IT TR",2],["488720","WON 종합채권(AA-이상)액티브",7],["442320","RISE 글로벌원자력",4],["0104N0","TIGER 200타겟위클리커버드콜",2],["490600","RISE 미국배당100데일리고정커버드콜",4],["123320","TIGER 레버리지",3],["0204D0","KODEX 현대차로보틱스밸류체인TOP3플러스",2],["388420","RISE 비메모리반도체액티브",2],["0040X0","SOL 팔란티어미국채커버드콜혼합",7],["266160","RISE 고배당",2],["494330","ACE 라이프자산주주가치액티브",2],["472870","RISE 미국30년국채엔화노출(합성 H)",6],["251340","KODEX 코스닥150선물인버스",3],["0228G0","ACE 반도체Plus전략산업",2],["237370","KODEX 코리아배당성장채권혼합",7],["480030","ACE 미국500데일리타겟커버드콜(합성)",4],["491610","1Q CD금리액티브(합성)",6],["0151S0","KODEX 미국AI반도체TOP3플러스",4],["0005D0","SOL 전고체배터리&실리콘음극재",2],["139230","TIGER 200 중공업",2],["461950","KODEX 2차전지핵심소재10",2],["473460","KODEX 미국서학개미",4],["0064K0","KODEX 금액티브",5],["458210","KIWOOM CD금리액티브(합성)",7],["0047A0","TIGER 차이나테크TOP10",4],["0192Z0","TIGER 중기종합채권(A-이상)액티브",6],["219480","KODEX 미국S&P500선물(H)",4],["495550","SOL 코리아밸류업TR",1],["0127M0","ACE 미국대형가치주액티브",4],["498180","파워 종합채권(AA-이상)액티브",6],["245340","TIGER 미국다우존스30",4],["0131W0","1Q 단기특수은행채액티브",6],["160580","TIGER 구리실물",5],["332930","HANARO 200TR",1],["412570","TIGER 2차전지TOP10레버리지",2],["157500","TIGER 증권",2],["433500","ACE 원자력TOP10",2],["475310","SOL 반도체후공정",2],["0115D0","KODEX 조선TOP10",2],["466930","SOL 자동차TOP3플러스",2],["495060","TIME 코리아밸류업액티브",1],["0048K0","KODEX 차이나휴머노이드로봇",4],["0093A0","RISE AI반도체TOP10",2],["143860","TIGER 헬스케어",2],["0057H0","PLUS 미국S&P500미국채혼합50액티브",7],["122090","PLUS 코스피50",1],["0221V0","IBK 초단기채권액티브",6],["403790","MIDAS 코스피액티브",1],["0041E0","KODEX 미국S&P500액티브",4],["394670","TIGER 글로벌리튬&2차전지SOLACTIVE(합성)",4],["0180V0","ACE 미국우주테크액티브",4],["0091M0","HANARO 27-06 회사채(AA-이상)액티브",6],["476030","SOL 미국나스닥100",4],["0104H0","KoAct 미국나스닥채권혼합50액티브",7],["332500","ACE 200TR",1],["0005G0","IBK K-AI반도체코어테크",2],["447620","SOL 미국TOP5채권혼합50",7],["463290","1Q 단기금융채액티브",6],["0051G0","SOL 미국원자력SMR",4],["421320","PLUS 우주항공",2],["461500","HANARO 종합채권(AA-이상)액티브",6],["337160","KODEX 200ESG",2],["304660","KODEX 미국30년국채울트라선물(H)",6],["0000Y0","HK 26-12 회사채(AA-이상)액티브",6],["152870","파워 200",1],["138520","TIGER 삼성그룹",2],["438570","SOL 국고채10년",6],["481180","SOL 미국AI소프트웨어",4],["139220","TIGER 200 건설",2],["354500","ACE 코스닥150",1],["233160","TIGER 코스닥150 레버리지",3],["491230","PLUS 국공채머니마켓액티브",6],["494220","UNICORN SK하이닉스밸류체인액티브",2],["451530","TIGER 국고채30년스트립액티브",6],["0199C0","ACE 고배당주Plus커버드콜액티브",2],["488500","TIGER 미국S&P500동일가중",4],["0190G0","KODEX 반도체타겟위클리커버드콜",2],["114820","TIGER 국채3년",6],["463680","KODEX 미국S&P500테크놀로지",4],["309230","ACE 미국WideMoat동일가중",4],["399110","SOL 미국S&P500ESG",4],["0193G0","KoAct 코스피액티브",1],["267770","TIGER 200선물레버리지",3],["192090","TIGER 차이나CSI300",4],["411420","KODEX 미국나스닥AI테크액티브",4],["203780","TIGER 미국나스닥바이오",4],["438560","SOL 국고채3년",6],["0132K0","PLUS 테슬라위클리커버드콜채권혼합",7],["0193M0","BNK 27-12 특수채(AAA이상)액티브",6],["461460","PLUS 국고채10년액티브",6],["182480","TIGER 미국MSCI리츠(합성 H)",7],["495330","1Q 코리아밸류업",1],["308620","KODEX 미국10년국채선물",6],["469170","ACE 포스코그룹포커스",2],["304940","KODEX 미국나스닥100선물(H)",4],["0254S0","KODEX 미국배당다우존스액티브",4],["0138Y0","PLUS 금채권혼합",7],["0184L0","PLUS 중기종합채권(A-이상)액티브",6],["0168K0","TIGER 기술이전바이오액티브",2],["429760","PLUS 미국S&P500",4],["475050","ACE KPOP포커스",2],["0123G0","TIGER 미국AI전력SMR",4],["0198A0","KIWOOM 코스닥150커버드콜액티브",2],["0036R0","RISE 미국휴머노이드로봇",4],["0135Y0","IBK 중기종합채권(AA-이상)액티브",6],["464930","TIGER 글로벌혁신블루칩TOP10",4],["114100","RISE 국고채3년",6],["372330","KODEX 차이나항셍테크",4],["458030","WON 국공채머니마켓액티브",6],["328370","PLUS 코스피TR",1],["0137V0","KIWOOM 미국S&P500모멘텀",4],["0151P0","RISE 코리아전략산업액티브",2],["473440","ACE 11월만기자동연장회사채AA-이상액티브",6],["455860","SOL 2차전지소부장Fn",2],["433970","KODEX TDF2030액티브 적격",7],["0191W0","HANARO 중기종합채권(A-이상)액티브",6],["325010","KODEX 성장주",2],["464310","TIGER 글로벌AI&로보틱스 INDXX",4],["491820","HANARO 전력설비투자",2],["468380","KODEX iShares미국하이일드액티브",6],["0197X0","SOL SK하이닉스선물단일종목인버스2X",2],["168580","ACE 중국본토CSI300",4],["465610","ACE 미국빅테크TOP7 Plus레버리지(합성)",4],["143850","TIGER 미국S&P500선물(H)",4],["0074K0","KoAct K수출핵심기업TOP30액티브",2],["0052T0","1Q 중단기회사채(A-이상)액티브",6],["448100","WON 200",1],["444490","WON 미국S&P500",4],["0066W0","SOL 국제금",5],["0017Y0","1Q 종합채권(AA-이상)액티브",6],["0092B0","SOL 한국원자력SMR",2],["476850","KoAct 배당성장액티브",1],["453080","KIWOOM 미국나스닥100(H)",4],["394660","TIGER 글로벌자율주행&전기차SOLACTIVE",4],["269540","PLUS 미국S&P500(H)",4],["319640","TIGER 골드선물(H)",4],["418670","TIGER 글로벌AI사이버보안",4],["195980","PLUS 신흥국MSCI(합성 H)",4],["329670","KODEX TRF7030",7],["453330","RISE 미국S&P500(H)",4],["332940","HANARO MSCI Korea TR",1],["377990","TIGER Fn신재생에너지",2],["329660","KODEX TRF5050",7],["475280","ACE 8월만기자동연장회사채AA-이상액티브",6],["496090","KIWOOM 코리아밸류업",1],["326240","RISE IT플러스",2],["460960","ACE 글로벌인컴TOP10",7],["0255E0","TIGER 글로벌MLCC&기판",4],["449770","KIWOOM 미국S&P500",4],["0000J0","PLUS 한화그룹주",2],["211900","KODEX 코리아배당성장",2],["298340","PLUS 국채선물3년",6],["367770","RISE 수소경제테마",2],["0177X0","ACE K휴머노이드로봇산업TOP2+",2],["325020","KODEX 배당가치",2],["0035T0","PLUS 글로벌휴머노이드로봇액티브",7],["0162L0","KODEX 차이나AI반도체TOP10",4],["475350","RISE 버크셔포트폴리오TOP10",4],["0181B0","HANARO 미국AI메모리반도체TOP4+",4],["266370","KODEX IT",2],["0080X0","SOL 미국S&P500미국채혼합50",7],["272910","ACE 중장기국공채액티브",6],["0018C0","PLUS 고배당주위클리고정커버드콜",2],["0220B0","DS 코스닥액티브",1],["0098N0","PLUS 자사주매입고배당주",2],["292770","KODEX 국채선물3년인버스",6],["0049M0","ACE 미국배당퀄리티+커버드콜액티브",4],["157490","TIGER 소프트웨어",2],["228810","TIGER 미디어컨텐츠",2],["0174B0","KoAct 글로벌AI메모리반도체액티브",7],["453640","KODEX 미국S&P500헬스케어",4],["210780","TIGER 코스피고배당",2],["458750","TIGER 미국배당다우존스타겟커버드콜1호",4],["0246X0","SOL 글로벌DRAM반도체플러스",4],["130730","KIWOOM 단기자금",6],["0210E0","PLUS 200커버드콜액티브",2],["479620","SOL 미국AI반도체칩메이커",4],["0022T0","SOL 국제금커버드콜액티브",4],["364960","TIGER BBIG",2],["0142D0","TIGER 미국AI데이터센터TOP4Plus",4],["0122W0","RISE 26-11 회사채(AA-이상)액티브",6],["108450","ACE 삼성그룹섹터가중",2],["0222D0","KoAct 고배당액티브",2],["278620","PLUS 단기채권액티브",6],["298770","KODEX 한국대만IT프리미어",4],["0008T0","SOL 화장품TOP3플러스",2],["495040","PLUS 코리아밸류업",1],["485690","RISE 미국AI밸류체인TOP3Plus",4],["0007N0","아이엠에셋 200",1],["176950","KODEX 국채선물10년인버스",6],["0176E0","RISE 미국AI전력인프라액티브",4],["359210","KODEX 코스피TR",1],["486240","DAISHIN AI반도체&인프라액티브",2],["455960","RISE 미국달러SOFR금리액티브(합성)",6],["433880","PLUS TDF2060액티브 적격",7],["228800","TIGER 여행레저",2],["473640","HANARO 글로벌금채굴기업",4],["419890","KIWOOM 단기채권ESG액티브",6],["138530","TIGER LG그룹플러스",2],["261270","KODEX 미국달러선물인버스",7],["0123S0","HANARO 26-12 은행채(AA+이상)액티브",2],["469060","RISE 미국반도체NYSE",4],["266420","KODEX 헬스케어",2],["455660","ACE 미국하이일드액티브(H)",6],["476750","ACE 미국30년국채엔화노출액티브(H)",6],["454320","HANARO CAPEX설비투자iSelect",2],["295020","RISE 국채선물10년인버스",6],["211560","TIGER 배당성장",2],["495750","HANARO 코리아밸류업",1],["261240","KODEX 미국달러선물",7],["252400","RISE 200선물레버리지",3],["440640","ACE 단기채권알파액티브",6],["465330","RISE 2차전지TOP10",2],["0113D0","TIME 글로벌탑픽액티브",4],["479730","TIGER 인도빌리언컨슈머",4],["0102A0","TIGER 미국AI소프트웨어TOP4Plus",4],["365040","TIGER AI코리아그로스액티브",1],["492500","1Q 현대차그룹채권(A+이상)&국고통안",7],["412770","TIGER 글로벌AI플랫폼액티브",4],["0238P0","TIGER 미국S&P500미국채혼합50",7],["484890","SOL 머니마켓액티브",6],["442560","RISE TDF2040액티브 적격",7],["275980","TIGER 글로벌4차산업혁신기술(합성 H)",4],["337140","KODEX 코스피대형주",2],["0190Y0","TIGER 구글밸류체인",4],["292190","KODEX KRX300",1],["123310","TIGER 인버스",3],["481430","RISE 국고채10년액티브",6],["225040","TIGER 미국S&P500레버리지(합성 H)",4],["453950","TIGER TSMC파운드리밸류체인",4],["0080Y0","SOL 조선TOP3플러스레버리지",2],["0098Z0","FOCUS 200",1],["114470","KIWOOM 국고채3년",6],["441540","HANARO Fn조선해운",2],["0046Y0","ACE 미국배당퀄리티",4],["0181L0","SOL 미국우주항공TOP10",4],["0000D0","TIGER 엔비디아미국채커버드콜밸런스(합성)",7],["0115E0","KODEX 코리아소버린AI",2],["0172V0","1Q 은액티브",5],["0113P0","HK 머니마켓액티브",6],["401470","KODEX 메타버스액티브",2],["475260","ACE 2월만기자동연장회사채AA-이상액티브",6],["277640","TIGER 코스피대형주",2],["140700","KODEX 보험",2],["352560","KODEX 미국부동산리츠(H)",7],["0141T0","SOL 중기종합채권(AA-이상)액티브",6],["336160","RISE 금융채액티브",6],["292560","TIGER 일본엔선물",7],["150460","TIGER 중국소비테마",2],["0234N0","KIWOOM 삼성SK그룹TOP4+",2],["360140","KODEX 200롱코스닥150숏선물",2],["440910","WON 미국우주항공방산",4],["101280","KODEX 일본TOPIX100",4],["218420","KODEX 미국S&P500에너지(합성)",4],["453650","KODEX 미국S&P500금융",4],["0233A0","ACE 삼성전자SK하이닉스플러스채권혼합50",7],["480310","TIGER 글로벌온디바이스AI",4],["0041D0","KODEX 미국AI소프트웨어TOP10",4],["0239Z0","PLUS AI반도체소부장액티브",2],["490480","SOL K방산",2],["447430","ACE 주주환원가치주액티브",2],["0178H0","IBK 미국AI TOP10국채혼합50",7],["0139P0","ACE 고배당주",2],["491220","PLUS 200TR",1],["200030","KODEX 미국S&P500산업재(합성)",4],["495940","RISE 미국AI테크액티브",4],["0226A0","PLUS SK하이닉스샌디스크채권혼합50",7],["0186S0","1Q 코스닥150채권혼합50액티브",7],["440650","ACE 미국달러단기채권액티브",6],["287180","PLUS 미국나스닥테크",4],["261070","TIGER 코스닥150바이오테크",2],["371470","TIGER 차이나바이오테크SOLACTIVE",4],["0185L0","TIME 글로벌휴머노이드로봇산업액티브",4],["0118Z0","ACE 미국AI테크핵심산업액티브",4],["0085N0","ACE 미국10년국채액티브(H)",6],["261220","KODEX WTI원유선물(H)",5],["0207G0","SOL 우주항공밸류체인",2],["0191M0","마이티 5월만기자동연장특수채(AAA)액티브",6],["472830","RISE 미국30년국채커버드콜(합성)",6],["0000Z0","RISE 바이오TOP10액티브",2],["385590","ACE ESG액티브",2],["252710","TIGER 200선물인버스2X",3],["434960","DAISHIN K200",1],["494840","TIGER 미국방산TOP10",4],["196030","ACE 일본TOPIX레버리지(H)",4],["305050","ACE 코스피",1],["0203R0","WON 중단기종합채권(A-이상)액티브",6],["0218J0","RISE 미국우주&로봇TOP2미국채혼합50",7],["473490","KIWOOM 글로벌AI반도체",4],["0241D0","KODEX 미국AI에이전트액티브",4],["204480","TIGER 차이나CSI300레버리지(합성)",4],["238720","ACE 일본Nikkei225(H)",4],["0118S0","SOL 미국넥스트테크TOP10액티브",4],["464470","PLUS 미국채30년액티브",6],["276990","KODEX 글로벌로봇(합성)",4],["465660","TIGER 일본반도체FACTSET",4],["276970","KODEX 미국S&P500배당귀족커버드콜(합성 H)",4],["0086B0","TIGER 리츠부동산인프라TOP10액티브",2],["473590","ACE 미국주식베스트셀러",4],["275300","KODEX 우량주",2],["461340","HANARO 글로벌생성형AI액티브",4],["0111J0","HANARO 증권고배당TOP3플러스",2],["139280","TIGER 경기방어",2],["0141S0","SOL 조선기자재",2],["316670","KIWOOM 코스닥150",1],["139320","TIGER 금은선물(H)",5],["195930","TIGER 유로스탁스50(합성 H)",4],["0007G0","PLUS 글로벌원자력밸류체인",4],["442260","마이티 다이나믹퀀트액티브",1],["465350","RISE 2차전지TOP10인버스(합성)",3],["322410","HANARO K고배당",2],["183700","RISE 200채권혼합50",7],["401170","RISE 메타버스",2],["0166S0","PLUS K제조업핵심기업액티브",2],["445150","KODEX 친환경조선해운액티브",2],["140950","파워 코스피100",1],["0112X0","마이티 200TR",1],["0132H0","KODEX 미국원자력SMR",4],["352540","KODEX 일본부동산리츠(H)",7],["442090","에셋플러스 코리아대장장이액티브",2],["266360","KODEX K콘텐츠",2],["0189B0","TIGER 은액티브",5],["0020H0","KoAct 글로벌양자컴퓨팅액티브",4],["476260","HANARO 반도체핵심공정주도주",2],["375770","KODEX 탄소효율그린뉴딜",2],["0225V0","KODEX 미국CPU반도체TOP10",4],["494410","PLUS 미국S&P500성장주",4],["256750","KODEX 차이나심천ChiNext(합성)",4],["449780","KIWOOM 미국S&P500(H)",4],["400970","TIGER Fn메타버스",2],["0089B0","PLUS 미국나스닥100미국채혼합50",7],["248270","TIGER S&P글로벌헬스케어(합성)",4],["104530","KIWOOM 코리아고배당",2],["217770","TIGER 원유선물인버스(H)",5],["476690","TIGER 글로벌비만치료제TOP2Plus",4],["306950","KODEX KRX300레버리지",3],["122260","KIWOOM 통안채1년",6],["278240","RISE 코스닥150선물레버리지",3],["365000","TIGER 인터넷TOP10",2],["241390","RISE V&S셀렉트밸류채권혼합",7],["474800","KIWOOM 미국원유에너지기업",4],["491830","TIGER 미국AI반도체팹리스",4],["426150","WON 대한민국국고채액티브",6],["407830","에셋플러스 글로벌플랫폼액티브",4],["0254W0","ACE 29-11 회사채(AA-이상)액티브",6],["099140","KODEX 차이나H",4],["468630","KODEX iShares미국투자등급회사채액티브",6],["459560","KODEX 테슬라밸류체인FactSet",4],["276650","RISE 글로벌테크놀로지(합성 H)",4],["0138T0","RISE 미국S&P500데일리고정커버드콜",4],["0083S0","1Q 미국메디컬AI",4],["0184E0","1Q 200채권혼합50액티브",7],["100910","KIWOOM KRX100",1],["481340","RISE 미국30년국채액티브",6],["472840","IBK 200",1],["227540","TIGER 200 헬스케어",2],["0238F0","KODEX 미국AI메모리TOP2플러스",4],["167860","KIWOOM 국고채10년레버리지",6],["304780","HANARO 200선물레버리지",3],["395290","HANARO Fn K-POP&미디어",2],["452250","ACE 미국30년국채선물레버리지(합성 H)",6],["0115C0","RISE 미국고배당다우존스TOP10",4],["322400","HANARO e커머스",2],["491700","HK 200",1],["469050","RISE 미국반도체NYSE(H)",4],["428510","KODEX 차이나AI테크액티브",4],["448570","FOCUS AI코리아액티브",1],["476070","KODEX 글로벌비만치료제TOP2 Plus",4],["0023B0","PLUS 미국양자컴퓨팅TOP10",4],["459750","RISE 글로벌주식분산액티브",4],["261250","KODEX 미국달러선물레버리지",7],["493420","SOL 미국배당다우존스2호",4],["487130","KoAct AI인프라액티브",2],["275280","KODEX 모멘텀주",2],["450910","SOL 코스닥150",1],["174360","RISE 중국본토대형주CSI100",4],["496770","PLUS 글로벌방산",4],["138910","KODEX 구리선물(H)",5],["0154F0","WON 초대형IB&금융지주",2],["223190","KODEX 200가치저변동",2],["0223A0","RISE 코스닥커버드콜액티브",2],["498860","RISE 코리아금융고배당",2],["0049K0","ACE 미국배당퀄리티채권혼합50",7],["0013R0","RISE 테슬라미국채타겟커버드콜혼합(합성)",7],["475070","KoAct 글로벌친환경전력인프라액티브",4],["256440","ACE MSCI인도네시아(합성)",4],["449690","TIGER 한중반도체(합성)",4],["192720","파워 고배당저변동성",2],["253150","PLUS 200선물레버리지",3],["489290","WON 미국빌리어네어",4],["117460","KODEX 에너지화학",2],["475380","RISE 글로벌리얼티인컴",7],["0107F0","KIWOOM 미국고배당&AI테크",4],["152500","ACE 레버리지",3],["380340","ACE 코리아AI테크핵심산업",2],["0224X0","1Q 엔비디아알파벳미국채혼합50",7],["459790","KIWOOM 미국성장기업30액티브",4],["437350","RISE 미국단기투자등급회사채액티브",6],["464920","PLUS 일본반도체소부장",4],["0137W0","KIWOOM 미국S&P500&GOLD",4],["245350","TIGER 유로스탁스배당30",4],["440340","TIGER 글로벌멀티에셋TIF액티브",7],["0089C0","KODEX 미국S&P500변동성확대시커버드콜",4],["139270","TIGER 200 금융",2],["289480","TIGER 200커버드콜",3],["245360","TIGER 차이나HSCEI",4],["105780","RISE 5대그룹주",2],["385520","KODEX 자율주행액티브",2],["0150K0","KoAct 수소전력ESS인프라액티브",2],["395170","KODEX Top10동일가중",2],["145850","TREX 펀더멘탈 200",2],["0204S0","TIGER 코스닥액티브",1],["415920","PLUS 글로벌희토류&전략자원생산기업",5],["275290","KODEX 가치주",2],["185680","KODEX 미국S&P바이오(합성)",4],["491090","KODEX 미국테크TOP3플러스",4],["483570","KCGI 미국S&P500 TOP10",4],["156080","KODEX MSCI Korea",1],["195970","PLUS 선진국MSCI(합성 H)",4],["0047R0","RISE 팔란티어고정테크100",4],["471460","KIWOOM 국고채30년액티브",6],["387270","TIGER 글로벌이노베이션액티브",4],["0103T0","1Q K소버린AI",2],["0192T0","SOL 코스닥TOP10",2],["442550","RISE TDF2030액티브 적격",7],["138230","KIWOOM 미국달러선물",7],["0203S0","WON 삼성전자현대차채권혼합50",7],["469790","KIWOOM 코리아테크TOP10",2],["153270","KIWOOM 코스피100",1],["447660","PLUS 애플채권혼합",7],["261120","TIGER 미국달러선물인버스2X",7],["269420","KODEX S&P글로벌인프라(합성)",4],["0155M0","ACE 미국SMR원자력TOP10",4],["477730","KODEX 인도타타그룹",4],["261140","TIGER 우선주",2],["239660","PLUS 우량회사채50",6],["0097L0","KIWOOM 한국고배당&미국AI테크",7],["461600","SOL 미국30년국채액티브(H)",6],["0155N0","HANARO K휴머노이드테마TOP10",2],["300950","KODEX 게임산업",2],["277540","ACE 아시아TOP50",4],["368190","HANARO Fn K-뉴딜디지털플러스",2],["0223R0","TIGER 미국테크NYSE100액티브",4],["0193L0","PLUS 삼성전자선물단일종목인버스2X",2],["0194M0","ACE 삼성전자단일종목레버리지",2],["414270","ACE 글로벌자율주행액티브",4],["271060","KODEX 3대농산물선물(H)",5],["415340","KODEX 차이나과창판STAR50(합성)",4],["117680","KODEX 철강",2],["494340","ACE 글로벌AI맞춤형반도체",4],["152380","KODEX 국채선물10년",6],["0192S0","SOL 코스피200채권혼합50",7],["0247S0","KIWOOM 글로벌MLCC&AI기판TOP4+",2],["280930","KODEX 미국러셀2000(H)",4],["450190","KODEX 한중반도체(합성)",4],["282000","RISE 국고채3년선물인버스",3],["0047P0","RISE 테슬라고정테크100",4],["0152E0","SOL 배당성향탑픽액티브",2],["0026E0","KODEX 미국S&P500버퍼3월액티브",4],["388280","RISE K엔터&여행레저",2],["0197W0","SOL SK하이닉스단일종목레버리지",2],["0206G0","1Q 현대차기아채권혼합50",7],["204450","KODEX 차이나H레버리지(H)",4],["147970","TIGER 모멘텀",2],["225130","ACE 골드선물 레버리지(합성 H)",4],["446690","KODEX 아시아AI반도체exChina액티브",4],["253290","RISE 헬스케어채권혼합",7],["451600","PLUS 국고채30년액티브",6],["0194T0","ACE SK하이닉스단일종목레버리지",2],["300640","RISE 게임테마",2],["0238C0","IBK 한미대표기업TOP2+채권혼합50액티브",7],["465670","TIGER 미국캐시카우100",4],["0100K0","KODEX 방산TOP10레버리지",2],["364990","TIGER 게임TOP10",2],["0166N0","PLUS 코스닥150액티브",1],["475270","ACE 5월만기자동연장회사채AA-이상액티브",6],["489000","PLUS 일본엔화초단기국채(합성)",6],["379790","RISE 유로스탁스50(H)",4],["437070","KODEX 아시아달러채권ESG플러스액티브",6],["419430","KODEX 차이나2차전지MSCI(합성)",4],["0240J0","RISE 삼성SK그룹",2],["213630","PLUS 미국다우존스고배당주(합성 H)",4],["0067V0","TIGER 차이나글로벌리더스TOP3+",4],["496120","ACE 코리아밸류업",1],["0153X0","PLUS 미국고배당주액티브",4],["367740","HANARO Fn5G산업",2],["460660","RISE 미국S&P배당킹",4],["261060","TIGER 코스닥150IT",2],["292500","SOL KRX300",1],["0259R0","ACE 글로벌메모리반도체TOP3채권혼합액티브",7],["463300","RISE 중국본토CSI300",4],["276000","TIGER 글로벌자원생산기업(합성 H)",4],["438320","TIGER 차이나항셍테크레버리지(합성 H)",4],["497780","KoAct 미국천연가스인프라액티브",4],["292160","TIGER KRX300",1],["449580","RISE 테슬라애플아마존채권혼합",7],["159800","마이티 코스피100",1],["433220","에셋플러스 글로벌대장장이액티브",4],["461900","PLUS 미국테크TOP10",4],["479850","HANARO K-뷰티",2],["139250","TIGER 200 에너지화학",2],["371450","TIGER 글로벌클라우드컴퓨팅INDXX",4],["0144M0","KODEX 미국드론UAM TOP10",4],["457690","KODEX 33-06 국고채액티브",6],["456680","TIGER 차이나전기차레버리지(합성)",4],["236350","TIGER 인도니프티50레버리지(합성)",4],["0164G0","RISE 차이나AI반도체TOP4Plus",4],["0186L0","KoAct 미국로봇피지컬AI액티브",4],["169950","KODEX 차이나A50",4],["364690","KODEX 혁신기술테마액티브",1],["468370","KODEX iShares미국인플레이션국채액티브",6],["494420","PLUS 미국배당증가성장주데일리커버드콜",2],["195920","TIGER 일본TOPIX(합성 H)",4],["445910","TIGER MKF배당귀족",2],["250730","RISE 차이나HSCEI(H)",4],["0065G0","KODEX 차이나테크TOP10",4],["226980","KODEX 200 중소형",1],["375760","HANARO 탄소효율그린뉴딜",2],["469160","ACE 일본반도체",4],["487950","KODEX 대만테크고배당다우존스",4],["0086C0","TIGER 리츠부동산인프라10채권혼합액티브",7],["485810","TIME 글로벌바이오액티브",4],["0127R0","RISE 미국AI클라우드인프라",4],["0105D0","SOL 한국AI소프트웨어",2],["108590","TREX 200",1],["0192L0","RISE SK하이닉스단일종목레버리지",2],["0209Z0","ACE 코리아AI전력TOP10",2],["0018Z0","RISE 미국양자컴퓨팅",4],["332620","PLUS 미국장기우량회사채",6],["461910","PLUS 미국테크TOP10레버리지(합성)",4],["091220","TIGER 은행",2],["265690","ACE 러시아MSCI(합성)",4],["0104P0","TIGER 코리아배당다우존스위클리커버드콜",2],["284980","RISE 200금융",2],["337120","KODEX 멀티팩터",2],["464600","SOL 자동차소부장Fn",2],["417630","TIGER KEDI혁신기업ESG30",2],["483330","ACE 마이크로소프트밸류체인액티브",4],["416090","ACE 중국과창판STAR50",4],["409810","KODEX 미국나스닥100선물인버스(H)",4],["253250","KIWOOM 200선물레버리지",3],["404120","TIME K신재생에너지액티브",2],["453820","KODEX 인도Nifty50레버리지(합성)",4],["453630","KODEX 미국S&P500필수소비재",4],["0241R0","TIGER 현대차LG전자고정피지컬AI밸류체인",7],["289040","KODEX MSCI KOREA ESG유니버설",2],["114460","ACE 국고채3년",6],["411540","SOL 200 Top10",1],["477490","에셋플러스 글로벌일등기업포커스10액티브",4],["183710","RISE 주식혼합",7],["289250","TIGER MSCI KOREA ESG유니버설",2],["0177A0","WON 두산그룹포커스",2],["474920","에셋플러스 차이나일등기업포커스10액티브",4],["432840","HANARO 미국S&P500",4],["228820","TIGER KTOP30",1],["0093D0","KoAct 팔란티어밸류체인액티브",7],["219390","RISE 미국S&P원유생산기업(합성 H)",4],["304770","HANARO 코스닥150",1],["0192M0","RISE 삼성전자단일종목레버리지",2],["404260","KODEX 기후변화솔루션",2],["0231Z0","KODEX 코리아TDF2065액티브 적격",7],["461450","KODEX 코스닥글로벌",1],["131890","ACE 삼성그룹동일가중",2],["445690","BNK 주주가치액티브",2],["453010","PLUS KOFR금리",7],["376410","TIGER 탄소효율그린뉴딜",2],["0258B0","1Q 미국AI테크플랫폼TOP10",4],["0004G0","1Q 미국배당TOP30",4],["174350","TIGER 로우볼",2],["0190M0","KIWOOM 미국AI테크하이베타",4],["385600","ACE 2차전지&친환경차액티브",2],["229720","KODEX KTOP30",1],["407310","HANARO 200 TOP10",1],["304760","HANARO KRX300",1],["0256C0","1Q 엔비디아고정미국AI반도체",4],["0242S0","파워 SK그룹",2],["225060","TIGER 이머징마켓MSCI레버리지(합성 H)",4],["0084E0","KIWOOM 미국대형주500월간목표헤지액티브",7],["130680","TIGER 원유선물Enhanced(H)",5],["381560","HANARO Fn전기&수소차",2],["227830","PLUS 코스피",1],["457700","KODEX 53-09 국고채액티브",6],["438900","HANARO Fn K-푸드",2],["0028X0","KODEX 미국금융테크액티브",4],["491510","파워 K-주주가치액티브",2],["415760","SOL 차이나육성산업액티브(합성)",4],["140710","KODEX 운송",2],["419650","PLUS 글로벌수소&차세대연료전지",4],["428560","KODEX 미국ETF산업Top10 Indxx",4],["292050","RISE KRX300",1],["360150","KODEX 코스닥150롱코스피200숏선물",2],["0127T0","KIWOOM 미국S&P500&배당다우존스비중전환",4],["363510","SOL KIS단기통안채",6],["0127V0","KIWOOM 미국S&P500 TOP10&배당다우비중전환",4],["0254H0","RISE 반도체소부장액티브",2],["0219Z0","HANARO 미국S&P500액티브",4],["391670","HK 베스트일레븐액티브",1],["104520","KIWOOM 블루칩",2],["290080","RISE 200고배당커버드콜ATM",3],["453060","HANARO KOFR금리액티브(합성)",6],["0013P0","RISE 미국은행TOP10",4],["453660","KODEX 미국S&P500경기소비재",4],["0243M0","DS AI반도체액티브",2],["337150","KODEX 200exTOP",2],["0051A0","KoAct 브로드컴밸류체인액티브",4],["300610","TIGER K게임",2],["400570","KODEX 유럽탄소배출권선물ICE(H)",4],["0239Y0","PLUS 코리아HBM반도체",2],["435550","KIWOOM TDF2050액티브 적격",7],["0207Z0","KIWOOM 미국우주데이터센터인프라",4],["430500","KIWOOM 물가채KIS",7],["0153P0","ACE 리츠부동산인프라액티브",2],["251590","PLUS 고배당저변동50",2],["269530","PLUS S&P글로벌인프라",4],["489860","KIWOOM 글로벌전력GRID인프라",4],["269370","TIGER S&P글로벌인프라(합성)",4],["332610","PLUS 미국단기회사채(AAA~A)",6],["387280","TIGER 퓨처모빌리티액티브",2],["396510","TIGER 차이나클린에너지SOLACTIVE",4],["0015F0","KIWOOM 팔란티어미국30년국채혼합액티브(H)",7],["0088N0","WON K-글로벌수급상위",2],["0000H0","KODEX 인도Nifty미드캡100",2],["0090B0","PLUS K방산소부장",2],["410870","TIME K컬처액티브",2],["137610","TIGER 농산물선물Enhanced(H)",5],["448490","HANARO 32-10 국고채액티브",6],["234310","RISE V&S셀렉트밸류",2],["488290","MIDAS 일본테크액티브",4],["404650","SOL KRX기후변화솔루션",2],["289260","TIGER MSCI KOREA ESG리더스",2],["0002C0","에셋플러스 인도일등기업포커스20액티브",4],["463640","KODEX 미국S&P500유틸리티",4],["496130","TRUSTON 코리아밸류업액티브",1],["354240","RISE 미국고정배당우선증권",7],["373490","KODEX 코리아혁신성장액티브",2],["472720","TRUSTON 주주가치액티브",1],["140580","RISE 우량업종대표주",2],["291130","ACE MSCI멕시코(합성)",4],["244620","KODEX 모멘텀Plus",2],["413930","WON AI ESG액티브",2],["417450","RISE 글로벌수소경제",4],["0222F0","마이티 AI데이터센터밸류체인",2],["0113G0","KoAct 미국바이오헬스케어액티브",4],["279540","KODEX 최소변동성",2],["0220A0","KIWOOM 현대차그룹TOP3채권혼합50",7],["451150","에셋플러스 글로벌영에이지액티브",4],["0233N0","RISE 글로벌AI낸드메모리반도체",4],["266410","KODEX 필수소비재",2],["0203D0","PLUS 200위클리커버드콜채권혼합",7],["310080","RISE 중국MSCI China(H)",4],["237440","TIGER 경기방어채권혼합",7],["181480","ACE 미국부동산리츠(합성 H)",7],["0068M0","KODEX 미국S&P500버퍼6월액티브",4],["0227L0","HANARO 미국에이전틱AI TOP2+",4],["460270","KIWOOM 미국달러SOFR금리액티브(합성)",6],["487910","ACE 인도컨슈머파워액티브",4],["354350","HANARO 글로벌럭셔리S&P(합성)",4],["217780","TIGER 차이나CSI300인버스(합성)",4],["0198D0","1Q SK하이닉스선물단일종목레버리지",2],["497510","ACE 글로벌빅파마",4],["166400","TIGER 200커버드콜OTM",3],["385710","TIME K이노베이션액티브",2],["487750","BNK 온디바이스AI",2],["252650","KODEX 200동일가중",1],["0208N0","IBK 코스피액티브",1],["117690","TIGER 차이나항셍30",4],["371870","ACE 차이나항셍테크",4],["497520","ACE 일라이릴리밸류체인",4],["399580","RISE 글로벌클린에너지",4],["429010","TIGER 미국나스닥넥스트100",4],["407820","에셋플러스 코리아플랫폼액티브",2],["0094L0","RISE 차이나테크TOP10위클리타겟커버드콜",4],["0093B0","RISE 엔비디아고정테크100",4],["102960","KODEX 기계장비",2],["456250","KODEX 유럽명품TOP10 STOXX",4],["0252P0","KoAct 코리아TOP5플러스채권혼합50액티브",7],["0189Z0","DAISHIN 금융&지주고배당",2],["446700","RISE 배터리 리사이클링",2],["0174R0","KIWOOM 미국성장다우존스",4],["464610","SOL 의료기기소부장Fn",2],["266390","KODEX 경기소비재",2],["395760","PLUS ESG성장주액티브",2],["0216K0","KIWOOM 미국우주테크TOP2채권혼합50",7],["230480","KIWOOM 미국달러선물인버스2X",7],["494180","TIME 글로벌소비트렌드액티브",4],["0184N0","PLUS 은채권혼합",7],["419420","KODEX 미국클린에너지나스닥",4],["0001P0","마이티 바이오시밀러&CDMO액티브",2],["225050","TIGER 유로스탁스레버리지(합성 H)",4],["0084D0","KIWOOM 미국테크100월간목표헤지액티브",7],["341850","TIGER 리츠부동산인프라채권",7],["435040","ACE 글로벌브랜드TOP10",4],["215620","HK S&P코리아로우볼",2],["0120J0","BNK 카카오그룹포커스",2],["281990","RISE 중소형고배당",2],["395150","KODEX 웹툰&드라마",2],["498050","HANARO 바이오코리아액티브",2],["140570","RISE 수출주",2],["435540","KIWOOM TDF2040액티브 적격",7],["463690","KODEX 미국S&P500커뮤니케이션",4],["182490","TIGER 단기선진하이일드(합성 H)",6],["462340","에셋플러스 글로벌다이나믹시니어액티브",4],["0191S0","IBK 코스닥150",1],["105010","TIGER 라틴35",4],["375270","RISE 글로벌데이터센터리츠(합성)",7],["487920","ACE 인도시장대표BIG5그룹액티브",4],["438740","MIDAS 중소형액티브",2],["0219B0","KoAct 광통신&위성네트워크액티브",2],["395280","HANARO Fn K-게임",2],["270800","RISE KQ고배당",2],["0133E0","TIGER 차이나증권",4],["0255D0","FOCUS 스페이스X밸류체인",4],["0198B0","1Q 삼성전자선물단일종목레버리지",2],["0067Y0","TIGER 차이나AI소프트웨어",4],["280920","PLUS 주도업종",2],["451670","RISE 국채30년레버리지(합성)",6],["371150","RISE 차이나항셍테크",4],["0008E0","ACE 미국중심중소형제조업",4],["261110","TIGER 미국달러선물레버리지",7],["482030","KoAct 반도체&2차전지핵심소재액티브",2],["189400","PLUS 글로벌MSCI(합성 H)",4],["304670","KODEX 미국30년국채울트라선물인버스(H)",6],["435530","KIWOOM TDF2030액티브 적격",7],["277650","TIGER 코스피중형주",2],["0227K0","RISE 미국우주위성통신",4],["466810","BNK 2차전지양극재",2],["449680","TIGER 한중전기차(합성)",7],["437370","RISE 글로벌농업경제",4],["0236J0","마이티 미국피지컬AI액티브",4],["225800","KIWOOM 미국달러선물레버리지",7],["400590","SOL 글로벌탄소배출권선물ICE(합성)",4],["301400","PLUS 코스닥150",1],["0214M0","MIDAS 바이오헬스케어액티브",2],["0193K0","PLUS 삼성전자단일종목레버리지",2],["429980","SOL 한국형글로벌전기차&2차전지액티브",7],["494210","SOL 미국500타겟데일리커버드콜액티브",4],["381570","HANARO Fn친환경에너지",2],["289670","PLUS 국채선물10년",6],["0005C0","RISE 미국S&P500엔화노출(합성 H)",6],["461580","TIGER 코스닥글로벌",1],["480460","WON 한국부동산TOP3플러스",7],["474390","SOL 국고채30년액티브",6],["0226D0","FOCUS 금융반도체지주채권혼합50액티브",7],["253280","RISE 헬스케어",2],["457930","BNK 미래전략기술액티브",2],["0221Z0","ACE K바이오코스닥액티브",2],["139660","KIWOOM 미국달러선물인버스",7],["252000","TIGER 200동일가중",1],["0224D0","KIWOOM 미국CPU반도체TOP4+",4],["0252V0","ACE 미국CPU반도체TOP3+",4],["0082F0","HANARO 유럽방산",4],["404540","TIGER KRX기후변화솔루션",2],["252420","RISE 200선물인버스2X",3],["0036Z0","RISE 미국천연가스밸류체인",4],["456200","PLUS 미국달러SOFR금리액티브(합성)",6],["0216Z0","ACE K방산TOP5+",2],["244670","KODEX 밸류Plus",2],["483020","KIWOOM 의료AI",2],["250780","TIGER 코스닥150선물인버스",3],["0255G0","마이티 삼성그룹테크TOP3&하드웨어",2],["488480","RISE 일본섹터TOP4Plus",4],["402460","HANARO Fn K-메타버스MZ",2],["0166T0","PLUS 글로벌저작권핵심기업액티브",4],["395750","PLUS ESG가치주액티브",2],["0226G0","WON 피지컬AI TOP2플러스액티브",2],["469530","RISE 미국달러선물인버스",3],["139240","TIGER 200 철강소재",2],["285690","FOCUS ESG리더스",2],["400580","SOL 유럽탄소배출권선물S&P(H)",4],["0094X0","1Q 샤오미밸류체인액티브",4],["316300","ACE 싱가포르리츠",7],["0047N0","PLUS 차이나AI테크TOP10",4],["138920","KODEX 콩선물(H)",5],["139290","TIGER 200 경기소비재",2],["401590","HANARO 글로벌탄소배출권선물ICE(합성)",4],["450180","KODEX 한중전기차(합성)",7],["368680","KODEX K-뉴딜디지털플러스",2],["326230","RISE 내수주플러스",2],["0172Y0","ACE K수출핵심TOP10산업액티브",2],["432600","RISE 국채선물3년",6],["483030","KIWOOM 미국블록버스터바이오테크의약품+",4],["476310","RISE 글로벌비만산업TOP2+",4],["267450","RISE 미국장기국채선물인버스(H)",6],["0176P0","FOCUS AI반도체위클리고정커버드콜",2],["470310","UNICORN 생성형AI강소기업액티브",2],["295000","RISE 국채선물10년",6],["314700","HANARO 농업융복합산업",2],["0104G0","PLUS K방산레버리지",2],["0215T0","HANARO 미국AI광통신TOP10",4],["256450","PLUS 심천차이넥스트(합성)",4],["429740","PLUS K리츠",7],["272570","RISE 중장기국공채액티브",6],["0114X0","RISE 글로벌게임테크TOP3Plus",4],["238670","PLUS 스마트베타Quality채권혼합",7],["0218K0","BNK 스마트카",2],["227570","TIGER 우량가치",2],["499150","SOL 미국S&P500엔화노출(H)",4],["0015K0","TIGER 미국소비트렌드액티브",4],["291890","KODEX MSCI EM선물(H)",4],["0102X0","ACE 유럽방산TOP10",4],["0015E0","KIWOOM 엔비디아미국30년국채혼합액티브(H)",7],["390400","KODEX 미국스마트모빌리티S&P",4],["411860","KIWOOM 독일DAX",4],["498610","RISE 인도디지털성장",4],["267440","RISE 미국장기국채선물(H)",6],["0229F0","마이티 신약포커스바이오액티브",2],["307510","TIGER 의료기기",2],["490330","KoAct 미국치매&뇌질환치료제액티브",4],["220130","SOL 차이나강소기업CSI500(합성 H)",4],["0194R0","KIWOOM SK하이닉스선물단일종목레버리지",2],["0138D0","RISE 동학개미",2],["413220","SOL 차이나태양광CSI(합성)",4],["219900","ACE 중국본토CSI300레버리지(합성)",4],["0174J0","DAISHIN 오피스리츠플러스",7],["0087F0","ACE 차이나AI빅테크TOP2+액티브",4],["407300","HANARO Fn골프테마",2],["0073X0","FOCUS 알리바바미국채커버드콜혼합",5],["0194N0","KIWOOM 삼성전자선물단일종목레버리지",2],["0132D0","KoAct 글로벌K컬처밸류체인액티브",7],["433250","UNICORN R&D 액티브",1],["205720","ACE 일본TOPIX인버스(합성 H)",4],["0191B0","MIDAS 코스닥액티브",1],["373790","KIWOOM 미국방어배당성장나스닥",4],["391600","ACE 미국친환경그린테마",4],["225030","TIGER 미국S&P500선물인버스(H)",4],["0053M0","더제이 중소형포커스액티브",2],["0154H0","KoAct 차이나바이오헬스케어액티브",4],["266550","PLUS 중형주저변동50",2],["0050E0","PLUS 미국AI에이전트",4],["0128D0","PLUS 차이나항셍테크위클리타겟커버드콜",4],["0184V0","UNICORN K바이오액티브",2],["291680","RISE 차이나H선물인버스(H)",4],["0078V0","PLUS 미국로보택시",4],["226380","ACE Fn성장소비주도주",2],["315270","TIGER 200커뮤니케이션서비스",2],["291630","KIWOOM 코스닥150선물레버리지",3],["252410","RISE 200선물인버스",3],["267490","RISE 미국장기국채선물레버리지(합성 H)",6],["491630","RISE 미국반도체인버스(합성 H)",4],["145670","ACE 인버스",3],["334690","RISE 팔라듐선물(H)",5],["321410","KODEX 멀티에셋하이인컴(H)",7],["427120","RISE AI플랫폼",2],["0079X0","ACE BYD밸류체인액티브",4],["243890","TIGER 200에너지화학레버리지",2],["275750","RISE 코스닥150선물인버스",3],["253230","KIWOOM 200선물인버스2X",3],["227560","TIGER 200 생활소비재",2],["334700","RISE 팔라듐선물인버스(H)",5],["227550","TIGER 200 산업재",2],["280940","KODEX 골드선물인버스(H)",5],["244660","KODEX 퀄리티Plus",2],["0131A0","SOL 차이나소비트렌드",4],["306530","HANARO 코스닥150선물레버리지",3],["476000","UNICORN 포스트IPO액티브",2],["291620","KIWOOM 코스닥150선물인버스",3],["253240","KIWOOM 200선물인버스",3],["306520","HANARO 200선물인버스",3],["253160","PLUS 200선물인버스2X",3],["412560","TIGER BBIG레버리지",2]];
+const KRX_TAB={1:'국내 시장지수',2:'국내 업종·테마',3:'국내 파생',4:'해외 주식',5:'원자재',6:'채권',7:'기타'};
+const RENAMED={"KOSEF 200": "KIWOOM 200", "KODEX 선진국MSCI World": "KODEX MSCI선진국", "ACE 신흥국MSCI(합성 H)": "PLUS 신흥국MSCI(합성 H)", "KODEX 미국반도체MV": "KODEX 미국반도체"};
+const krCore=n=>n.replace(/^\S+\s+/,'').replace(/\((합성\s*H|합성|H|UH)\)/g,'').replace(/\s+/g,'');
+function krClass(name){const c=krCore(name);
+ if(/레버리지|인버스|2X|3X/.test(c))return'lev';
+ if(/커버드콜|프리미엄|위클리/.test(c))return'cc';
+ if(/^(미국)?S&P500(TR)?(선물)?$/.test(c))return'sp500';
+ if(/^(미국)?나스닥100(TR)?(선물)?$/.test(c))return'ndx';
+ if(/^(코스피|KOSPI)?200(TR)?$/.test(c))return'kospi200';
+ if(/^(MSCI선진국|선진국MSCIWorld|MSCIWorld)$/.test(c))return'world';
+ if(/^(신흥국MSCI|MSCIEM선물|MSCI신흥국|이머징마켓MSCI)$/.test(c))return'em';
+ if(/^미국배당다우존스(TR|2호)?$/.test(c))return'divg';
+ if(/^미국(채)?(울트라)?30년(국채)?(울트라)?(선물)?(액티브)?$/.test(c)||/^미국장기국채(선물)?$/.test(c))return'ustlt';
+ if(/^미국종합채권/.test(c))return'usagg';
+ if(/CD금리|CD1년금리|양도성예금증서|KOFR|머니마켓|단기채권|단기통안채|단기자금|초단기채권/.test(c)&&!/미국|달러|SOFR|엔화|혼합/.test(c))return'krcash';
+ if(/^(KRX금현물|금현물|골드선물|국제금|금액티브)$/.test(c))return'gold';
+ if(/^미국(필라델피아)?반도체(나스닥|MV|NYSE)?$/.test(c))return'semis';
+ return null}
+const KR_THEME=/TOP\s?\d+|테크|AI|2차전지|바이오|반도체|로봇|방산|조선|원자력|게임|메타버스|전기차|빅테크|우주|양자|소부장|헬스케어|클라우드|플랫폼|럭셔리|수소|전력|K-?POP|엔터|자율주행|블록체인|비만|인터넷|소프트웨어|배터리|리튬|희토류|드론|사이버|핀테크|휴머노이드|화장품|은행|증권|보험|자동차|건설|철강|미디어|여행|웹툰/;
+const KR_RELATED=[['sp500',/S&P500/],['ndx',/나스닥100/],['semis',/반도체/],['ustlt',/미국(채)?(울트라)?30년/],['divg',/배당다우존스/],['gold',/금현물|골드/],['kospi200',/(^|[^0-9])200(?![0-9])/]];
+let KRX_IDX=null;
+function krCls(id){if(typeof id!=='string'||id.slice(0,3)!=='kr:')return null;const m=krCls.cache||(krCls.cache={});if(m[id])return m[id];const e=krIndex().find(x=>x.code===id.slice(3));if(!e)return null;const g=krGroup(e),nm=e.name;
+ return m[id]={id,name:nm,group:e.theme?'theme':g==='other'?'etc':g,series:null,fx:e.tab===4,etfs:[[nm,'kr',null,nm.includes('(H)')||nm.includes(' H)')?1:0,0]],desc:'',alias:'',custom:true,kr:e}}
+function krIndex(){if(KRX_IDX)return KRX_IDX;const cur={};PF_CLASSES.forEach(c=>c.etfs.forEach(e=>{if(e[1]==='kr')cur[e[0]]=c.id}));
+ KRX_IDX=KRX_ETF.map(([code,name,tab])=>{const cid=cur[name]||krClass(name),core=krCore(name);
+  const rel=(KR_RELATED.find(([id,re])=>id!==cid&&re.test(core)&&(id!=='kospi200'||tab<4||tab===7))||[])[0]||null;
+  return{code,name,tab,cid,rel,theme:!cid&&(tab===2||tab===4)&&KR_THEME.test(core),hay:name.toLowerCase().replace(/\s/g,'')}});return KRX_IDX}
+function krFit(e){const p=profile();if(!p)return null;
+ if(e.cid){const f=fit(cls(e.cid));return{lv:f.lv,text:f.text,cap:p.max[f.tier]}}
+ if(e.theme){const [lv,text]=p.fit[4];return{lv,text:'이름으로 보면 테마·업종형 · '+text,cap:0}}
+ return null}
+function krSearch(q){if(!q)return[];const toks=q.replace(/에스앤피|snp/g,'s&p').split(/\s+/).filter(Boolean);
+ return krIndex().filter(e=>toks.every(t=>e.hay.includes(t)||(t.length>=4&&/^[0-9a-z]+$/.test(t)&&e.code.toLowerCase().includes(t))))}
+const krGroup=e=>{if(e.cid){const g=cls(e.cid).group;return g==='theme'||g==='income'?'equity':g}return e.tab===6?'bond':e.tab===1||e.tab===2||e.tab===4?'equity':'other'};
+const krRow=e=>{const f=krFit(e);return `<li><button class="item" data-go="kr/${e.code}"><span class="t"><strong>${esc(e.name)} <span class="muted small num" style="font-weight:500">· ${e.code}</span></strong><span class="s">${e.cid?`${esc(cls(e.cid).name)} 범주`:`${KRX_TAB[e.tab]||'기타'} · 이 앱에 없는 범주`}</span>${f?`<span class="s" style="margin-top:4px"><span class="badge ${f.lv}">${esc(f.text)}</span></span>`:''}</span>${ARROW}</button></li>`};
+function krResults(q){const n=KRX_ETF.length.toLocaleString('ko-KR');
+ if(!q)return `<p class="small muted" style="margin-top:16px">국내 상장 ETF ${n}개도 이름이나 종목코드로 찾을 수 있어요. 예: KODEX 200, 2차전지, 360750</p>`;
+ const all=krSearch(q).filter(e=>searchGroup==='all'||krGroup(e)===searchGroup),show=all.slice(0,30);
+ return `<h2>국내 상장 ETF <span class="muted small" style="font-weight:500">${all.length}개</span></h2>${all.length?`<ul class="list card">${show.map(krRow).join('')}</ul>${all.length>show.length?'<p class="small muted">시가총액이 큰 순으로 30개만 보여요. 검색어를 더 구체적으로 넣어 보세요.</p>':''}`:'<div class="card"><p class="muted">이 이름·코드의 국내 상장 ETF가 없어요. 개별 주식은 다루지 않고, 미국 상장 ETF는 지수 범주 안의 대표 상품만 있어요.</p></div>'}`}
+function krSiblings(id){const L=krIndex().filter(e=>e.cid===id);if(!L.length)return'';const show=L.slice(0,40);
+ return `<h2>국내 상장 ETF 전체 목록에서</h2><details class="card sib"><summary>이 범주로 연결된 상품 ${L.length}개 보기</summary><ul class="list">${show.map(e=>`<li><button class="item" data-go="kr/${e.code}"><span class="t"><strong>${esc(e.name)}</strong><span class="s num">${e.code}</span></span>${ARROW}</button></li>`).join('')}</ul>${L.length>show.length?'<p class="small muted">시가총액이 큰 순으로 40개만 보여요. 나머지는 찾기에서 이름으로 검색하세요.</p>':''}<p class="small muted">이름으로 연결했고 보수는 넣지 않았어요. ${KRX_SRC} ${KRX_ASOF} 기준.</p></details>`}
+function product(code){const e=krIndex().find(x=>x.code===code);if(!e)return search();const p=profile(),c=e.cid?cls(e.cid):null,r=e.rel?cls(e.rel):null,f=krFit(e),core=krCore(e.name);
+ const traits=[];if(/\((합성\s*)?H\)/.test(e.name))traits.push(['환헤지 (H)','환율 영향을 줄인 상품이에요. 헤지 비용이 들어요.']);if(/합성/.test(e.name))traits.push(['합성','주식·채권을 직접 담지 않고 스왑 계약으로 지수를 따라가요.']);if(/액티브/.test(e.name))traits.push(['액티브','지수를 그대로 따르지 않고 운용사가 종목과 비중을 정해요.']);if(/TR$/.test(core))traits.push(['TR','분배금을 주지 않고 자동으로 다시 투자해요.']);
+ const banner=!p?'<div class="banner none"><button class="link" data-go="quiz">진단</button>을 하면 이 상품이 내 성향에 맞는지 알려드려요.</div>':f?`<div class="banner ${f.lv}"><strong>${p.name}: ${esc(f.text)}</strong>${f.lv==='care'&&f.cap?` · 담더라도 ${f.cap}% 이내로.`:''}</div>`:'<div class="banner none"><strong>성향 기준을 붙이지 않았어요.</strong> 이 앱의 13개 범주에 없는 상품이라 이름만으로 판단하지 않아요.</div>';
+ const hid=c?c.id:'kr:'+e.code,held=state.holdings.find(h=>h.cls===hid);
+ const addBox=held?`<h2>내 구성</h2><div class="card kradd"><p class="small muted">${c?`${esc(c.name)} 범주가 이미 내 구성에 있어요 (${esc(etfInfo(held).name)}). 같은 범주의 상품은 한 줄로 합쳐요. 금액은 내 구성에서 더해서 적어 주세요.`:'이미 내 구성에 담겨 있어요.'}</p><button data-go="portfolio" style="width:100%">내 구성 보기</button></div>`:`<h2>내 구성에 담기</h2><div class="card kradd"><label><span class="small muted">보유 금액(원) · 증권사 앱의 평가금액. 비워 둬도 돼요.</span><input id="kr-amt" class="money" type="text" inputmode="numeric" autocomplete="off" placeholder="0"></label><button class="primary" data-act="add-kr" data-code="${e.code}" style="width:100%;margin-top:8px">내 구성에 담기</button><p class="small muted">${c?`${esc(c.name)} 범주로 담겨요.`:'이 앱에 없는 범주라 연도별 수익률 계산에서는 빠져요.'} 금액을 넣으면 실제 비중이 계산돼요.</p></div>`;
+ const sib=c?krIndex().filter(x=>x.cid===e.cid).length:0;
+ return `${topbar(KRX_TAB[e.tab]||'국내 상장 ETF','search')}<h1>${esc(e.name)}</h1><p class="muted small num">종목코드 ${e.code} · 국내 상장 · 분류: ${KRX_TAB[e.tab]||'기타'}</p>${banner}${addBox}
+ <h2>이 앱에서 보면</h2><div class="card">${c?`<p>이름으로 보면 <strong>${esc(c.name)}</strong> 범주예요. ${esc(c.desc)}</p><button class="primary" data-go="etf/${c.id}" style="width:100%;margin-top:8px">${esc(c.name)} 상세 보기</button><p class="small muted">연도별 수익률과 담긴 회사는 상세 화면에 있어요. 같은 범주로 연결된 국내 상장 ETF는 ${sib}개예요.${['sp500','ndx','kospi200','divg'].includes(c.id)?' 같은 지수를 따르는 상품끼리는 수익률이 거의 같고, 보수와 환헤지 여부가 달라요.':''}</p>`:'<p>이 앱의 13개 범주에 없는 상품이에요. 연도별 수익률과 담긴 회사는 보여드리지 못해요.</p>'}${r?`<button data-go="etf/${r.id}" style="width:100%;margin-top:8px">이름에 들어 있는 지수: ${esc(r.name)} 보기</button><p class="small muted">이 상품이 ${esc(r.name)} 지수를 그대로 따른다는 뜻은 아니에요.</p>`:''}</div>
+ ${traits.length?`<h2>이름에서 읽을 수 있는 것</h2><ul class="list card">${traits.map(([t,s])=>`<li style="padding:12px 4px"><strong>${t}</strong><br><span class="small muted">${s}</span></li>`).join('')}</ul>`:''}
+ <h2>담기 전에 직접 확인할 것</h2><div class="card"><ol class="plain"><li>어떤 지수를 따라가는지 (기초지수)</li><li>총보수가 같은 지수의 다른 상품보다 높지 않은지</li><li>상위 구성 종목과 한 회사 비중</li><li>순자산이 너무 작지 않은지</li></ol><p class="small muted">증권사 앱의 종목 정보나 운용사 페이지에서 볼 수 있어요. 이 목록에는 이름과 종목코드만 있어요 (${KRX_SRC} ${KRX_ASOF} 기준).</p></div>${disclaimer}`}
+
+function searchBody(){const p=profile();const q=searchQ.trim().toLowerCase();const list=PF_CLASSES.filter(c=>(searchGroup==='all'||c.group===searchGroup||(searchGroup==='equity'&&(c.group==='theme'||c.group==='income')))&&(!q||(c.name+' '+c.alias+' '+c.etfs.map(e=>e[0]).join(' ')).toLowerCase().includes(q)));return `<ul class="list card">${list.length?list.map(c=>{const st=seriesStats(c.series);return `<li><button class="item" data-go="etf/${c.id}"><span class="t"><strong>${esc(c.name)} <span class="muted small" style="font-weight:500">· ${GROUP_LABEL[c.group]}</span></strong><span class="s">${esc(c.desc)}</span><span class="s" style="margin-top:4px">${badge(c)} ${st?`<span class="badge neutral num">연평균 ${pct(st.cagr,1)} · 최악 ${pct(st.worst,0)}</span>`:''}</span></span>${spark(c.series)}${ARROW}</button></li>`}).join(''):'<li><p class="muted" style="padding:16px 4px">이 검색어에 맞는 지수 범주는 없어요. 연도별 수익률과 담긴 회사는 13개 범주만 다뤄요.</p></li>'}</ul>
+ ${krResults(q)}`}
+function search(){const p=profile();
+ const groups=[['all','전체'],['equity','주식'],['bond','채권'],['cash','현금성'],['gold','금'],['lev','레버리지']];
+ return `<h1 class="sr">지수·ETF 찾기</h1><div class="searchbar"><input id="q" type="search" placeholder="S&P 500, 반도체, KODEX 200, 종목코드…" value="${esc(searchQ)}" aria-label="지수·ETF 검색" autocomplete="off"></div>
+ <div class="chips" role="group" aria-label="자산군">${groups.map(([k,l])=>`<button class="chip ${searchGroup===k?'on':''}" data-group="${k}" aria-pressed="${searchGroup===k}">${l}</button>`).join('')}</div>
+ <div id="results">${searchBody()}</div>
+ <p class="small muted">같은 지수를 따르는 ETF는 수익률이 거의 같아요. 지수를 먼저 고르고, 그 안에서 보수가 낮은 상품을 보세요. 수익률로 정렬하지 않아요. 작은 선은 최근 10년 연도별 수익률(과거 지수 기준)이에요. 국내 상장 ETF 목록은 ${KRX_SRC} ${KRX_ASOF} 기준 ${KRX_ETF.length.toLocaleString('ko-KR')}개이고, 범주 연결은 이름으로 판단했어요.${p?'':' <button class="link" data-go="quiz">진단</button>을 하면 성향 배지가 붙어요.'}</p>${disclaimer}`}
+
+/* ===== v7.9: 연도별 수익률을 꺾은선으로 ===== */
+function lineChart(s){const n=s.length,hi=Math.max(0,...s),lo=Math.min(0,...s),span=(hi-lo)||1,pad=6,f=v=>Math.round(v*100)/100;
+ const Y=r=>pad+(hi-r)/span*(100-2*pad),X=i=>(i+.5)/n*100,z=f(Y(0));
+ const pts=s.map((r,i)=>f(X(i))+','+f(Y(r)));
+ const line='M'+pts.join(' L'),area='M'+f(X(0))+','+z+' L'+pts.join(' L')+' L'+f(X(n-1))+','+z+' Z';
+ const dots=s.map((r,i)=>{const y=SERIES_YEARS[i],on=detailYear===y;return `<button class="bar${r<0?' neg':''}${on?' on':''}" data-year="${y}" aria-pressed="${on}" aria-label="${y}년 ${pct(r,1)}" style="--i:${i}"><i style="top:${f(Y(r))}%"></i><b class="val num" aria-hidden="true" style="bottom:calc(${f(100-Y(r))}% + 12px)">${r>0?'+':''}${pct(r,1)}</b><span>${String(y).slice(2)}</span></button>`}).join('');
+ return `<div class="bars line${detailYear!=null?' has-on':''}" role="group" aria-label="연도별 수익률 꺾은선 그래프. 점을 누르면 수치가 보여요" style="--z:${z}%">${dots}<svg class="linesvg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="lg-line" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="100"><stop offset="${z}%" stop-color="#63e6a8" style="stop-color:var(--up)"/><stop offset="${z}%" stop-color="#ff7b7b" style="stop-color:var(--down)"/></linearGradient><linearGradient id="lg-area" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="100"><stop offset="0%" stop-color="#63e6a8" stop-opacity=".32" style="stop-color:var(--up)"/><stop offset="${z}%" stop-color="#63e6a8" stop-opacity=".03" style="stop-color:var(--up)"/><stop offset="${z}%" stop-color="#ff7b7b" stop-opacity=".03" style="stop-color:var(--down)"/><stop offset="100%" stop-color="#ff7b7b" stop-opacity=".32" style="stop-color:var(--down)"/></linearGradient></defs><path class="area" d="${area}" fill="url(#lg-area)"/><path class="ln" d="${line}" fill="none" stroke="url(#lg-line)" vector-effect="non-scaling-stroke"/></svg></div><p class="legend"><span><i class="u"></i>오른 해</span><span><i class="d"></i>내린 해</span><span><i class="z"></i>가로선 0%</span></p>`}
+function detail(id){const c=cls(id);if(!c)return search();if(c.custom)return product(c.kr.code);const p=profile(),f=fit(c),st=seriesStats(c.series),s=PF_SERIES[c.series];
+ const m=s?Math.max(...s.map(Math.abs)):1;const held=state.holdings.find(h=>h.cls===id);const defW=p?.defaults[id]??10;
+ const yearBox=()=>{if(!s||detailYear==null)return `<p class="small muted">점을 누르면 그해 수익률과, 1,000만원이 얼마가 됐는지 보여요.</p>`;const i=SERIES_YEARS.indexOf(detailYear);const r=s[i];return `<div class="yearbox"><strong class="num ${r<0?'down':'up'}">${detailYear}년 ${sgn(r)}</strong> · 연초 1,000만원이 연말 <strong class="num">${manwon(1e7*(1+r/100))}</strong>${r<0?'. 이 해에 팔지 않고 둘 수 있었을까요?':''}</div>${sameYear(c.series,i)}`};
+ yearBoxFn=yearBox;
+ const fitBanner=f?`<div class="banner ${f.lv}"><strong>${p.name}: ${esc(f.text)}</strong>${f.lv==='far'&&st?` · 가장 나빴던 해 ${st.worstYear}년 ${pct(st.worst,1)}. 진단에서 답한 것과 거리가 멀어요.`:f.lv==='far'&&id==='lev'?' · 2022년 TQQQ 약 -79%, SOXL 약 -86%였어요. 적립식과 맞지 않아요.':f.lv==='care'?` · 담더라도 ${p.max[f.tier]}% 이내로.`:''}</div>`:`<div class="banner none"><button class="link" data-go="quiz">진단</button>을 하면 이 지수가 내 성향에 맞는지 알려드려요.</div>`;
+ const holds=HOLD[id];const kr=c.etfs.filter(e=>e[1]==='kr').sort((a,b)=>a[2]-b[2]),us=c.etfs.filter(e=>e[1]==='us').sort((a,b)=>a[2]-b[2]);
+ const etfRow=e=>`<tr><td>${esc(e[0])}${e[3]?' <span class="badge neutral">환헤지</span>':''}${e[4]?' <span class="badge care">확인 필요</span>':''}</td><td class="r num">${e[2].toLocaleString('ko-KR',{maximumFractionDigits:4})}%</td></tr>`;
+ return `${topbar(GROUP_LABEL[c.group],'search')}<h1>${esc(c.name)}</h1><p class="muted">${esc(c.desc)}</p>${fitBanner}
+ <h2>연도별 수익률 <span class="muted small" style="font-weight:500">· ${SERIES_YEARS[0]}~${SERIES_YEARS.at(-1)} 지수 기준</span></h2>
+ ${s?`<div class="card glass">${lineChart(s)}<div id="yearbox" aria-live="polite">${yearBox()}</div>
+ <div class="stats" style="margin-top:12px"><div class="stat"><div class="l">가장 나빴던 해</div><div class="v num down">${st.worstYear} ${pct(st.worst,0)}</div></div><div class="stat"><div class="l">연말 기준 최대 하락</div><div class="v num down">${pct(st.mdd,0)}</div></div><div class="stat"><div class="l">마이너스였던 해</div><div class="v num">${st.n}년 중 ${st.neg}번</div></div><div class="stat"><div class="l">연평균(복리)</div><div class="v num">${pct(st.cagr,1)}</div></div></div>
+ <p class="small muted">연평균은 20년 전체를 매년 똑같이 올랐다고 본 숫자예요. 실제로는 위 선처럼 들쭉날쭉했고, 연중 하락은 연말 숫자보다 깊었어요.</p></div>`:`<div class="card"><p class="muted">이 범주는 연도별 지수 데이터를 아직 넣지 않았어요.${id==='lev'?' 레버리지는 기초지수의 2~3배로 움직여요. 나스닥 100이 -32%였던 2022년, 3배 상품은 약 -79%였어요.':id==='cc'?' 상품마다 기초자산과 옵션 전략이 달라 하나의 지수로 묶을 수 없어요. 적립 계산에서는 빠져요.':''}</p></div>`}
+ <h2>무엇을 담고 있나</h2><div class="card">${holds?`<table><thead><tr><th>상위 10종목</th><th class="r">비중</th></tr></thead><tbody>${holds.map(([n,w],k)=>`<tr><td>${esc(n)}<div class="hbar" style="margin-top:4px;max-width:160px"><i style="width:${Math.min(100,w/holds[0][1]*100)}%;--i:${k}"></i></div></td><td class="r num">${pct(w,1)}</td></tr>`).join('')}</tbody></table><p class="small muted">상위 10종목 합계 ${pct(holds.reduce((a,h)=>a+h[1],0),0)}. ${id==='kospi200'?'삼성전자·SK하이닉스 두 곳이 40%를 넘어요. 사실상 반도체 비중이 큰 지수예요.':id==='world'?`나라별로는 ${WORLD_REGION.map(([n,w])=>n+' '+w+'%').join(', ')}.`:id==='ndx'?'상위 10곳이 절반을 넘어요. "100개 기업"이지만 실제로는 빅테크 10곳에 거는 셈이에요.':id==='divg'?'기술주가 거의 없고 에너지·헬스케어·필수소비재 중심이에요. 나스닥과 반대로 움직이는 편.':''} ${AS_OF} 기준 근사치.</p>`:`<p>${esc(HOLD_NOTE[id])}</p>`}${YIELD_NOTE[id]||''}</div>
+ <h2>${c.group==='income'?'이 범주의 상품':'이 지수를 따르는 상품'}</h2><div class="card"><p class="small muted" style="margin-top:0">${c.group==='income'?'보수 순. 특정 상품을 추천하지 않아요. 기초자산과 옵션 전략이 상품마다 달라 수익률도 서로 달라요.':'보수 순. 특정 상품을 추천하지 않아요. 같은 지수면 수익률 차이는 거의 보수 차이예요.'}</p>
+ ${kr.length?`<h3>국내 상장</h3><table><tbody>${kr.map(etfRow).join('')}</tbody></table><p class="small muted">${c.fx?'일반 계좌 배당소득세 15.4%. ISA·연금저축에 담을 수 있어요.':'국내 주식형은 매매차익 비과세, 분배금 15.4%.'}</p>`:''}
+ ${us.length?`<h3>미국 상장</h3><table><tbody>${us.map(etfRow).join('')}</tbody></table><p class="small muted">환전 필요. 매매차익 연 250만원 초과분 양도세 22%, ISA·연금계좌 불가. 보수는 더 낮은 편. (2025년 기준, 확인 필요)</p>`:''}</div>
+ ${krSiblings(id)}${disclaimer}<div class="addbar"><div class="addbar-in"><div class="row"><input id="w" type="number" inputmode="numeric" min="1" max="100" value="${held?held.weight:defW}" aria-label="비중 퍼센트"><span class="unit">%</span><select id="etf-pick" aria-label="상품 선택">${[...kr,...us].map(e=>`<option value="${esc(e[0])}" ${held&&held.etf===e[0]?'selected':''}>${esc(e[0])} · ${e[2]}%</option>`).join('')}</select><button class="primary" data-act="add" data-cls="${id}" aria-label="${held?'내 구성에서 바꾸기':'내 구성에 담기'}">${held?'바꾸기':'담기'}</button></div>${f&&f.lv==='far'?`<p class="far-text">${p.name} 진단과 맞지 않아요. 담으면 점검에 경고로 떠요.</p>`:''}</div></div>`}
+
+function portfolio(){const p=profile(),H=state.holdings,tot=holdingsTotal(),ck=checks();
+ const isEq=h=>['equity','theme','lev','income'].includes(cls(h.cls).group),bar=[...H].sort((a,b)=>isEq(b)-isEq(a)),eqW=H.filter(isEq).reduce((a,h)=>a+Number(h.weight||0),0);
+ const aT=amtTotal(),useAct=!pctMode()&&aT>0,mix=mixBar(useAct?actualW:(h=>Number(h.weight)||0),p);
+ const modeTabs=`<div class="modes" role="group" aria-label="입력 방식"><button class="${pctMode()?'on':''}" data-mode="pct" aria-pressed="${pctMode()}">계획 비중(%)</button><button class="${pctMode()?'':'on'}" data-mode="amt" aria-pressed="${!pctMode()}">보유 금액(원)</button></div>`;
+ const modeHead=pctMode()?`<p class="small muted num" style="margin:8px 0 0">매달 ${amtFmt(state.monthly)} 기준으로 지수별 금액을 보여줘요. 금액은 아래 '매달 넣는 돈'에서 바꿔요.</p>${aT>0?autoLine():''}`:`<p class="small muted" style="margin:8px 0 0">증권사 앱의 종목별 <strong>평가금액</strong>을 옮겨 적으세요. 시세가 없어도 실제 비중이 계산돼요. 없는 종목은 아래 '더 담기'에서 이름으로 찾아요.${useAct?' 위 막대는 실제 보유 비중이에요.':''}</p><div class="row between small num" style="margin-top:8px"><span>보유 합계 ${aT?amtFmt(aT):'0원'}</span><span class="muted">${aT&&dateOk(state.amtAt)?`${state.amtAt} 입력`:'아직 입력 전'}</span></div>${autoLine()}`;
+ return `<div class="eyebrow">내 구성</div><h1>${p?`${p.name} 기준으로 점검`:'담은 지수 점검'}</h1><p class="muted small">${p?`주식 ${p.equity}% · 테마 ${p.max[4]}% 이내 · 레버리지 없음이 기준이에요.`:'<button class="link" data-go="quiz">진단</button>을 하면 성향 기준으로 점검해요.'}</p>
+ ${H.length?`<div class="card">${modeTabs}${mix}${modeHead}<div class="row between small" style="margin-top:8px"${pctMode()?'':' hidden'}><span class="num">합계 ${tot}% ${tot===100?'· 맞췄어요':tot<100?`· 100%까지 ${100-tot}% 남음`:`· ${tot-100}% 초과`}</span><span class="muted">${Object.entries(groupShare()).filter(([k])=>k[0]==='_').map(([k,v])=>`${GROUP_LABEL[k.slice(1)]} ${v}`).join(' · ')}</span></div>
+ ${weightRows()}
+ <div class="row" style="margin-top:8px"><button class="sm grow" data-go="search">+ 지수·ETF 더 담기</button>${p?`<button class="sm grow" data-act="load-defaults">${p.name} 기본 구성으로</button>`:''}</div></div>
+ <h2>점검</h2><div class="card">${ck.map(c=>`<div class="check ${c.lv}"><span class="ic" aria-hidden="true">${LV_ICON[c.lv]||'i'}</span><div><strong><span class="sr">${LV_WORD[c.lv]||'참고'}: </span>${esc(c.t)}</strong><span>${esc(c.s)}</span></div></div>`).join('')}${checkRow()}</div>
+ ${compareCard(p)}`
+ :`<div class="card"><p class="muted">아직 담은 지수가 없어요.</p><div class="row">${p?`<button class="primary grow" data-act="load-defaults">${p.name} 기본 구성 불러오기</button>`:''}<button class="grow" data-go="search">직접 찾기</button></div>${p?`<p class="small muted">기본 구성: ${Object.entries(p.defaults).map(([k,v])=>`${cls(k).name} ${v}%`).join(' · ')}. 출발점일 뿐이고 바꿔도 돼요.</p>`:''}</div>`}
+ <p class="small muted" style="margin-top:16px"><button class="link" data-go="more">백업 · 지우기</button></p>${disclaimer}`}
+
+function more(){return `${topbar('더보기')}<h1>백업과 설정</h1><div class="card"><p class="small muted" style="margin-top:0">진단 결과와 구성은 이 기기의 브라우저에만 저장돼요. 서버로 보내지 않아요.</p><div class="row"><button class="grow" data-act="export">백업 파일 저장</button><button class="grow" data-act="import">백업 파일 불러오기</button></div><input id="file" type="file" accept="application/json" class="sr"><p style="margin-top:16px"><button class="link danger" data-act="clear">이 기기에서 모두 지우기</button></p></div>
+ <div class="card"><h3 style="margin-top:0">데이터 기준</h3><p class="small muted">상품·총보수·상위 종목: ${AS_OF} 기준 근사치 · 연도별 수익률: ${SERIES_YEARS[0]}~${SERIES_YEARS.at(-1)} 지수 연간 근사치 · 세금: 2025년 기준 · 코스피: 금융위원회 지수시세정보(전 영업일 종가). 모두 운용사·국세청 공시로 확인하세요.</p><h3>이 앱이 하지 않는 것</h3><p class="small muted">개별 종목 검색 · 수익률 순위 · 실시간 시세 · 특정 상품 추천 · 매수 버튼.</p></div>${disclaimer}`}
+
+/* ===================== 렌더 · 이벤트 ===================== */
+function render(){(state.holdings||[]).forEach(h=>{if(RENAMED[h.etf])h.etf=RENAMED[h.etf]});state.holdings=(state.holdings||[]).filter(h=>h&&cls(h.cls));autoSync();const {name,arg}=route();const app=document.getElementById('app');
+ const html=name==='quiz'?quiz():name==='result'?result():name==='search'?search():name==='etf'?detail(arg):name==='kr'?product(arg):name==='portfolio'?portfolio():name==='more'?more():home();
+ if(html==='')return;app.innerHTML=html;document.body.dataset.screen=name;app.classList.toggle('enter',location.hash!==lastRoute);lastRoute=location.hash;
+ const tab=name==='etf'||name==='kr'||name==='search'?'search':name==='portfolio'?'portfolio':name==='home'?'home':null;
+ const ic={home:'M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z',search:'M11 4a7 7 0 1 1 0 14 7 7 0 0 1 0-14z M20 20l-3.5-3.5',portfolio:'M4 19h16 M7 16V9 M12 16V5 M17 16v-6'};
+ document.getElementById('nav').innerHTML=[['home','홈'],['search','찾기'],['portfolio','내 구성']].map(([k,l])=>`<button data-go="${k}" class="${tab===k?'on':''}" ${tab===k?'aria-current="page"':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${ic[k]}"/></svg><span>${l}</span></button>`).join('');
+ if(name!=='etf')detailYear=null;window.scrollTo({top:0});
+ const q=document.getElementById('q');if(q){q.addEventListener('input',e=>{searchQ=e.target.value;const r=document.getElementById('results');if(r)r.innerHTML=searchBody()})}
+ document.getElementById('monthly')?.addEventListener('change',e=>{const raw=digits(e.target.value),v=Number(raw);if(raw!==''&&v>=10000&&v<=1e9){state.monthly=Math.round(v);save();render()}else{toast('매달 넣는 돈은 1만원~10억원 사이로 넣어요');e.target.value=commas(state.monthly)}});
+ document.getElementById('simStart')?.addEventListener('change',e=>{state.simStart=Number(e.target.value);save();render()});
+ document.querySelectorAll('[data-w]').forEach(el=>el.addEventListener('change',e=>{const i=+e.target.dataset.w,v=Number(e.target.value);if(Number.isFinite(v)&&v>=0&&v<=100){state.holdings[i].weight=Math.round(v);state.auto=false;save();render()}else render()}));
+ document.getElementById('file')?.addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text());if(!d||d.version!==7||!Array.isArray(d.holdings))throw 0;if(d.profile&&!PROFILES[d.profile.type])throw 0;d.holdings=d.holdings.filter(h=>cls(h.cls)&&Number.isFinite(Number(h.weight))).map(h=>({cls:h.cls,etf:String(h.etf||''),weight:Math.max(0,Math.min(100,Math.round(Number(h.weight))))}));if(!validDay(d.checkedAt))delete d.checkedAt;if(!confirm(`백업 ${d.holdings.length}개 구성${d.profile?' · '+PROFILES[d.profile.type].name:''}으로 지금 데이터를 덮어쓸까요?`))return;state={...fresh(),...d};save();toast('불러왔어요');go('home')}catch{toast('이 앱의 백업 파일이 아니에요')}});
+}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+ if(b.dataset.go!=null){go(b.dataset.go);return}
+ if(b.dataset.ans!=null){quizAns.push(+b.dataset.ans);render();return}
+ if(b.dataset.act==='quiz-back'){quizAns.pop();render();return}
+ if(b.dataset.group){searchGroup=b.dataset.group;render();return}
+ if(b.dataset.year){const y=+b.dataset.year;detailYear=detailYear===y?null:y;const box=document.getElementById('yearbox'),wrap=b.closest('.bars');if(box&&wrap&&yearBoxFn){wrap.classList.toggle('has-on',detailYear!=null);wrap.querySelectorAll('.bar').forEach(x=>{const on=+x.dataset.year===detailYear;x.classList.toggle('on',on);x.setAttribute('aria-pressed',String(on))});box.innerHTML=yearBoxFn()}else render();return}
+ if(b.dataset.seg!=null){const box=document.getElementById('segbox'),was=b.classList.contains('on'),wrap=b.parentElement;wrap.querySelectorAll('.seg').forEach(x=>{x.classList.remove('on');x.setAttribute('aria-pressed','false')});if(!was){b.classList.add('on');b.setAttribute('aria-pressed','true')}wrap.classList.toggle('has-on',!was);if(box){box.textContent=was?'막대를 누르면 지수 이름과 비중이 보여요.':b.dataset.label;box.classList.toggle('on',!was)}return}
+ if(b.dataset.act==='add'){const id=b.dataset.cls,w=Number(document.getElementById('w').value),etf=document.getElementById('etf-pick').value;if(!Number.isFinite(w)||w<1||w>100){toast('비중은 1~100 사이로');return}const i=state.holdings.findIndex(h=>h.cls===id);if(i>=0){if(Number(state.holdings[i].weight)!==Math.round(w))state.auto=false;state.holdings[i]={cls:id,etf,weight:Math.round(w)}}else state.holdings.push({cls:id,etf,weight:Math.round(w)});save();toast('내 구성에 담았어요');go('portfolio');return}
+ if(b.dataset.act==='add-kr'){const k=krIndex().find(x=>x.code===b.dataset.code);if(!k)return;const id=k.cid||'kr:'+k.code;if(state.holdings.some(h=>h.cls===id)){go('portfolio');return}const el=document.getElementById('kr-amt'),raw=el?digits(el.value):'',v=Number(raw);if(raw!==''&&!(Number.isFinite(v)&&v>=0&&v<=AMT_MAX)){toast('금액은 1,000억원 이하로 넣어요');return}const fo=planFollows();state.holdings.push({cls:id,etf:k.name,weight:0});if(raw!==''&&v>0){state.amts={...amtMap(),[id]:Math.round(v)};state.amtAt=today();state.mode='amt'}if(fo)amtToPlan();save();toast('내 구성에 담았어요');go('portfolio');return}
+ if(b.dataset.rm!=null){const fo=planFollows();state.holdings.splice(+b.dataset.rm,1);if(fo)amtToPlan();save();render();return}
+ if(b.dataset.act==='load-defaults'){const p=profile();if(!p)return;if(state.holdings.length&&!confirm('지금 구성을 기본 구성으로 바꿀까요?'))return;state.holdings=Object.entries(p.defaults).map(([id,w])=>{const c=cls(id);const kr=c.etfs.filter(x=>x[1]==='kr'&&!x[3]).sort((a,b)=>a[2]-b[2])[0]||c.etfs[0];return{cls:id,etf:kr[0],weight:w}});state.auto=false;save();go('portfolio');return}
+ if(b.dataset.act==='mark-checked'){state.checkedAt=today();save();toast('점검일을 기록했어요');render();return}
+ if(b.dataset.act==='export'){const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`invest-compass-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(a.href);return}
+ if(b.dataset.act==='import'){document.getElementById('file').click();return}
+ if(b.dataset.act==='clear'){if(confirm('진단 결과와 구성을 모두 지울까요?')){localStorage.removeItem(KEY);state=fresh();go('home');render()}return}
+});
+render();loadKospi();
+window.Compass={state:()=>state,checks,simulate,classify,PROFILES,PF_CLASSES};
+</script></body></html>
